@@ -1,0 +1,9 @@
+[
+  {
+    "name": "GCC 10.3.0 x86_64-w64-mingw32",
+    "compilers": {
+      "C": "C:\\Users\\simsr\\scoop\\apps\\msys2\\current\\mingw64\\bin\\x86_64-w64-mingw32-gcc.exe",
+      "CXX": "C:\\Users\\simsr\\scoop\\apps\\msys2\\current\\mingw64\\bin\\x86_64-w64-mingw32-g++.exe"
+    }
+  }
+]
