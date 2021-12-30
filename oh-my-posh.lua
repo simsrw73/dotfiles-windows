@@ -1,0 +1,1 @@
+C:/Users/simsr/AppData/Local/clink/oh-my-posh.lua
