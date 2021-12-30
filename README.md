@@ -16,3 +16,13 @@
 
 - Location: C:\Users\simsr
 - Description: A simple theme for the Oh My Posh prompt enhancer. Tested on PowerShell & CMD.
+
+### oh-my-posh.lua
+
+- Location: C:\Users\simsr\AppData\Local\clink
+- Description: lua script executed by clink to load Oh My Posh prompt enhancer
+
+### settings.json
+
+- Location: C:\Users\simsr\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState
+- Description: Settings file for Windows Terminal
