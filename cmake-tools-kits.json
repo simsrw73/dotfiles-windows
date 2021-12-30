@@ -1,9 +1,92 @@
 [
   {
-    "name": "GCC 10.3.0 x86_64-w64-mingw32",
+    "name": "Clang 12.0.0 (GNU CLI) for MSVC 16.11.31624.102 (Visual Studio Community 2019 Release - amd64)",
+    "visualStudio": "dca1a24d",
+    "visualStudioArchitecture": "amd64",
     "compilers": {
-      "C": "C:\\Users\\simsr\\scoop\\apps\\msys2\\current\\mingw64\\bin\\x86_64-w64-mingw32-gcc.exe",
-      "CXX": "C:\\Users\\simsr\\scoop\\apps\\msys2\\current\\mingw64\\bin\\x86_64-w64-mingw32-g++.exe"
+      "C": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\Llvm\\x64\\bin\\clang.exe",
+      "CXX": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\Llvm\\x64\\bin\\clang.exe"
+    }
+  },
+  {
+    "name": "Clang 12.0.0 (GNU CLI) for MSVC 16.11.31624.102 (Visual Studio Community 2019 Release - x86)",
+    "visualStudio": "dca1a24d",
+    "visualStudioArchitecture": "x86",
+    "compilers": {
+      "C": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\Llvm\\bin\\clang.exe",
+      "CXX": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\Llvm\\bin\\clang.exe"
+    }
+  },
+  {
+    "name": "Clang 12.0.0 (MSVC CLI) for MSVC 16.11.31624.102 (Visual Studio Community 2019 Release - amd64)",
+    "visualStudio": "dca1a24d",
+    "visualStudioArchitecture": "amd64",
+    "compilers": {
+      "C": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe",
+      "CXX": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe"
+    }
+  },
+  {
+    "name": "Clang 12.0.0 (MSVC CLI) for MSVC 16.11.31624.102 (Visual Studio Community 2019 Release - x86)",
+    "visualStudio": "dca1a24d",
+    "visualStudioArchitecture": "x86",
+    "compilers": {
+      "C": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\Llvm\\bin\\clang-cl.exe",
+      "CXX": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\Llvm\\bin\\clang-cl.exe"
+    }
+  },
+  {
+    "name": "Clang 12.0.1 x86_64-pc-windows-msvc",
+    "compilers": {
+      "C": "C:\\Users\\simsr\\scoop\\shims\\clang.exe",
+      "CXX": "C:\\Users\\simsr\\scoop\\shims\\clang++.exe"
+    }
+  },
+  {
+    "name": "GCC 8.3.0 x86_64-w64-mingw32",
+    "compilers": {
+      "C": "C:\\Users\\simsr\\scoop\\apps\\perl\\current\\c\\bin\\x86_64-w64-mingw32-gcc.exe",
+      "CXX": "C:\\Users\\simsr\\scoop\\apps\\perl\\current\\c\\bin\\x86_64-w64-mingw32-g++.exe"
+    }
+  },
+  {
+    "name": "Visual Studio Community 2019 Release - amd64",
+    "visualStudio": "dca1a24d",
+    "visualStudioArchitecture": "x64",
+    "preferredGenerator": {
+      "name": "Visual Studio 16 2019",
+      "platform": "x64",
+      "toolset": "host=x64"
+    }
+  },
+  {
+    "name": "Visual Studio Community 2019 Release - amd64_x86",
+    "visualStudio": "dca1a24d",
+    "visualStudioArchitecture": "x64",
+    "preferredGenerator": {
+      "name": "Visual Studio 16 2019",
+      "platform": "win32",
+      "toolset": "host=x64"
+    }
+  },
+  {
+    "name": "Visual Studio Community 2019 Release - x86",
+    "visualStudio": "dca1a24d",
+    "visualStudioArchitecture": "x86",
+    "preferredGenerator": {
+      "name": "Visual Studio 16 2019",
+      "platform": "win32",
+      "toolset": "host=x86"
+    }
+  },
+  {
+    "name": "Visual Studio Community 2019 Release - x86_amd64",
+    "visualStudio": "dca1a24d",
+    "visualStudioArchitecture": "x86",
+    "preferredGenerator": {
+      "name": "Visual Studio 16 2019",
+      "platform": "x64",
+      "toolset": "host=x86"
     }
   }
 ]
