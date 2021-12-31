@@ -44,9 +44,9 @@
           "trailing_diamond": "",
           "properties": {
             "prefix": "\uE5FF ",
-            "home_icon": "($HOME) ~",
+            "home_icon": "~",
             "folder_icon": "\uF115",
-            "folder_separator_icon": " \uE0B1 ",
+            "folder_separator_icon": "/",
             "style": "folder"
           }
         }
@@ -114,8 +114,8 @@
           "style": "plain",
           "foreground": "#cccccc",
           "properties": {
-            "prefix": "<#ffffff>[</>",
-            "postfix": "<#ffffff>]-</>",
+            "prefix": "<#ffffff>[ </>",
+            "postfix": "<#ffffff> ]-</>",
             "branch_icon": "\ue725 ",
             "fetch_status": true,
             "fetch_upstream_icon": true,
@@ -139,7 +139,7 @@
           "properties": {
             "prefix": "",
             "postfix": "",
-            "text": " >"
+            "text": "❯"
           }
         }
       ]
