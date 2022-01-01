@@ -1,5 +1,9 @@
 {
   "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "final_space": true,
+  "console_title": true,
+  "console_title_style": "template",
+  "console_title_template": "{{ .Shell }} in {{ .Folder }}",
   "blocks": [
     {
       "type": "prompt",
@@ -21,7 +25,7 @@
           "style": "diamond",
           "foreground": "transparent",
           "background": "#cccccc",
-          "leading_diamond": "",
+          "leading_diamond": "\uE0B6",
           "properties": {
             "prefix": "",
             "postfix": ""
@@ -41,7 +45,7 @@
           "style": "diamond",
           "foreground": "transparent",
           "background": "#cccccc",
-          "trailing_diamond": "",
+          "trailing_diamond": "\uE0B4",
           "properties": {
             "prefix": "\uE5FF ",
             "home_icon": "~",
@@ -53,18 +57,21 @@
       ]
     },
     {
-      "type": "rprompt",
+      "type": "prompt",
+      "newline": false,
+      "alignment": "right",
       "segments": [
         {
           "type": "shell",
-          "style": "plain",
+          "style": "diamond",
           "foreground": "transparent",
           "background": "#cccccc",
+          "leading_diamond": "\uE0B6",
           "properties": {
-            "prefix": "<#cccccc,transparent></>  ",
+            "prefix": "",
             "postfix": "",
             "mapped_shell_names": {
-              "pwsh": ""
+              "pwsh": ""
             }
           }
         },
@@ -75,8 +82,9 @@
           "background": "#cccccc",
           "properties": {
             "always_enabled": true,
+            "style": "austin",
             "prefix": " (",
-            "postfix": ") "
+            "postfix": ")"
           }
         },
         {
@@ -86,10 +94,10 @@
           "background": "#cccccc",
           "background_templates": ["{{ if gt .Code 0 }}lightRed{{ end }}"],
           "leading_diamond": "",
-          "trailing_diamond": "",
+          "trailing_diamond": "\uE0B4",
           "properties": {
             "always_enabled": true,
-            "template": ""
+            "template": "\uE23A"
           }
         }
       ]
@@ -123,30 +131,16 @@
           }
         },
         {
-          "type": "root",
-          "style": "plain",
-          "foreground": "#FF9248",
-          "properties": {
-            "prefix": "<transparent>─(</>",
-            "postfix": "<transparent>)</>",
-            "root_icon": "#"
-          }
-        },
-        {
           "type": "text",
           "style": "plain",
           "foreground": "#cccccc",
           "properties": {
             "prefix": "",
             "postfix": "",
-            "text": "❯"
+            "text": "\u276F"
           }
         }
       ]
     }
-  ],
-  "final_space": true,
-  "console_title": true,
-  "console_title_style": "template",
-  "console_title_template": "{{ .Shell }} in {{ .Folder }}"
+  ]
 }
