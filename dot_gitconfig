@@ -1,0 +1,11 @@
+[core]
+	editor = code --wait
+	longpaths = true
+	excludesfile = C:\\Users\\simsr\\.gitignore_global
+[user]
+	name = Randy W. Sims
+	email = simsrw73@gmail.com
+[credential "helperselector"]
+	selected = manager-core
+[init]
+	defaultBranch = main
