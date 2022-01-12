@@ -13,3 +13,4 @@ Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineOption -EditMode Windows
 
 Remove-Alias -Name r -Force -ErrorAction SilentlyContinue
+Set-Alias -Name cz -Value chezmoi
