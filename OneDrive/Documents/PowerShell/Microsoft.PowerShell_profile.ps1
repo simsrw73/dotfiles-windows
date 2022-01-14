@@ -6,7 +6,7 @@ Import-Module PSReadLine
 # $env:PAGER = 'less'
 $env:POSH_GIT_ENABLED = $true
 
-Set-PoshPrompt ~/simple.omp.json
+Set-PoshPrompt ~/Monochrome.omp.json
 
 Set-PSReadLineOption -PredictionSource History
 Set-PSReadLineOption -PredictionViewStyle ListView
