@@ -1,7 +1,11 @@
 [core]
 	editor = code --wait
 	longpaths = true
-	excludesfile = C:\\Users\\simsr\\.gitignore_global
+	excludesfile = {{ if (eq .chezmoi.os "windows") }}
+		{{- joinPath .chezmoi.homeDir ".gitignore_global" | replace "\\" "\\\\" }}
+	{{- else }}
+		{{- joinPath .chezmoi.homeDir ".gitignore_global" }}
+	{{- end }}
 [user]
 	name = {{ .name }}
 	email = {{ .email }}
