@@ -14,3 +14,9 @@ Set-PSReadLineOption -EditMode Windows
 
 Remove-Alias -Name r -Force -ErrorAction SilentlyContinue
 Set-Alias -Name cz -Value chezmoi
+Set-Alias -Name printenv -Value "Get-ChildItem env:* | Sort-Object name"
+
+Function Write-Environment {
+    Get-ChildItem env:* | Sort-Object name | Format-Table -AutoSize
+}
+Set-Alias -Name printenv -Value Write-Environment
