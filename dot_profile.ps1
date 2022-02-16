@@ -22,11 +22,25 @@ Set-PSReadLineOption -PredictionSource History
 Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineOption -EditMode Windows
 
+# Aliases
 Remove-Alias -Name r -Force -ErrorAction SilentlyContinue
 Set-Alias -Name cz -Value chezmoi
 Set-Alias -Name printenv -Value "Get-ChildItem env:* | Sort-Object name"
 
+# Cmdlets
 Function Write-Environment {
     Get-ChildItem env:* | Sort-Object name | Format-Table -AutoSize
 }
 Set-Alias -Name printenv -Value Write-Environment
+
+function touch($file) {
+    "" | Out-File $file -Encoding utf8
+}
+
+Function Get-PubIP {
+    (Invoke-WebRequest http://ifconfig.me/ip ).Content
+   }
+
+# One-Time Configs
+# sudo Add-MpPreference -ExclusionPath 'C:\Users\simsr\scoop'
+# sudo Add-MpPreference -ExclusionPath 'C:\ProgramData\scoop'
