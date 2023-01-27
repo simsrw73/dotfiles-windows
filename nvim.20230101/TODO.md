@@ -1,0 +1,9 @@
+- Reload config on change. plugins.lua syncs plugins. Does it now need to reload config files?
+- Winbar
+- Navic
+- Feline
+- Noice
+- Catpuccin
+- Trouble
+- Display modified buffers
+-

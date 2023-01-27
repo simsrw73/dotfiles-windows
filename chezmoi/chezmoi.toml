@@ -1,0 +1,8 @@
+[data]
+    name = "Randy W. Sims"
+    email = "simsrw73@gmail.com"
+    signingkey = "41736183F04CA31D"
+[cd]
+    command = "pwsh"
+[git]
+    autoAdd = true

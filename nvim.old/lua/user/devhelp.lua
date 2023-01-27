@@ -1,0 +1,3 @@
+-- pretty print
+-- reload plugin, reload config
+-- save file, source it
