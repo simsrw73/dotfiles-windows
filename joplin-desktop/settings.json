@@ -28,7 +28,7 @@
 	"noteVisiblePanes": [
 		"editor"
 	],
-	"editor.codeView": false,
+	"editor.codeView": true,
 	"sync.target": 10,
 	"sync.10.username": "simsrw73@gmail.com",
 	"notes.sortOrder.reverse": false,

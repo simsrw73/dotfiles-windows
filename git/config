@@ -1,0 +1,16 @@
+[core]
+	editor = code --wait
+	longpaths = true
+[user]
+	name = Randy W. Sims
+	email = simsrw73@gmail.com
+	signingkey = 41736183F04CA31D
+[credential "helperselector"]
+	selected = manager-core
+[init]
+	defaultBranch = main
+[gpg]
+	program = "C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe"
+[commit]
+	gpgsign = true
+
