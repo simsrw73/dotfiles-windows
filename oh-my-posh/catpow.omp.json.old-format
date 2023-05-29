@@ -28,7 +28,7 @@
                 "Surface2": "#585b70",
                 "Surface1": "#45475a",
                 "Surface0": "#313244",
-                "surface0": "#1e1e2e",
+                "Base": "#1e1e2e",
                 "Mantle": "#181825",
                 "Crust": "#11111b"
             },
@@ -56,7 +56,7 @@
                 "Surface2": "#5b6078",
                 "Surface1": "#494d64",
                 "Surface0": "#363a4f",
-                "surface0": "#24273a",
+                "Base": "#24273a",
                 "Mantle": "#1e2030",
                 "Crust": "#181926"
             },
@@ -84,7 +84,7 @@
                 "Surface2": "#626880",
                 "Surface1": "#51576d",
                 "Surface0": "#414559",
-                "surface0": "#303446",
+                "Base": "#303446",
                 "Mantle": "#292c3c",
                 "Crust": "#232634"
             },
@@ -112,7 +112,7 @@
                 "Surface2": "#acb0be",
                 "Surface1": "#bcc0cc",
                 "Surface0": "#ccd0da",
-                "surface0": "#eff1f5",
+                "Base": "#eff1f5",
                 "Mantle": "#e6e9ef",
                 "Crust": "#dce0e8"
             }

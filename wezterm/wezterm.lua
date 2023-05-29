@@ -24,7 +24,7 @@ local colors = {
     overlay0 = "#6c7086",
     surface2 = "#585b70",
     surface1 = "#45475a",
-    surface0 = "#313244",
+    Base = "#313244",
     base = "#1e1e2e",
     mantle = "#181825",
     crust = "#11111b",
@@ -39,7 +39,7 @@ local config = {
             background = colors.crust,
             inactive_tab_edge = colors.overlay0,
             active_tab = {
-                bg_color = colors.surface0,
+                bg_color = colors.Base,
                 fg_color = colors.text,
             },
             inactive_tab = {
@@ -51,7 +51,7 @@ local config = {
                 fg_color = colors.text,
             },
             new_tab = {
-                bg_color = colors.surface0,
+                bg_color = colors.Base,
                 fg_color = colors.text,
             },
             new_tab_hover = {
