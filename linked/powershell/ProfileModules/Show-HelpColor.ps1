@@ -3,7 +3,7 @@
 Set-StrictMode -Version 'Latest'
 Write-Host 'Loading functions...'
 
-function Show-HelpColor {
+function global:Show-HelpColor {
   [CmdletBinding()]
   param(
     [Parameter(Mandatory, Position = 0)]
@@ -59,4 +59,4 @@ function Show-HelpColor {
   $p.WaitForExit()
 }
 
-Set-Alias -Name shc -Value Show-HelpColor
+Set-Alias -Name shc -Value Show-HelpColor -Scope Global

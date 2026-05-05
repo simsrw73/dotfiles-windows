@@ -1,18 +1,18 @@
 #Requires -Version 7.0
 
-function isAdminUser {
+function global:isAdminUser {
     $wi = [Security.Principal.WindowsIdentity]::GetCurrent()
     $wp = New-Object Security.Principal.WindowsPrincipal($wi)
     $wp.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
-$isAdmin = isAdminUser
-if ($isAdmin) {
+$global:isAdmin = isAdminUser
+if ($global:isAdmin) {
     Write-Output 'Running as Administrator'
 }
 
 
-function Update-AllModules {
+function global:Update-AllModules {
     [CmdletBinding(SupportsShouldProcess)]
     param()
 
@@ -48,7 +48,7 @@ function Update-AllModules {
         $i++
         $scope = if ($module.InstalledLocation -like "*$env:USERPROFILE*") { 'CurrentUser' } else { 'AllUsers' }
 
-        if ($scope -eq 'AllUsers' -and -not $isAdmin) {
+        if ($scope -eq 'AllUsers' -and -not $global:isAdmin) {
             Write-Host "  [$i/$total] SKIP (needs admin): $($module.Name) [$scope]" -ForegroundColor DarkYellow
             continue
         }
@@ -86,16 +86,16 @@ function Update-AllModules {
 }
 
 
-function nls { npm list -g --depth=0 }
+function global:nls { npm list -g --depth=0 }
 
-function sstat { scoop update && scoop status }
-function supd  { scoop update * && scoop cleanup * }
+function global:sstat { scoop update && scoop status }
+function global:supd  { scoop update * && scoop cleanup * }
 
-function wstat { winget upgrade }
-function wupd  { winget upgrade --all }
+function global:wstat { winget upgrade }
+function global:wupd  { winget upgrade --all }
 
 
-function Test-Syntax {
+function global:Test-Syntax {
     # Demo PSReadLine syntax highlighting
     [CmdletBinding()]
     param([IO.FileInfo]$Path)
@@ -105,35 +105,35 @@ function Test-Syntax {
     }
 }
 
-function cd...  { Set-Location ..\.. }
-function cd.... { Set-Location ..\..\.. }
+function global:cd...  { Set-Location ..\.. }
+function global:cd.... { Set-Location ..\..\.. }
 
-function Show-Environment {
+function global:Show-Environment {
     Get-ChildItem env:* | Sort-Object name | Format-Table -AutoSize
 }
 
-function Show-Path {
+function global:Show-Path {
     Write-Output $Env:Path.Split(';')
 }
 
-function New-File($filename) {
+function global:New-File($filename) {
     Write-Output $null | Out-File $filename -Encoding utf8
 }
 
-function Remove-All {
+function global:Remove-All {
     Remove-Item -Force -Recurse $args
 }
 
-function Get-PubIP {
+function global:Get-PubIP {
     (Invoke-WebRequest http://ifconfig.me/ip).Content
 }
 
-function Invoke-MQTT {
+function global:Invoke-MQTT {
     $mqtt_config_file = Join-Path -Path $home -ChildPath '.mosquitto' 'config'
     mosquitto -v -c $mqtt_config_file
 }
 
-function Join-Files {
+function global:Join-Files {
     if (Get-Command bat.exe -ErrorAction SilentlyContinue) {
         $bat = (Get-Command bat.exe).Path.ToString()
         & $bat -pp $args
@@ -145,17 +145,17 @@ function Join-Files {
 # eza: functions and aliases are defined together since _ls/_ll/_la/_tree close over $eza
 if (Get-Command eza.exe -ErrorAction SilentlyContinue) {
     $eza = (Get-Command eza.exe).Path.ToString()
-    function _ls   { & $eza --color=auto --icons --group-directories-first @args }
-    function _ll   { & $eza --all --long --header @args }
-    function _la   { & $eza --all --group @args }
-    function _tree { & $eza --tree @args }
-    Set-Alias -Name ls   -Value _ls
-    Set-Alias -Name ll   -Value _ll
-    Set-Alias -Name la   -Value _la
-    Set-Alias -Name tree -Value _tree
+    function global:_ls   { & $eza --color=auto --icons --group-directories-first @args }
+    function global:_ll   { & $eza --all --long --header @args }
+    function global:_la   { & $eza --all --group @args }
+    function global:_tree { & $eza --tree @args }
+    Set-Alias -Name ls   -Value _ls   -Scope Global
+    Set-Alias -Name ll   -Value _ll   -Scope Global
+    Set-Alias -Name la   -Value _la   -Scope Global
+    Set-Alias -Name tree -Value _tree -Scope Global
 }
 
-function Start-GlazeWM {
+function global:Start-GlazeWM {
     if (Get-Command glazewm.exe -ErrorAction SilentlyContinue) {
         $wm = (Get-Command glazewm.exe).Path.ToString()
         $glaze_config = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'glazewm' 'config.yaml'
@@ -163,7 +163,7 @@ function Start-GlazeWM {
     }
 }
 
-function Copy-SSHID($dest) {
+function global:Copy-SSHID($dest) {
     try {
         Get-Content $Env:USERPROFILE\.ssh\id_rsa.pub | ssh $dest 'mkdir ~/.ssh; cat >> ~/.ssh/authorized_keys'
     } catch {
