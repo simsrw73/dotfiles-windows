@@ -29,6 +29,7 @@ foreach ($mod in @(
 . (Join-Path $moduleRoot 'Functions.ps1')
 . (Join-Path $moduleRoot 'Completers.ps1')
 . (Join-Path $moduleRoot 'PSReadline.ps1')
+. (Join-Path $moduleRoot 'cli_tools_config.ps1')
 . (Join-Path $moduleRoot 'Show-HelpColor.ps1')
 
 # Startup diagnostics
