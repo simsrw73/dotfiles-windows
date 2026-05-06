@@ -145,25 +145,72 @@ Glyphs are restricted to this set. No decorative use.
 
 ---
 
+## Style Guide (applies everywhere in the profile)
+
+All Write-Host output — startup or runtime — follows these conventions:
+
+### Messaging language
+- Short, lowercase-first phrases: `✓ eza`, `⚙ Dev Shell ready`, not `Dev Shell Has Been Initialized`
+- No trailing periods on status lines
+- Failures use Write-Warning (full sentence, capitalized): `WARNING: Module 'X' failed to load: …`
+- Paths shown with `→`: `→ Transcript: PowerShell.Transcripts/2026-05-06/…`
+- Progress shown with `…` suffix when work is ongoing, then replaced by result
+
+### Write-ProfileMsg vs Write-Host
+
+| Context | Mechanism | Reason |
+|---|---|---|
+| Startup / load-time output | `Write-ProfileMsg` | Level-gated; user may silence |
+| Runtime function output (fzf pickers, Update-AllModules) | `Write-Host` directly | User explicitly invoked; always visible |
+| Genuine errors / warnings | `Write-Error` / `Write-Warning` | Correct PS streams; always visible |
+
+Both use the same colors and glyphs — the only difference is whether output is level-gated.
+
+---
+
 ## Files Changed
 
 | File | Change |
 |---|---|
 | `profile.ps1` | Add enum, `$Global:ProfileLogLevel`, `Write-ProfileMsg`; remove terminal size output and shell info; replace Dev Shell messages; gate admin output |
 | `ProfileModules/Env.ps1` | Remove 9 terminal detection Write-Host calls |
-| `ProfileModules/Functions.ps1` | Replace `Write-Output 'Running as Administrator'` with `Write-ProfileMsg` call |
+| `ProfileModules/Functions.ps1` | Replace `Write-Output 'Running as Administrator'` with `Write-ProfileMsg`; restyle `Update-AllModules` output to use established colors and glyphs |
 | `ProfileModules/Show-HelpColor.ps1` | Remove `Write-Host 'Loading functions...'` |
-| `ProfileModules/cli_tools_config.ps1` | Add Debug-level tool availability summary after all sections load |
+| `ProfileModules/cli_tools_config.ps1` | Add Debug-level tool availability summary; restyle fzf picker output (Write-Host stays, colors/glyphs aligned) |
+
+### Update-AllModules restyling (before → after)
+
+| Before | After |
+|---|---|
+| `=== Phase 1: Pruning stale module entries ===` (Yellow) | `⚙  Phase 1 — Pruning stale entries` (Cyan) |
+| `No stale entries found.` (Green) | `  ✓ No stale entries` (Green) |
+| `  Stale: $name v$ver → $path` (Red) | `  · Stale: $name v$ver` (DarkYellow) + `Write-Warning` |
+| `=== Phase 2: Updating installed modules ===` (Yellow) | `⚙  Phase 2 — Updating modules` (Cyan) |
+| `  [$i/$total] SKIP (needs admin): $name` (DarkYellow) | `  · [$i/$total] $name — needs admin` (DarkYellow) |
+| `  [$i/$total] $name [$scope]...` + ` Done.` (Green) | `  ✓ [$i/$total] $name` (Green) |
+| `=== Phase 3: Updating help files ===` (Yellow) | `⚙  Phase 3 — Updating help files` (Cyan) |
+| `Help update complete.` (Green) | `  ✓ Help updated` (Green) |
+| `Help update encountered errors: …` (DarkYellow) | `Write-Warning "Help update failed: …"` |
+| `All done.` (Cyan) | `✓ Done` (Green) |
+
+### Fzf picker restyling (representative examples)
+
+| Before | After |
+|---|---|
+| `"Installing $name..."` (Cyan) | `⚙  Installing $name…` (Cyan) |
+| `"Uninstalling $name..."` (Yellow) | `⚙  Uninstalling $name…` (DarkYellow) |
+| `'Password copied to clipboard.'` (Green) | `✓ Password copied to clipboard` (Green) |
+| `'Applied theme: $theme (add to …)'` (Cyan) | `✓ Theme applied: $theme` (Green) + `→ To persist, update cli_tools_config.ps1` (DarkGray) |
+| `'No package.json in current directory'` (Write-Warning) | unchanged — already correct |
+| `'No items found. Are you logged in? Run: bw login'` (Write-Warning) | unchanged — already correct |
 
 ---
 
 ## What Is Not Changed
 
 - `Write-Warning` and `Write-Error` calls for genuine failures (module imports, transcript
-  errors) are left as-is — they already use the correct PS streams
-- Output inside fzf picker functions (`Write-Host "Installing $name..."` etc.) is runtime
-  user-facing output, not startup output — left unchanged
-- `Update-AllModules` Write-Host calls are runtime output — left unchanged
+  errors) — already use correct PS streams, no restyling needed
+- Logic and behavior of all functions — this spec covers output only
 
 ---
 
