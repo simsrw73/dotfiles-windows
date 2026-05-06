@@ -56,7 +56,14 @@ if (Get-Command fd.exe -ErrorAction SilentlyContinue) {
 
 #region ripgrep  -  fast grep
 if (Get-Command rg.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
+    # --- XDG / Config paths ---
+    $Env:RIPGREP_CONFIG_PATH = Join-Path $Env:XDG_CONFIG_HOME 'ripgrep' 'ripgreprc'
+    # Create a default ripgreprc if it doesn't exist
+    $ripgrepDir = Join-Path $Env:XDG_CONFIG_HOME 'ripgrep'
+    if (-not (Test-Path $ripgrepDir)) {
+        New-Item -ItemType Directory -Force -Path $ripgrepDir | Out-Null
+        Set-Content -Path $Env:RIPGREP_CONFIG_PATH -Value "# ripgrep config`n--smart-case`n--hidden" -Encoding UTF8
+    }
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -115,7 +122,9 @@ if (Get-Command jid.exe -ErrorAction SilentlyContinue) {
 
 #region glow  -  markdown reader
 if (Get-Command glow.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
+    # --- XDG / Config paths ---
+    $Env:GLOW_CONFIG_DIR = Join-Path $Env:XDG_CONFIG_HOME 'glow'
+    New-Item -ItemType Directory -Force -Path $Env:GLOW_CONFIG_DIR | Out-Null
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -186,7 +195,9 @@ if (Get-Command winfetch -ErrorAction SilentlyContinue) {
 
 #region curl  -  HTTP client
 if (Get-Command curl.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
+    # --- XDG / Config paths ---
+    $Env:CURL_HOME = Join-Path $Env:XDG_CONFIG_HOME 'curl'
+    New-Item -ItemType Directory -Force -Path $Env:CURL_HOME | Out-Null
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -195,12 +206,28 @@ if (Get-Command curl.exe -ErrorAction SilentlyContinue) {
 
 #region wget  -  downloader
 if (Get-Command wget.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
+    # --- XDG / Config paths ---
+    $Env:WGETRC = Join-Path $Env:XDG_CONFIG_HOME 'wget' 'wgetrc'
+    $wgetDir = Join-Path $Env:XDG_CONFIG_HOME 'wget'
+    if (-not (Test-Path $wgetDir)) {
+        New-Item -ItemType Directory -Force -Path $wgetDir | Out-Null
+        New-Item -ItemType File -Force -Path $Env:WGETRC | Out-Null
+    }
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
 }
 #endregion wget
+
+#region docker  -  container runtime
+# Set DOCKER_CONFIG unconditionally so docker-compose and other tools use XDG path
+$Env:DOCKER_CONFIG = Join-Path $Env:XDG_CONFIG_HOME 'docker'
+New-Item -ItemType Directory -Force -Path $Env:DOCKER_CONFIG | Out-Null
+if (Get-Command docker -ErrorAction SilentlyContinue) {
+    # TODO: Completers
+    # TODO: Fzf Pickers
+}
+#endregion docker
 
 # ==============================================================================
 # Group 5  -  Editors
@@ -299,7 +326,13 @@ if (Get-Command moor.exe -ErrorAction SilentlyContinue) {
 
 #region less  -  pager
 if (Get-Command less.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
+    # --- XDG / Config paths ---
+    $Env:LESSHISTFILE = Join-Path $Env:XDG_STATE_HOME 'less' 'history'
+    $Env:LESSKEY      = Join-Path $Env:XDG_CONFIG_HOME 'less' 'lesskey'
+    $lessStateDir  = Join-Path $Env:XDG_STATE_HOME 'less'
+    $lessConfigDir = Join-Path $Env:XDG_CONFIG_HOME 'less'
+    New-Item -ItemType Directory -Force -Path $lessStateDir  | Out-Null
+    New-Item -ItemType Directory -Force -Path $lessConfigDir | Out-Null
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -364,7 +397,9 @@ if (Get-Command rustup.exe -ErrorAction SilentlyContinue) {
 
 #region nvm  -  Node version manager
 if (Get-Command nvm -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
+    # --- XDG / Config paths ---
+    $Env:NVM_DIR = Join-Path $Env:XDG_DATA_HOME 'nvm'
+    # Note: nvm for Windows (scoop) uses NVM_HOME/NVM_SYMLINK instead; NVM_DIR is for Unix nvm
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -373,6 +408,13 @@ if (Get-Command nvm -ErrorAction SilentlyContinue) {
 
 #region npm  -  Node package manager
 if (Get-Command npm -ErrorAction SilentlyContinue) {
+    # --- XDG / Config paths ---
+    $Env:NPM_CONFIG_USERCONFIG = Join-Path $Env:XDG_CONFIG_HOME 'npm' 'npmrc'
+    $npmConfigDir = Join-Path $Env:XDG_CONFIG_HOME 'npm'
+    if (-not (Test-Path $npmConfigDir)) {
+        New-Item -ItemType Directory -Force -Path $npmConfigDir | Out-Null
+    }
+    $Env:NODE_REPL_HISTORY = Join-Path $Env:XDG_DATA_HOME 'node_repl_history'
     # --- Functions ---
     function global:nls { npm list -g --depth=0 }
     # TODO: Completers
