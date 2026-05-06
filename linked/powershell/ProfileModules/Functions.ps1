@@ -86,7 +86,7 @@ function global:Update-AllModules {
 }
 
 
-function global:nls { npm list -g --depth=0 }
+# nls moved to cli_tools_config.ps1
 
 # sstat/supd moved to cli_tools_config.ps1 (#region scoop)
 # wstat/wupd moved to cli_tools_config.ps1 (#region winget)
@@ -124,22 +124,13 @@ function global:Get-PubIP {
     (Invoke-WebRequest http://ifconfig.me/ip).Content
 }
 
-function global:Invoke-MQTT {
-    $mqtt_config_file = Join-Path -Path $home -ChildPath '.mosquitto' 'config'
-    mosquitto -v -c $mqtt_config_file
-}
+# Invoke-MQTT moved to cli_tools_config.ps1
 
 # bat/Join-Files moved to cli_tools_config.ps1
 
 # eza config moved to cli_tools_config.ps1
 
-function global:Start-GlazeWM {
-    if (Get-Command glazewm.exe -ErrorAction SilentlyContinue) {
-        $wm = (Get-Command glazewm.exe).Path.ToString()
-        $glaze_config = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'glazewm' 'config.yaml'
-        & $wm --config=$glaze_config $args
-    }
-}
+# Start-GlazeWM moved to cli_tools_config.ps1
 
 function global:Copy-SSHID($dest) {
     try {

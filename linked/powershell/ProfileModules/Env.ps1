@@ -95,4 +95,4 @@ $PSDefaultParameterValues = @{
     'Get-Help:ShowWindow'       = $true
 }
 
-Set-Variable CLAUDE_CODE_USE_POWERSHELL_TOOL=1
+$Env:CLAUDE_CODE_USE_POWERSHELL_TOOL = '1'

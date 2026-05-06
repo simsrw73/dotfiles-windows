@@ -224,12 +224,12 @@ if (Get-Command micro.exe -ErrorAction SilentlyContinue) {
 }
 #endregion micro
 
-#region notepadplusplus  -  Notepad++ (gets the 'edit' alias)
-if (Get-Command notepad++.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
+#region notepadplusplus  -  Notepad++ text editor
+# edit alias: use Notepad++ if installed, fall back to notepad.exe
+if (Test-Path -Path 'C:\Program Files\Notepad++\notepad++.exe' -PathType Leaf) {
+    Set-Alias -Name edit -Value 'C:\Program Files\Notepad++\notepad++.exe' -Scope Global
+} else {
+    Set-Alias -Name edit -Value 'C:\Windows\system32\notepad.exe' -Scope Global
 }
 #endregion notepadplusplus
 
@@ -373,8 +373,8 @@ if (Get-Command nvm -ErrorAction SilentlyContinue) {
 
 #region npm  -  Node package manager
 if (Get-Command npm -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
+    # --- Functions ---
+    function global:nls { npm list -g --depth=0 }
     # TODO: Completers
     # TODO: Fzf Pickers
 }
@@ -399,8 +399,8 @@ if (Get-Command uv.exe -ErrorAction SilentlyContinue) {
 
 #region chezmoi  -  dotfile manager
 if (Get-Command chezmoi.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
+    # --- Aliases ---
+    Set-Alias -Name cz -Value chezmoi -Scope Global
     # TODO: Completers
     # TODO: Fzf Pickers
 }
@@ -460,12 +460,16 @@ if (Get-Module -Name gsudoModule -ListAvailable) {
 # Group 17  -  Window management
 # ==============================================================================
 
-#region glazewm  -  tiling WM
+#region glazewm  -  tiling window manager
 if (Get-Command glazewm.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
+    # --- Functions ---
+    function global:Start-GlazeWM {
+        $wm = (Get-Command glazewm.exe).Path.ToString()
+        $glaze_config = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'glazewm' 'config.yaml'
+        & $wm --config=$glaze_config $args
+    }
+    # --- Aliases ---
+    Set-Alias -Name glazewm -Value Start-GlazeWM -Scope Global
 }
 #endregion glazewm
 
@@ -475,10 +479,13 @@ if (Get-Command glazewm.exe -ErrorAction SilentlyContinue) {
 
 #region mosquitto  -  MQTT client
 if (Get-Command mosquitto.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
+    # --- Functions ---
+    function global:Invoke-MQTT {
+        $mqtt_config_file = Join-Path -Path $home -ChildPath '.mosquitto' 'config'
+        mosquitto -v -c $mqtt_config_file
+    }
+    # --- Aliases ---
+    Set-Alias -Name mqtt -Value Invoke-MQTT -Scope Global
 }
 #endregion mosquitto
 
