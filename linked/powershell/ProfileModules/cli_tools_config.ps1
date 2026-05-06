@@ -389,7 +389,30 @@ $Env:DOCKER_CONFIG = Join-Path $Env:XDG_CONFIG_HOME 'docker'
 New-Item -ItemType Directory -Force -Path $Env:DOCKER_CONFIG | Out-Null
 if (_HasCmd 'docker' -Exe 'docker') {
     # TODO: Completers
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Select-DockerContainer {
+        [CmdletBinding()]
+        param([switch]$All)
+        $dockerArgs = if ($All) { @('ps', '--all') } else { @('ps') }
+        $container = docker @dockerArgs --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}' 2>$null |
+            Select-Object -Skip 1 |
+            fzf --header 'Select container (Enter to exec shell)'
+        if ($container) {
+            $id = ($container -split '\s+')[0]
+            docker exec -it $id sh
+        }
+    }
+    Set-Alias -Name fdc -Value Select-DockerContainer -Scope Global
+
+    function global:Select-DockerImage {
+        [CmdletBinding()]
+        param()
+        $image = docker images --format 'table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.Size}}' 2>$null |
+            Select-Object -Skip 1 |
+            fzf --header 'Select image'
+        if ($image) { ($image -split '\s+')[2] }
+    }
+    Set-Alias -Name fdi -Value Select-DockerImage -Scope Global
 }
 #endregion docker
 
@@ -740,6 +763,60 @@ if (_HasCmd 'npm' -Exe 'npm') {
     Set-Alias -Name fns -Value Select-NpmScript -Scope Global
 }
 #endregion npm
+
+#region gh  -  GitHub CLI
+if (_HasCmd 'gh') {
+    # --- Completers ---
+    gh completion -s powershell | Out-String | Invoke-Expression
+
+    # --- Fzf Pickers ---
+    function global:Select-GHPr {
+        [CmdletBinding()]
+        param()
+        $pr = gh pr list --json number,title,author,headRefName 2>$null |
+            ConvertFrom-Json |
+            ForEach-Object { "$($_.number)`t$($_.title)`t($($_.author.login))" } |
+            fzf --header 'Select PR to checkout' --delimiter "`t" --with-nth '1,2'
+        if ($pr) {
+            $num = ($pr -split "`t")[0].Trim()
+            gh pr checkout $num
+        }
+    }
+    Set-Alias -Name fpr -Value Select-GHPr -Scope Global
+
+    function global:Select-GHIssue {
+        [CmdletBinding()]
+        param()
+        $issue = gh issue list --json number,title,assignees,state 2>$null |
+            ConvertFrom-Json |
+            ForEach-Object { "#$($_.number)`t$($_.title)" } |
+            fzf --header 'Select issue to view' --delimiter "`t" --with-nth '1,2'
+        if ($issue) {
+            $num = ($issue -split "`t")[0].TrimStart('#').Trim()
+            gh issue view $num --web
+        }
+    }
+    Set-Alias -Name fgi -Value Select-GHIssue -Scope Global
+}
+#endregion gh
+
+#region delta  -  enhanced git diff pager
+if (_HasCmd 'delta') {
+    # --- Config ---
+    $Env:GIT_PAGER    = 'delta'
+    $Env:DELTA_FEATURES = 'catppuccin-mocha'
+}
+#endregion delta
+
+#region lazygit  -  TUI git client
+if (_HasCmd 'lazygit') {
+    # --- XDG / Config paths ---
+    $Env:LG_CONFIG_FILE = Join-Path $Env:XDG_CONFIG_HOME 'lazygit' 'config.yml'
+    New-Item -ItemType Directory -Force -Path (Split-Path $Env:LG_CONFIG_FILE) | Out-Null
+    # --- Aliases ---
+    Set-Alias -Name lg -Value lazygit -Scope Global
+}
+#endregion lazygit
 
 # ==============================================================================
 # Group 11  -  Python tools
