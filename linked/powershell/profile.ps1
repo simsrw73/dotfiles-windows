@@ -100,6 +100,12 @@ if ($_modsFail.Count -gt 0) {
     Write-ProfileMsg ("  Failed:  " + (($_modsFail | ForEach-Object { "· $_" }) -join '  ')) -Level Debug -Color DarkYellow
 }
 
+# SSH agent — check OpenSSH service is available
+$_sshAgent = Get-Service ssh-agent -ErrorAction Ignore
+if (-not $_sshAgent -or $_sshAgent.Status -ne 'Running') {
+    Write-ProfileMsg '  · ssh-agent not running — run: Start-Service ssh-agent (requires admin)' -Level ([LogLevel]::Debug)
+}
+
 . (Join-Path $moduleRoot 'Env.ps1')
 Write-ProfileMsg "  Terminal: $($Env:TERM_PROGRAM ?? 'unknown')" -Level Debug
 Write-ProfileMsg '  · Aliases.ps1' -Level Debug

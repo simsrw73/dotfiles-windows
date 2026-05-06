@@ -117,3 +117,13 @@ function global:Copy-SSHID($dest) {
         Write-Host $_
     }
 }
+
+function global:Reload-Profile {
+    . $PROFILE
+    Write-ProfileMsg '✓ Profile reloaded' -Color Green
+}
+
+function global:Measure-Profile {
+    $t = Measure-Command { . $PROFILE }
+    Write-Host "Profile load: $([math]::Round($t.TotalMilliseconds))ms" -ForegroundColor Cyan
+}
