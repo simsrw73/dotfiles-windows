@@ -316,7 +316,9 @@ if (Get-Command scoop -ErrorAction SilentlyContinue) {
     if (Get-Command scoop-search -ErrorAction SilentlyContinue) {
         . ([ScriptBlock]::Create((& scoop-search --hook | Out-String)))
     }
-    # TODO: Functions / Aliases
+    # --- Functions ---
+    function global:sstat { scoop update; scoop status }
+    function global:supd { scoop update *; scoop cleanup * }
     # TODO: Completers
     # TODO: Fzf Pickers
 }
@@ -333,8 +335,9 @@ if (Get-Command sfsu.exe -ErrorAction SilentlyContinue) {
 
 #region winget  -  Windows package manager
 if (Get-Command winget -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
+    # --- Functions ---
+    function global:wstat { winget upgrade }
+    function global:wupd { winget upgrade --all }
     # TODO: Completers
     # TODO: Fzf Pickers
 }
@@ -346,8 +349,6 @@ if (Get-Command winget -ErrorAction SilentlyContinue) {
 
 #region cargo  -  Rust package manager
 if (Get-Command cargo.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
 }
@@ -355,9 +356,8 @@ if (Get-Command cargo.exe -ErrorAction SilentlyContinue) {
 
 #region rustup  -  Rust toolchain manager
 if (Get-Command rustup.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
+    # --- Completers ---
+    rustup completions powershell | Out-String | Invoke-Expression
     # TODO: Fzf Pickers
 }
 #endregion rustup

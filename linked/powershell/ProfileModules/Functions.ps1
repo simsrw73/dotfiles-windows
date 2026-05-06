@@ -88,12 +88,8 @@ function global:Update-AllModules {
 
 function global:nls { npm list -g --depth=0 }
 
-function global:sstat { scoop update && scoop status }
-function global:supd  { scoop update * && scoop cleanup * }
-
-function global:wstat { winget upgrade }
-function global:wupd  { winget upgrade --all }
-
+# sstat/supd moved to cli_tools_config.ps1 (#region scoop)
+# wstat/wupd moved to cli_tools_config.ps1 (#region winget)
 
 function global:Test-Syntax {
     # Demo PSReadLine syntax highlighting

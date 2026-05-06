@@ -40,7 +40,7 @@ $Env:XDG_CACHE_HOME = Join-Path -Path $home -ChildPath '.cache'
 # PATH: personal scripts
 $Env:Path += [IO.Path]::PathSeparator + (Join-Path $home 'scripts')
 
-# Rust / Cargo
+# Rust / Cargo — kept in Env.ps1 because PATH must be set before cli_tools_config.ps1
 $Env:RUSTUP_HOME = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'rustup'
 $Env:CARGO_HOME = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'cargo'
 $Env:Path += [IO.Path]::PathSeparator + (Join-Path $Env:CARGO_HOME 'bin')
