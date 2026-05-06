@@ -86,17 +86,6 @@ foreach ($mod in @(
 . (Join-Path $moduleRoot 'cli_tools_config.ps1')
 . (Join-Path $moduleRoot 'Show-HelpColor.ps1')
 
-# Startup diagnostics
-$PSInfo = Get-Process -Id $pid | Get-Item
-Write-Output "Current shell: $PSInfo"
-
-$termInfo = $Host.UI.RawUI
-if ($termInfo.WindowSize.Height -le 20) {
-    Write-Output 'Terminal size is small.'
-} else {
-    Write-Output 'Terminal size is normal.'
-}
-
 # Weekly module update (every Friday)
 if ((Get-Date).DayOfWeek -eq 'Friday') {
     Write-Host 'Running weekly module update...' -ForegroundColor Cyan

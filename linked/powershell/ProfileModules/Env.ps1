@@ -3,32 +3,12 @@
 # Editor
 $env:EDITOR = 'code'
 
-# Terminal detection
-$isVSCodeTerm = $false
-if ($Env:TERM_PROGRAM -eq 'WezTerm') {
-    Write-Host 'WezTerm detected'
-} elseif ($Env:TERM_PROGRAM -eq 'Tabby') {
-    Write-Host 'Tabby detected'
-} elseif ($Env:TERM_PROGRAM -eq 'Hyper') {
-    Write-Host 'Hyper Terminal detected'
-} elseif ($Env:TERM_PROGRAM -eq 'vscode') {
-    $isVSCodeTerm = $true
-    Write-Host 'VS Code Terminal'
-} elseif ($Env:TERM_PROGRAM -ilike 'sublime') {
-    # eg Terminus-Sublime
-    Write-Host 'Sublime Terminal'
-} elseif ($Env:ALACRITTY_LOG) {
-    $Env:TERM_PROGRAM = 'Alacritty'
-    Write-Host 'Alacritty Terminal detected'
-} elseif ($Env:LC_EXTRATERM_COOKIE) {
-    $Env:TERM_PROGRAM = 'ExtraTerm'
-    Write-Host 'ExtraTerm detected'
-} elseif ($env:WT_SESSION) {
-    # unreliable; this can be true if editor is launched from wt
-    $Env:TERM_PROGRAM = 'wt'
-    Write-Host 'Windows Terminal detected'
-} else {
-    Write-Host 'Terminal not detected'
+# Terminal detection — set $isVSCodeTerm; fill TERM_PROGRAM for terminals that don't set it
+$isVSCodeTerm = $Env:TERM_PROGRAM -eq 'vscode'
+if (-not $Env:TERM_PROGRAM) {
+    if      ($Env:ALACRITTY_LOG)        { $Env:TERM_PROGRAM = 'Alacritty' }
+    elseif  ($Env:LC_EXTRATERM_COOKIE)  { $Env:TERM_PROGRAM = 'ExtraTerm' }
+    elseif  ($env:WT_SESSION)           { $Env:TERM_PROGRAM = 'wt' }
 }
 
 # XDG Base Directory

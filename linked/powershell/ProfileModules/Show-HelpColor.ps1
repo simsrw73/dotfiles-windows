@@ -1,7 +1,6 @@
 #Requires -Version 7.0
 
 Set-StrictMode -Version 'Latest'
-Write-Host 'Loading functions...'
 
 function global:Show-HelpColor {
   [CmdletBinding()]
