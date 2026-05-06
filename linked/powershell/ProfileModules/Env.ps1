@@ -79,8 +79,7 @@ if (Get-Command moor.exe -ErrorAction SilentlyContinue) {
 
 # bat config moved to cli_tools_config.ps1
 
-# oh-my-posh
-$Env:POSH_GIT_ENABLED = $true
+# POSH_GIT_ENABLED moved to cli_tools_config.ps1
 
 # fzf config moved to cli_tools_config.ps1
 # zoxide config moved to cli_tools_config.ps1

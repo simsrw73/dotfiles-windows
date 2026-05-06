@@ -12,13 +12,13 @@ $ErrorActionPreference = 'Stop'
 if (Get-Command eza.exe -ErrorAction SilentlyContinue) {
     # --- Functions / Aliases ---
     $eza = (Get-Command eza.exe).Path.ToString()
-    function global:_ls   { & $eza --color=auto --icons --group-directories-first @args }
-    function global:_ll   { & $eza --all --long --header @args }
-    function global:_la   { & $eza --all --group @args }
+    function global:_ls { & $eza --color=auto --icons --group-directories-first @args }
+    function global:_ll { & $eza --all --long --header @args }
+    function global:_la { & $eza --all --group @args }
     function global:_tree { & $eza --tree @args }
-    Set-Alias -Name ls   -Value _ls   -Scope Global
-    Set-Alias -Name ll   -Value _ll   -Scope Global
-    Set-Alias -Name la   -Value _la   -Scope Global
+    Set-Alias -Name ls -Value _ls -Scope Global
+    Set-Alias -Name ll -Value _ll -Scope Global
+    Set-Alias -Name la -Value _la -Scope Global
     Set-Alias -Name tree -Value _tree -Scope Global
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -271,9 +271,9 @@ if (Get-Command zoxide.exe -ErrorAction SilentlyContinue) {
 
     # --- Init ---
     Invoke-Expression (& {
-        $hook = if ($PSVersionTable.PSVersion.Major -lt 6) { 'prompt' } else { 'pwd' }
-        (zoxide init --hook $hook powershell | Out-String)
-    })
+            $hook = if ($PSVersionTable.PSVersion.Major -lt 6) { 'prompt' } else { 'pwd' }
+            (zoxide init --hook $hook powershell | Out-String)
+        })
 
     # --- Aliases ---
     if (Get-Command z -ErrorAction SilentlyContinue) {
@@ -450,11 +450,9 @@ if (Get-Command win32yank.exe -ErrorAction SilentlyContinue) {
 # ==============================================================================
 
 #region gsudo  -  elevation tool
-if (Get-Command gsudo.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
+if (Get-Module -Name gsudoModule -ListAvailable) {
+    Import-Module gsudoModule -ErrorAction SilentlyContinue
+    # TODO: Completers / Fzf Pickers
 }
 #endregion gsudo
 
@@ -490,26 +488,23 @@ if (Get-Command mosquitto.exe -ErrorAction SilentlyContinue) {
 
 #region posh-git  -  git prompt info
 if (Get-Module -Name posh-git -ListAvailable) {
-    # TODO: Import
-    # TODO: Config
+    Import-Module posh-git -ErrorAction SilentlyContinue
     # TODO: Completers / Fzf Pickers
 }
 #endregion posh-git
 
-#region Terminal-Icons  -  file icons
+#region Terminal-Icons  -  file icons in terminal
 if (Get-Module -Name Terminal-Icons -ListAvailable) {
-    # TODO: Import
-    # TODO: Config
-    # TODO: Completers / Fzf Pickers
+    Import-Module Terminal-Icons -ErrorAction SilentlyContinue
 }
 #endregion Terminal-Icons
 
 #region oh-my-posh  -  prompt theme
 if (Get-Command oh-my-posh.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
+    $Env:POSH_GIT_ENABLED = $true
+    $ompConfig = Join-Path $home '.config' 'oh-my-posh' 'catpow.omp.yaml'
+    oh-my-posh init pwsh --config $ompConfig | Invoke-Expression
+    # TODO: Fzf Pickers (Select-PoshTheme)
 }
 #endregion oh-my-posh
 

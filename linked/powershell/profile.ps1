@@ -13,8 +13,8 @@ $VerbosePreference = 'SilentlyContinue' # Normal: 'SilentlyContinue', Debugging:
 # Import modules before dot-sourcing ProfileModules (Completers.ps1 and PSReadline.ps1 depend on these)
 # Use SilentlyContinue so a broken/missing module never aborts the profile
 foreach ($mod in @(
-        'posh-git', 'Terminal-Icons', 'PSReadLine', 'DockerCompletion',
-        'scoop-completion', 'PSFzf', 'powershell-yaml', 'gsudoModule',
+        'PSReadLine', 'DockerCompletion',
+        'scoop-completion', 'PSFzf', 'powershell-yaml',
         'Microsoft.PowerShell.SecretManagement'
     )) {
     try {
@@ -56,10 +56,7 @@ if ($experimentalFeatures.Name -contains 'PSFeedbackProvider') {
     Enable-ExperimentalFeature PSFeedbackProvider
 }
 
-# oh-my-posh prompt
-# oh-my-posh init pwsh --config "$Env:POSH_THEMES_PATH\powerlevel10k_classic.omp.json" | Invoke-Expression
-# oh-my-posh init pwsh --config "$Env:POSH_THEMES_PATH\catppuccin.omp.json" | Invoke-Expression
-oh-my-posh init pwsh --config "$home\.config\oh-my-posh\catpow.omp.yaml" | Invoke-Expression
+# oh-my-posh init moved to cli_tools_config.ps1
 
 # VS Dev Shell
 Write-Host 'Setting up MS Dev Environment... ' -ForegroundColor Green -NoNewline
