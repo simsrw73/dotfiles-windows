@@ -2,9 +2,14 @@
 
 Set-PSReadLineOption -EditMode Windows
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd
-Set-PSReadLineOption -PredictionSource HistoryAndPlugin
-Set-PSReadLineOption -PredictionViewStyle ListView
-Set-PSReadLineOption -Colors @{ InlinePrediction = '#ffdd99' }
+try {
+    # PredictionSource and ListView require a real VT-capable terminal
+    Set-PSReadLineOption -PredictionSource HistoryAndPlugin
+    Set-PSReadLineOption -PredictionViewStyle ListView
+    Set-PSReadLineOption -Colors @{ InlinePrediction = '#ffdd99' }
+} catch {
+    # Non-interactive or redirected — skip prediction UI options silently
+}
 Remove-PSReadLineKeyHandler 'Ctrl+r'
 Remove-PSReadLineKeyHandler 'Ctrl+t'
 Set-PSReadLineKeyHandler -Chord Ctrl+p -Function PreviousHistory

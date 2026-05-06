@@ -6,27 +6,30 @@ $ErrorActionPreference = 'Stop'
 $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding
 
 $profileRoot = Split-Path -Parent $PROFILE
-$moduleRoot  = Join-Path $profileRoot 'ProfileModules'
+$moduleRoot = Join-Path $profileRoot 'ProfileModules'
 
 $VerbosePreference = 'SilentlyContinue' # Normal: 'SilentlyContinue', Debugging: 'Continue'
 
 # Import modules before dot-sourcing ProfileModules (Completers.ps1 and PSReadline.ps1 depend on these)
-Import-Module -Name posh-git
-Import-Module -Name Terminal-Icons
-Import-Module -Name PSReadLine
-Import-Module -Name DockerCompletion
-Import-Module -Name scoop-completion
-Import-Module -Name PSFzf
-Import-Module -Name powershell-yaml
-Import-Module -Name gsudoModule
-Import-Module -Name Microsoft.PowerShell.SecretManagement
+# Use SilentlyContinue so a broken/missing module never aborts the profile
+foreach ($mod in @(
+        'posh-git', 'Terminal-Icons', 'PSReadLine', 'DockerCompletion',
+        'scoop-completion', 'PSFzf', 'powershell-yaml', 'gsudoModule',
+        'Microsoft.PowerShell.SecretManagement'
+    )) {
+    try {
+        Import-Module -Name $mod -ErrorAction Stop
+    } catch {
+        Write-Warning "Module '$mod' failed to load: $($_.Exception.Message)"
+    }
+}
 
-. Join-Path $moduleRoot 'Env.ps1'
-. Join-Path $moduleRoot 'Aliases.ps1'
-. Join-Path $moduleRoot 'Functions.ps1'
-. Join-Path $moduleRoot 'Completers.ps1'
-. Join-Path $moduleRoot 'PSReadline.ps1'
-. Join-Path $moduleRoot 'Show-HelpColor.ps1'
+. (Join-Path $moduleRoot 'Env.ps1')
+. (Join-Path $moduleRoot 'Aliases.ps1')
+. (Join-Path $moduleRoot 'Functions.ps1')
+. (Join-Path $moduleRoot 'Completers.ps1')
+. (Join-Path $moduleRoot 'PSReadline.ps1')
+. (Join-Path $moduleRoot 'Show-HelpColor.ps1')
 
 # Startup diagnostics
 $PSInfo = Get-Process -Id $pid | Get-Item
@@ -66,9 +69,9 @@ Write-Host 'Done.' -ForegroundColor Green
 
 # --- Transcript ---
 if ($Host.Name -eq 'ConsoleHost') {
-    $myDocuments    = [Environment]::GetFolderPath('MyDocuments')
+    $myDocuments = [Environment]::GetFolderPath('MyDocuments')
     $TranscriptRoot = Join-Path $myDocuments 'PowerShell.Transcripts'
-    $RetentionDays  = 7
+    $RetentionDays = 7
 
     if (-not (Test-Path $TranscriptRoot)) {
         New-Item -Path $TranscriptRoot -ItemType Directory -Force | Out-Null
