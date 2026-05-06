@@ -100,3 +100,10 @@ $catppuccinSyntaxTheme = @{
 }
 
 Set-PSReadLineOption -Colors $catppuccinSyntaxTheme
+
+# History — XDG path, deduplication, sensible limit
+$_psHistoryPath = Join-Path $Env:XDG_STATE_HOME 'ps_history.txt'
+New-Item -ItemType Directory -Force -Path $Env:XDG_STATE_HOME | Out-Null
+Set-PSReadLineOption -HistorySavePath   $_psHistoryPath
+Set-PSReadLineOption -MaximumHistoryCount 10000
+Set-PSReadLineOption -HistoryNoDuplicates $true

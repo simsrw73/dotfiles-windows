@@ -1,7 +1,9 @@
 #Requires -Version 7.0
 
 # Editor
-$env:EDITOR = 'code'
+$env:EDITOR     = 'code --wait'   # wait for VS Code tab to close (needed by git, etc.)
+$env:VISUAL     = 'code --wait'   # POSIX tools that prefer VISUAL over EDITOR
+$env:GIT_EDITOR = 'micro'         # terminal editor for git commit/rebase messages
 
 # Terminal detection — set $isVSCodeTerm; fill TERM_PROGRAM for terminals that don't set it
 $isVSCodeTerm = $Env:TERM_PROGRAM -eq 'vscode'
@@ -18,12 +20,18 @@ $Env:XDG_STATE_HOME = Join-Path -Path $home -ChildPath '.local' 'state'
 $Env:XDG_CACHE_HOME = Join-Path -Path $home -ChildPath '.cache'
 
 # PATH: personal scripts
-$Env:Path += [IO.Path]::PathSeparator + (Join-Path $home 'scripts')
+$_scripts = Join-Path $home 'scripts'
+if ($Env:Path -split [IO.Path]::PathSeparator -notcontains $_scripts) {
+    $Env:Path += [IO.Path]::PathSeparator + $_scripts
+}
 
 # Rust / Cargo — kept in Env.ps1 because PATH must be set before cli_tools_config.ps1
 $Env:RUSTUP_HOME = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'rustup'
 $Env:CARGO_HOME = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'cargo'
-$Env:Path += [IO.Path]::PathSeparator + (Join-Path $Env:CARGO_HOME 'bin')
+$_cargoBin = Join-Path $Env:CARGO_HOME 'bin'
+if ($Env:Path -split [IO.Path]::PathSeparator -notcontains $_cargoBin) {
+    $Env:Path += [IO.Path]::PathSeparator + $_cargoBin
+}
 
 # Python
 if (Get-Command python -ErrorAction Ignore) {

@@ -1,7 +1,7 @@
 #Requires -Version 7.0
 
 Set-StrictMode -Version 'Latest'
-$ErrorActionPreference = 'Stop'
+$ErrorActionPreference = 'Continue'
 
 $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding
 
