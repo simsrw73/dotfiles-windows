@@ -82,26 +82,8 @@ if (Get-Command moor.exe -ErrorAction SilentlyContinue) {
 # oh-my-posh
 $Env:POSH_GIT_ENABLED = $true
 
-# fzf — Catppuccin Mocha theme
-$Env:FZF_DEFAULT_COMMAND = 'fd --type f --hidden --follow --exclude .git'
-$Env:FZF_ALT_C_COMMAND = 'fd -H -L -E .git -t d'
-$Env:FZF_ALT_C_OPTS = '--preview "eza -a --icons --group-directories-first --color=always {}"'
-$Env:FZF_DEFAULT_OPTS = @'
---color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8
---color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc
---color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8
---exact
---no-sort
---layout=reverse
---border
---cycle
---height 50%
-'@
-$Env:FZF_CTRL_T_OPTS = '--preview "bat --color=always --line-range=:500 {}"'
-$Env:FZF_CTRL_T_COMMAND = 'fd -H -L -E .git -t f'
-
-# zoxide data dir (must be set before zoxide init in Completers.ps1)
-$Env:_ZO_DATA_DIR = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'zoxide'
+# fzf config moved to cli_tools_config.ps1
+# zoxide config moved to cli_tools_config.ps1
 
 # Window manager configs
 $Env:KOMOREBI_CONFIG_HOME = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'komorebi'

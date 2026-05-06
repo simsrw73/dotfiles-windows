@@ -4,10 +4,7 @@ Remove-Alias -Name r -Force -Scope Global -ErrorAction SilentlyContinue
 
 Set-Alias -Name cz -Value chezmoi -Scope Global
 
-if (Get-Command z -ErrorAction SilentlyContinue) {
-    Set-Alias -Name cd -Value z -Scope Global -Option AllScope
-}
-
+# cd alias (zoxide) moved to cli_tools_config.ps1
 Set-Alias -Name printenv    -Value Show-Environment -Scope Global
 Set-Alias -Name printpath   -Value Show-Path        -Scope Global
 Set-Alias -Name touch       -Value New-File         -Scope Global

@@ -239,9 +239,23 @@ if (Get-Command notepad++.exe -ErrorAction SilentlyContinue) {
 
 #region fzf  -  fuzzy finder
 if (Get-Command fzf.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
+    # --- Config ---
+    $Env:FZF_DEFAULT_COMMAND = 'fd --type f --hidden --follow --exclude .git'
+    $Env:FZF_ALT_C_COMMAND = 'fd -H -L -E .git -t d'
+    $Env:FZF_ALT_C_OPTS = '--preview "eza -a --icons --group-directories-first --color=always {}"'
+    $Env:FZF_DEFAULT_OPTS = @'
+--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8
+--color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc
+--color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8
+--exact
+--no-sort
+--layout=reverse
+--border
+--cycle
+--height 50%
+'@
+    $Env:FZF_CTRL_T_OPTS = '--preview "bat --color=always --line-range=:500 {}"'
+    $Env:FZF_CTRL_T_COMMAND = 'fd -H -L -E .git -t f'
     # TODO: Fzf Pickers
 }
 #endregion fzf
@@ -252,8 +266,19 @@ if (Get-Command fzf.exe -ErrorAction SilentlyContinue) {
 
 #region zoxide  -  smart cd
 if (Get-Command zoxide.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
+    # --- XDG / Config paths ---
+    $Env:_ZO_DATA_DIR = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'zoxide'
+
+    # --- Init ---
+    Invoke-Expression (& {
+        $hook = if ($PSVersionTable.PSVersion.Major -lt 6) { 'prompt' } else { 'pwd' }
+        (zoxide init --hook $hook powershell | Out-String)
+    })
+
+    # --- Aliases ---
+    if (Get-Command z -ErrorAction SilentlyContinue) {
+        Set-Alias -Name cd -Value z -Scope Global -Option AllScope
+    }
     # TODO: Completers
     # TODO: Fzf Pickers
 }
@@ -287,7 +312,10 @@ if (Get-Command less.exe -ErrorAction SilentlyContinue) {
 
 #region scoop  -  Windows package manager
 if (Get-Command scoop -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
+    # --- scoop-search hook ---
+    if (Get-Command scoop-search -ErrorAction SilentlyContinue) {
+        . ([ScriptBlock]::Create((& scoop-search --hook | Out-String)))
+    }
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -487,9 +515,18 @@ if (Get-Command oh-my-posh.exe -ErrorAction SilentlyContinue) {
 
 #region PSFzf  -  fzf PS integration
 if (Get-Module -Name PSFzf -ListAvailable) {
-    # TODO: Import
-    # TODO: Config
-    # TODO: Completers / Fzf Pickers
+    # PSFzf is imported in profile.ps1; configure it here
+    Set-PsFzfOption -EnableFd
+
+    Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' `
+        -PSReadlineChordReverseHistory 'Ctrl+r'
+
+    $commandOverride = [ScriptBlock] { param($Location) Set-Location $Location }
+    Set-PsFzfOption -AltCCommand $commandOverride
+
+    Set-PsFzfOption -EnableAliasFuzzyScoop
+    Set-PsFzfOption -TabExpansion
+    Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
 }
 #endregion PSFzf
 
