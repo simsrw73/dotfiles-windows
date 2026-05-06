@@ -46,9 +46,11 @@ $Env:CARGO_HOME = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'cargo'
 $Env:Path += [IO.Path]::PathSeparator + (Join-Path $Env:CARGO_HOME 'bin')
 
 # Python
-$pythonScriptsPath = python -c "import sysconfig; print(sysconfig.get_path('scripts'))" 2>$null
-if ($pythonScriptsPath -and ($env:Path -split ';' -notcontains $pythonScriptsPath)) {
-    $env:Path = "$pythonScriptsPath;$env:Path"
+if (Get-Command python -ErrorAction SilentlyContinue) {
+    $pythonScriptsPath = python -c "import sysconfig; print(sysconfig.get_path('scripts'))" 2>$null
+    if ($pythonScriptsPath -and ($env:Path -split ';' -notcontains $pythonScriptsPath)) {
+        $env:Path = "$pythonScriptsPath;$env:Path"
+    }
 }
 $Env:PYTHONPYCACHEPREFIX = Join-Path -Path $Env:XDG_CACHE_HOME -ChildPath 'python'
 $Env:PYTHONUSERBASE = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'python'

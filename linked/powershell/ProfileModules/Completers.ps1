@@ -2,7 +2,11 @@
 
 #f45873b3-b655-43a6-b217-97c00aa0db58 PowerToys CommandNotFound module
 
-Import-Module -Name Microsoft.WinGet.CommandNotFound
+try {
+    Import-Module -Name Microsoft.WinGet.CommandNotFound -ErrorAction Stop
+} catch {
+    # Module not available (requires PowerToys)
+}
 #f45873b3-b655-43a6-b217-97c00aa0db58
 
 # scoop-search hook moved to cli_tools_config.ps1

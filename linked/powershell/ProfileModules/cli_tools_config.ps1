@@ -1006,8 +1006,8 @@ if (Get-Command oh-my-posh.exe -ErrorAction SilentlyContinue) {
 #endregion oh-my-posh
 
 #region PSFzf  -  fzf PS integration
-if (Get-Module -Name PSFzf -ListAvailable) {
-    # PSFzf is imported in profile.ps1; configure it here
+if (Get-Module -Name PSFzf) {
+    # Guard checks loaded (not just installed) — Set-PsFzfOption requires PSFzf to be imported
     Set-PsFzfOption -EnableFd
 
     Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' `
