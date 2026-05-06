@@ -13,7 +13,7 @@ Set-Alias -Name printpath   -Value Show-Path        -Scope Global
 Set-Alias -Name touch       -Value New-File         -Scope Global
 Set-Alias -Name rmrf        -Value Remove-All       -Scope Global
 Set-Alias -Name mqtt        -Value Invoke-MQTT      -Scope Global
-Set-Alias -Name cat         -Value Join-Files       -Scope Global -Force
+# cat alias (Join-Files) moved to cli_tools_config.ps1
 Set-Alias -Name glazewm     -Value Start-GlazeWM    -Scope Global
 Set-Alias -Name ssh-copy-id -Value Copy-SSHID       -Scope Global
 

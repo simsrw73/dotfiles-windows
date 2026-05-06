@@ -133,27 +133,9 @@ function global:Invoke-MQTT {
     mosquitto -v -c $mqtt_config_file
 }
 
-function global:Join-Files {
-    if (Get-Command bat.exe -ErrorAction SilentlyContinue) {
-        $bat = (Get-Command bat.exe).Path.ToString()
-        & $bat -pp $args
-    } else {
-        Get-Content $args
-    }
-}
+# bat/Join-Files moved to cli_tools_config.ps1
 
-# eza: functions and aliases are defined together since _ls/_ll/_la/_tree close over $eza
-if (Get-Command eza.exe -ErrorAction SilentlyContinue) {
-    $eza = (Get-Command eza.exe).Path.ToString()
-    function global:_ls   { & $eza --color=auto --icons --group-directories-first @args }
-    function global:_ll   { & $eza --all --long --header @args }
-    function global:_la   { & $eza --all --group @args }
-    function global:_tree { & $eza --tree @args }
-    Set-Alias -Name ls   -Value _ls   -Scope Global
-    Set-Alias -Name ll   -Value _ll   -Scope Global
-    Set-Alias -Name la   -Value _la   -Scope Global
-    Set-Alias -Name tree -Value _tree -Scope Global
-}
+# eza config moved to cli_tools_config.ps1
 
 function global:Start-GlazeWM {
     if (Get-Command glazewm.exe -ErrorAction SilentlyContinue) {
