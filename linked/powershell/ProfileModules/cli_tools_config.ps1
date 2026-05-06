@@ -20,7 +20,19 @@ if (Get-Command eza.exe -ErrorAction SilentlyContinue) {
     Set-Alias -Name ll -Value _ll -Scope Global
     Set-Alias -Name la -Value _la -Scope Global
     Set-Alias -Name tree -Value _tree -Scope Global
-    # TODO: Completers
+    # --- Completers ---
+    Register-ArgumentCompleter -Native -CommandName eza -ScriptBlock {
+        param($wordToComplete, $commandAst, $cursorPosition)
+        $flags = @(
+            '--long', '--all', '--tree', '--icons', '--git', '--color',
+            '--group-directories-first', '--sort', '--reverse', '--header',
+            '--group', '--oneline', '--classify', '--level', '--ignore-glob',
+            '--time-style', '--hyperlink', '--no-permissions', '--no-filesize',
+            '--no-user', '--no-time', '--stdin', '--list-dirs', '--dereference'
+        )
+        $flags | Where-Object { $_ -like "$wordToComplete*" } |
+            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+    }
     # TODO: Fzf Pickers
 }
 #endregion eza
@@ -40,7 +52,19 @@ Set-Alias -Name cat -Value Join-Files -Scope Global -Force
 if (Get-Command bat.exe -ErrorAction SilentlyContinue) {
     # --- XDG / Config paths ---
     $Env:BAT_CONFIG_PATH = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'bat' 'bat.conf'
-    # TODO: Completers
+    # --- Completers ---
+    Register-ArgumentCompleter -Native -CommandName bat -ScriptBlock {
+        param($wordToComplete, $commandAst, $cursorPosition)
+        $flags = @(
+            '--language', '--theme', '--style', '--paging', '--color',
+            '--line-range', '--highlight-line', '--diff', '--show-all',
+            '--plain', '--number', '--decorations', '--italic-text',
+            '--tabs', '--wrap', '--terminal-width', '--map-syntax',
+            '--list-languages', '--list-themes'
+        )
+        $flags | Where-Object { $_ -like "$wordToComplete*" } |
+            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+    }
     # TODO: Fzf Pickers
 }
 #endregion bat
@@ -79,7 +103,20 @@ if (Get-Command broot.exe -ErrorAction SilentlyContinue) {
     $brootConfig = Join-Path $Env:XDG_CONFIG_HOME 'broot'
     New-Item -ItemType Directory -Force -Path $brootConfig | Out-Null
     # TODO: Functions / Aliases
-    # TODO: Completers
+    # --- Completers ---
+    Register-ArgumentCompleter -Native -CommandName broot -ScriptBlock {
+        param($wordToComplete, $commandAst, $cursorPosition)
+        $flags = @(
+            '--sizes', '--dates', '--permissions', '--hidden', '--git-ignored',
+            '--no-sizes', '--no-dates', '--no-permissions',
+            '--color', '--cmd', '--conf', '--outcmd',
+            '--sort-by-count', '--sort-by-date', '--sort-by-size',
+            '--whale-spotting', '--only-folders', '--show-root-fs',
+            '--install', '--print-shell-function', '--help', '--version'
+        )
+        $flags | Where-Object { $_ -like "$wordToComplete*" } |
+            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+    }
     # TODO: Fzf Pickers
 }
 #endregion broot
@@ -381,7 +418,16 @@ if (Get-Command scoop -ErrorAction SilentlyContinue) {
 if (Get-Command sfsu.exe -ErrorAction SilentlyContinue) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
-    # TODO: Completers
+    # --- Completers ---
+    Register-ArgumentCompleter -Native -CommandName sfsu -ScriptBlock {
+        param($wordToComplete, $commandAst, $cursorPosition)
+        $subcommands = @(
+            'search', 'info', 'install', 'update', 'upgrade',
+            'status', 'depends', 'checkver', 'cat', 'virustotal'
+        )
+        $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
+            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+    }
     # TODO: Fzf Pickers
 }
 #endregion sfsu
@@ -434,7 +480,17 @@ if (Get-Command nvm -ErrorAction SilentlyContinue) {
     $Env:NVM_DIR = Join-Path $Env:XDG_DATA_HOME 'nvm'
     # Note: nvm for Windows (scoop) uses NVM_HOME/NVM_SYMLINK instead; NVM_DIR is for Unix nvm
     # TODO: Functions / Aliases
-    # TODO: Completers
+    # --- Completers ---
+    Register-ArgumentCompleter -Native -CommandName nvm -ScriptBlock {
+        param($wordToComplete, $commandAst, $cursorPosition)
+        $subcommands = @(
+            'install', 'uninstall', 'use', 'list', 'ls', 'list available',
+            'ls-remote', 'current', 'alias', 'unalias', 'reinstall-packages',
+            'version', 'version-remote', 'deactivate', 'root', 'arch', 'node_mirror', 'npm_mirror'
+        )
+        $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
+            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+    }
     # TODO: Fzf Pickers
 }
 #endregion nvm
@@ -450,7 +506,18 @@ if (Get-Command npm -ErrorAction SilentlyContinue) {
     $Env:NODE_REPL_HISTORY = Join-Path $Env:XDG_DATA_HOME 'node_repl_history'
     # --- Functions ---
     function global:nls { npm list -g --depth=0 }
-    # TODO: Completers
+    # --- Completers ---
+    Register-ArgumentCompleter -Native -CommandName npm -ScriptBlock {
+        param($wordToComplete, $commandAst, $cursorPosition)
+        $subcommands = @(
+            'install', 'uninstall', 'update', 'run', 'start', 'stop', 'test',
+            'list', 'link', 'unlink', 'publish', 'pack', 'version', 'view',
+            'search', 'audit', 'fund', 'init', 'exec', 'prefix', 'config',
+            'cache', 'rebuild', 'prune', 'outdated', 'ci', 'dedupe', 'diff'
+        )
+        $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
+            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+    }
     # TODO: Fzf Pickers
 }
 #endregion npm
@@ -467,7 +534,17 @@ if (Get-Command uv.exe -ErrorAction SilentlyContinue) {
     New-Item -ItemType Directory -Force -Path $Env:UV_CACHE_DIR | Out-Null
     New-Item -ItemType Directory -Force -Path $Env:UV_DATA_DIR  | Out-Null
     # TODO: Functions / Aliases
-    # TODO: Completers
+    # --- Completers ---
+    Register-ArgumentCompleter -Native -CommandName uv -ScriptBlock {
+        param($wordToComplete, $commandAst, $cursorPosition)
+        $subcommands = @(
+            'pip', 'venv', 'run', 'sync', 'lock', 'add', 'remove', 'tool',
+            'python', 'init', 'build', 'publish', 'cache', 'self', 'version',
+            'help', 'export', 'tree', 'generate-shell-completion'
+        )
+        $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
+            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+    }
     # TODO: Fzf Pickers
 }
 #endregion uv
@@ -497,7 +574,18 @@ if (Get-Command chezmoi.exe -ErrorAction SilentlyContinue) {
 if (Get-Command bw -ErrorAction SilentlyContinue) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
-    # TODO: Completers
+    # --- Completers ---
+    Register-ArgumentCompleter -Native -CommandName bw -ScriptBlock {
+        param($wordToComplete, $commandAst, $cursorPosition)
+        $subcommands = @(
+            'login', 'logout', 'lock', 'unlock', 'sync', 'list', 'get',
+            'create', 'edit', 'delete', 'restore', 'move', 'confirm',
+            'import', 'export', 'generate', 'encode', 'config', 'update',
+            'completion', 'status', 'serve', 'receive'
+        )
+        $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
+            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+    }
     # TODO: Fzf Pickers
 }
 #endregion bitwarden
@@ -625,17 +713,14 @@ if (Get-Module -Name scoop-completion -ListAvailable) {
 
 #region DockerCompletion  -  Docker tab completions
 if (Get-Module -Name DockerCompletion -ListAvailable) {
-    # TODO: Import
-    # TODO: Config
-    # TODO: Completers / Fzf Pickers
+    Import-Module DockerCompletion -ErrorAction SilentlyContinue
 }
 #endregion DockerCompletion
 
 #region PowerType  -  AI tab completions
 if (Get-Module -Name PowerType -ListAvailable) {
-    # TODO: Import
-    # TODO: Config
-    # TODO: Completers / Fzf Pickers
+    Import-Module PowerType -ErrorAction SilentlyContinue
+    Enable-PowerType
 }
 #endregion PowerType
 

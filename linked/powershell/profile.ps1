@@ -13,9 +13,10 @@ $VerbosePreference = 'SilentlyContinue' # Normal: 'SilentlyContinue', Debugging:
 # Import modules before dot-sourcing ProfileModules (Completers.ps1 and PSReadline.ps1 depend on these)
 # Use SilentlyContinue so a broken/missing module never aborts the profile
 foreach ($mod in @(
-        'PSReadLine', 'DockerCompletion',
-        'scoop-completion', 'PSFzf', 'powershell-yaml',
+        'PSReadLine', 'PSFzf', 'powershell-yaml',
         'Microsoft.PowerShell.SecretManagement'
+        # DockerCompletion: imported in cli_tools_config.ps1 (#region DockerCompletion)
+        # scoop-completion: handled by PSFzf -EnableAliasFuzzyScoop in cli_tools_config.ps1
     )) {
     try {
         Import-Module -Name $mod -ErrorAction Stop
