@@ -29,6 +29,32 @@ function script:_HasMod {
 }
 # ─────────────────────────────────────────────────────────────────────────────
 
+function script:_GetCachedCompletion {
+    param(
+        [string]$CacheKey,
+        [string]$ExePath,
+        [scriptblock]$Generate
+    )
+    $cacheDir  = Join-Path $Env:XDG_CACHE_HOME 'ps-completions'
+    $cacheFile = Join-Path $cacheDir "$CacheKey.ps1"
+    $needsRegen = $true
+
+    if (Test-Path $cacheFile) {
+        $exe = Get-Item $ExePath -ErrorAction Ignore
+        if ($exe -and (Get-Item $cacheFile).LastWriteTime -gt $exe.LastWriteTime) {
+            $needsRegen = $false
+        }
+    }
+
+    if ($needsRegen) {
+        New-Item -ItemType Directory -Force -Path $cacheDir | Out-Null
+        $content = & $Generate
+        if ($content) { Set-Content -Path $cacheFile -Value $content -Encoding UTF8 }
+    }
+
+    if (Test-Path $cacheFile) { . $cacheFile }
+}
+
 # ==============================================================================
 # Group 1  -  File/directory tools
 # ==============================================================================
@@ -109,7 +135,7 @@ if (_HasCmd 'fd') {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # --- Completers ---
-    fd --gen-completions powershell | Out-String | Invoke-Expression
+    _GetCachedCompletion 'fd' (Get-Command fd.exe).Path { fd --gen-completions powershell }
     # --- Fzf Pickers ---
     function global:Select-FdResult {
         [CmdletBinding()]
@@ -146,7 +172,7 @@ if (_HasCmd 'rg') {
     }
     # TODO: Functions / Aliases
     # --- Completers ---
-    rg --generate complete-powershell | Out-String | Invoke-Expression
+    _GetCachedCompletion 'rg' (Get-Command rg.exe).Path { rg --generate complete-powershell }
     # --- Fzf Pickers ---
     function global:Select-RipgrepResult {
         [CmdletBinding()]
@@ -257,7 +283,7 @@ if (_HasCmd 'glow') {
     New-Item -ItemType Directory -Force -Path $Env:GLOW_CONFIG_DIR | Out-Null
     # TODO: Functions / Aliases
     # --- Completers ---
-    glow completion powershell | Out-String | Invoke-Expression
+    _GetCachedCompletion 'glow' (Get-Command glow.exe).Path { glow completion powershell }
     # --- Fzf Pickers ---
     function global:Read-MarkdownFile {
         [CmdletBinding()]
@@ -282,7 +308,7 @@ if (_HasCmd 'procs') {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # --- Completers ---
-    procs --gen-completion-out powershell | Out-String | Invoke-Expression
+    _GetCachedCompletion 'procs' (Get-Command procs.exe).Path { procs --gen-completion-out powershell }
     # --- Fzf Pickers ---
     function global:Select-Process {
         [CmdletBinding()]
@@ -675,7 +701,7 @@ if (_HasCmd 'cargo') {
 #region rustup  -  Rust toolchain manager
 if (_HasCmd 'rustup') {
     # --- Completers ---
-    rustup completions powershell | Out-String | Invoke-Expression
+    _GetCachedCompletion 'rustup' (Get-Command rustup.exe).Path { rustup completions powershell }
     # --- Fzf Pickers ---
     function global:Select-RustupToolchain {
         [CmdletBinding()]
@@ -872,7 +898,7 @@ if (_HasCmd 'chezmoi') {
     # --- Aliases ---
     Set-Alias -Name cz -Value chezmoi -Scope Global
     # --- Completers ---
-    chezmoi completion powershell | Out-String | Invoke-Expression
+    _GetCachedCompletion 'chezmoi' (Get-Command chezmoi.exe).Path { chezmoi completion powershell }
     # --- Fzf Pickers ---
     function global:Edit-DotFile {
         [CmdletBinding()]
