@@ -12,3 +12,6 @@ PowerShell.Transcripts/
 
 # Update-Help downloaded XML files (regenerated via Update-Help)
 Help/
+
+# Example profiles (reference material, not part of this profile)
+.examples/

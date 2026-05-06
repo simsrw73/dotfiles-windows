@@ -21,26 +21,27 @@ Documents/PowerShell/
 
 ## Key Tools & Modules
 
-| Tool | Purpose | Config |
-|------|---------|--------|
-| oh-my-posh | Prompt theme | `~/.config/oh-my-posh/catpow.omp.yaml` |
-| PSReadLine | Input experience | Configured in profile.ps1 + PSReadline.ps1 |
-| PSFzf | Fuzzy finder integration | fzf + fd; Ctrl+T file, Ctrl+R history |
-| eza | Modern ls replacement | ls/ll/la/tree aliases |
-| bat | Modern cat replacement | cat alias; config at `~/.config/bat/bat.conf` |
-| zoxide | Smart cd | z alias replaces cd; data at `$XDG_DATA_HOME/zoxide` |
-| fzf | Fuzzy finder | Catppuccin Mocha theme |
-| posh-git | Git prompt info | Loaded via Import-Module |
-| Terminal-Icons | File icons in terminal | Loaded via Import-Module |
-| scoop | Package manager | sstat/supd helpers |
-| winget | Package manager | wstat/wupd helpers |
-| gsudo | Elevation | gsudoModule imported |
-| chezmoi | Dotfile manager | cz alias |
-| moor/bat/less | Pager | Auto-detected; $PAGER set accordingly |
+| Tool           | Purpose                  | Config                                               |
+| -------------- | ------------------------ | ---------------------------------------------------- |
+| oh-my-posh     | Prompt theme             | `~/.config/oh-my-posh/catpow.omp.yaml`               |
+| PSReadLine     | Input experience         | Configured in profile.ps1 + PSReadline.ps1           |
+| PSFzf          | Fuzzy finder integration | fzf + fd; Ctrl+T file, Ctrl+R history                |
+| eza            | Modern ls replacement    | ls/ll/la/tree aliases                                |
+| bat            | Modern cat replacement   | cat alias; config at `~/.config/bat/bat.conf`        |
+| zoxide         | Smart cd                 | z alias replaces cd; data at `$XDG_DATA_HOME/zoxide` |
+| fzf            | Fuzzy finder             | Catppuccin Mocha theme                               |
+| posh-git       | Git prompt info          | Loaded via Import-Module                             |
+| Terminal-Icons | File icons in terminal   | Loaded via Import-Module                             |
+| scoop          | Package manager          | sstat/supd helpers                                   |
+| winget         | Package manager          | wstat/wupd helpers                                   |
+| gsudo          | Elevation                | gsudoModule imported                                 |
+| chezmoi        | Dotfile manager          | cz alias                                             |
+| moor/bat/less  | Pager                    | Auto-detected; $PAGER set accordingly                |
 
 ## Theme
 
 Everything uses **Catppuccin Mocha** consistently:
+
 - PSReadLine syntax colors: `$catppuccinSyntaxTheme` hashtable in profile.ps1
 - FZF: `$FZF_DEFAULT_OPTS` color string
 - oh-my-posh: `catpow.omp.yaml` (custom theme)
@@ -63,22 +64,23 @@ When moving content out of profile.ps1 into ProfileModules:
 - **Env.ps1** — All `$Env:*` assignments (XDG vars, tool paths, PAGER, EDITOR, FZF opts, etc.)
 - **Aliases.ps1** — All `Set-Alias` calls (ls→eza, cat→bat, cd→z, touch, rmrf, etc.)
 - **Functions.ps1** — Utility functions (Show-Environment, Show-Path, New-File, Get-PubIP, etc.)
-- **Completers.ps1** — Completion setup (PSFzf options, scoop-search hook, rustup completions)
+- **Completers.ps1** — Argument Completers: Completion setup (PSFzf options, scoop-search hook, rustup completions)
 - **PSReadline.ps1** — All `Set-PSReadLineOption` and `Set-PSReadLineKeyHandler` calls
 
 Each ProfileModule file must be self-contained: use `$ErrorActionPreference = 'Stop'` and guard tool availability with `Get-Command x.exe -ErrorAction SilentlyContinue`.
 
 ## Known TODOs
 
-- Complete migration of content from profile.ps1 into ProfileModules (most files are stubs)
 - Replace direct eza/bat/moor references with a separate tool-config script (see TODO comment in profile.ps1)
 - Move history, transcript, and PSReadLine history to `$XDG_STATE_HOME`
 - Apply remaining XDG paths (NPM, NVM, GOPATH, etc.)
 - Implement the `$isVSCodeTerm` conditional block (currently wired but empty)
+- Either set up the profile to install any required modules and tools if it finds them missing, or create an install script that clones the profile, installs powershell modules, and installs desired tools
 
 ## Startup Behavior
 
 On every shell start:
+
 1. Detects terminal type and sets `$Env:TERM_PROGRAM`
 2. Sets `$isVSCodeTerm` (true when TERM_PROGRAM is vscode)
 3. Imports modules (posh-git, Terminal-Icons, PSReadLine, PSFzf, etc.)

@@ -1,4 +1,8 @@
 {
+  "statusLine": {
+    "type": "command",
+    "command": "pwsh -NonInteractive -File C:/Users/simsr/OneDrive/Documents/PowerShell/.claude/scripts/statusline.ps1"
+  },
   "hooks": {
     "PostToolUse": [
       {
