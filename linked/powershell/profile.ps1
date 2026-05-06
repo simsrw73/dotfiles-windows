@@ -58,11 +58,18 @@ if ($Env:TERM_PROGRAM -eq 'vscode') {
         Write-ProfileMsg ("  Modules: " + (($_modsOk | ForEach-Object { "✓ $_" }) -join '  ')) -Level Debug -Color Green
     }
     . (Join-Path $moduleRoot 'Env.ps1')
+    Write-ProfileMsg "  Terminal: $($Env:TERM_PROGRAM ?? 'unknown')" -Level Debug
+    Write-ProfileMsg '  · Aliases.ps1' -Level Debug
     . (Join-Path $moduleRoot 'Aliases.ps1')
+    Write-ProfileMsg '  · Functions.ps1' -Level Debug
     . (Join-Path $moduleRoot 'Functions.ps1')
+    Write-ProfileMsg '  · Completers.ps1' -Level Debug
     . (Join-Path $moduleRoot 'Completers.ps1')
+    Write-ProfileMsg '  · PSReadline.ps1' -Level Debug
     . (Join-Path $moduleRoot 'PSReadline.ps1')
+    Write-ProfileMsg '  · cli_tools_config.ps1' -Level Debug
     . (Join-Path $moduleRoot 'cli_tools_config.ps1')
+    Write-ProfileMsg '  · Show-HelpColor.ps1' -Level Debug
     . (Join-Path $moduleRoot 'Show-HelpColor.ps1')
     return
 }
@@ -94,11 +101,18 @@ if ($_modsFail.Count -gt 0) {
 }
 
 . (Join-Path $moduleRoot 'Env.ps1')
+Write-ProfileMsg "  Terminal: $($Env:TERM_PROGRAM ?? 'unknown')" -Level Debug
+Write-ProfileMsg '  · Aliases.ps1' -Level Debug
 . (Join-Path $moduleRoot 'Aliases.ps1')
+Write-ProfileMsg '  · Functions.ps1' -Level Debug
 . (Join-Path $moduleRoot 'Functions.ps1')
+Write-ProfileMsg '  · Completers.ps1' -Level Debug
 . (Join-Path $moduleRoot 'Completers.ps1')
+Write-ProfileMsg '  · PSReadline.ps1' -Level Debug
 . (Join-Path $moduleRoot 'PSReadline.ps1')
+Write-ProfileMsg '  · cli_tools_config.ps1' -Level Debug
 . (Join-Path $moduleRoot 'cli_tools_config.ps1')
+Write-ProfileMsg '  · Show-HelpColor.ps1' -Level Debug
 . (Join-Path $moduleRoot 'Show-HelpColor.ps1')
 
 # Weekly module update (every Friday)
