@@ -46,7 +46,7 @@ $Env:CARGO_HOME = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'cargo'
 $Env:Path += [IO.Path]::PathSeparator + (Join-Path $Env:CARGO_HOME 'bin')
 
 # Python
-if (Get-Command python -ErrorAction SilentlyContinue) {
+if (Get-Command python -ErrorAction Ignore) {
     $pythonScriptsPath = python -c "import sysconfig; print(sysconfig.get_path('scripts'))" 2>$null
     if ($pythonScriptsPath -and ($env:Path -split ';' -notcontains $pythonScriptsPath)) {
         $env:Path = "$pythonScriptsPath;$env:Path"
@@ -68,12 +68,12 @@ $Env:Path += [IO.Path]::PathSeparator + (Join-Path $env:LOCALAPPDATA 'Programs' 
 $Env:GNUPGHOME = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'gnupg'
 
 # Pager
-if (Get-Command moor.exe -ErrorAction SilentlyContinue) {
+if (Get-Command moor.exe -ErrorAction Ignore) {
     $Env:PAGER = 'moor'
     $Env:MOOR = '-style catppuccin-mocha -no-linenumbers'
-} elseif (Get-Command bat.exe -ErrorAction SilentlyContinue) {
+} elseif (Get-Command bat.exe -ErrorAction Ignore) {
     $Env:PAGER = 'bat'
-} elseif (Get-Command less.exe -ErrorAction SilentlyContinue) {
+} elseif (Get-Command less.exe -ErrorAction Ignore) {
     $Env:PAGER = 'less -R'
 } else {
     $Env:PAGER = 'more'

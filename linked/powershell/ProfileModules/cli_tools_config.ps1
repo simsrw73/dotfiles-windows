@@ -9,7 +9,7 @@ $ErrorActionPreference = 'Stop'
 # ==============================================================================
 
 #region eza  -  modern ls replacement
-if (Get-Command eza.exe -ErrorAction SilentlyContinue) {
+if (Get-Command eza.exe -ErrorAction Ignore) {
     # --- Functions / Aliases ---
     $eza = (Get-Command eza.exe).Path.ToString()
     function global:_ls { & $eza --color=auto --icons --group-directories-first @args }
@@ -50,7 +50,7 @@ if (Get-Command eza.exe -ErrorAction SilentlyContinue) {
 #region bat  -  modern cat replacement
 # Join-Files works with or without bat (falls back to Get-Content)
 function global:Join-Files {
-    if (Get-Command bat.exe -ErrorAction SilentlyContinue) {
+    if (Get-Command bat.exe -ErrorAction Ignore) {
         $bat = (Get-Command bat.exe).Path.ToString()
         & $bat -pp $args
     } else {
@@ -59,7 +59,7 @@ function global:Join-Files {
 }
 Set-Alias -Name cat -Value Join-Files -Scope Global -Force
 
-if (Get-Command bat.exe -ErrorAction SilentlyContinue) {
+if (Get-Command bat.exe -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     $Env:BAT_CONFIG_PATH = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'bat' 'bat.conf'
     # --- Completers ---
@@ -80,7 +80,7 @@ if (Get-Command bat.exe -ErrorAction SilentlyContinue) {
 #endregion bat
 
 #region fd  -  modern find replacement
-if (Get-Command fd.exe -ErrorAction SilentlyContinue) {
+if (Get-Command fd.exe -ErrorAction Ignore) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # --- Completers ---
@@ -110,7 +110,7 @@ if (Get-Command fd.exe -ErrorAction SilentlyContinue) {
 #endregion fd
 
 #region ripgrep  -  fast grep
-if (Get-Command rg.exe -ErrorAction SilentlyContinue) {
+if (Get-Command rg.exe -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     $Env:RIPGREP_CONFIG_PATH = Join-Path $Env:XDG_CONFIG_HOME 'ripgrep' 'ripgreprc'
     # Create a default ripgreprc if it doesn't exist
@@ -146,7 +146,7 @@ if (Get-Command rg.exe -ErrorAction SilentlyContinue) {
 #endregion ripgrep
 
 #region broot  -  interactive file browser
-if (Get-Command broot.exe -ErrorAction SilentlyContinue) {
+if (Get-Command broot.exe -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     # broot respects $XDG_CONFIG_HOME on all platforms when set
     $brootConfig = Join-Path $Env:XDG_CONFIG_HOME 'broot'
@@ -172,7 +172,7 @@ if (Get-Command broot.exe -ErrorAction SilentlyContinue) {
 
 #region lsd  -  another ls alternative
 # NOTE: lsd conflicts with eza; enable only if eza is removed
-if (Get-Command lsd.exe -ErrorAction SilentlyContinue) {
+if (Get-Command lsd.exe -ErrorAction Ignore) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # TODO: Completers
@@ -185,7 +185,7 @@ if (Get-Command lsd.exe -ErrorAction SilentlyContinue) {
 # ==============================================================================
 
 #region jq  -  JSON processor
-if (Get-Command jq.exe -ErrorAction SilentlyContinue) {
+if (Get-Command jq.exe -ErrorAction Ignore) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # TODO: Completers
@@ -208,7 +208,7 @@ if (Get-Command jq.exe -ErrorAction SilentlyContinue) {
 #endregion jq
 
 #region fx  -  interactive JSON viewer
-if (Get-Command fx.exe -ErrorAction SilentlyContinue) {
+if (Get-Command fx.exe -ErrorAction Ignore) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # TODO: Completers
@@ -217,7 +217,7 @@ if (Get-Command fx.exe -ErrorAction SilentlyContinue) {
 #endregion fx
 
 #region jid  -  interactive JSON editor
-if (Get-Command jid.exe -ErrorAction SilentlyContinue) {
+if (Get-Command jid.exe -ErrorAction Ignore) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # TODO: Completers
@@ -226,7 +226,7 @@ if (Get-Command jid.exe -ErrorAction SilentlyContinue) {
 #endregion jid
 
 #region glow  -  markdown reader
-if (Get-Command glow.exe -ErrorAction SilentlyContinue) {
+if (Get-Command glow.exe -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     $Env:GLOW_CONFIG_DIR = Join-Path $Env:XDG_CONFIG_HOME 'glow'
     New-Item -ItemType Directory -Force -Path $Env:GLOW_CONFIG_DIR | Out-Null
@@ -253,7 +253,7 @@ if (Get-Command glow.exe -ErrorAction SilentlyContinue) {
 # ==============================================================================
 
 #region procs  -  modern ps replacement
-if (Get-Command procs.exe -ErrorAction SilentlyContinue) {
+if (Get-Command procs.exe -ErrorAction Ignore) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # --- Completers ---
@@ -279,7 +279,7 @@ if (Get-Command procs.exe -ErrorAction SilentlyContinue) {
 #endregion procs
 
 #region duf  -  modern df replacement
-if (Get-Command duf.exe -ErrorAction SilentlyContinue) {
+if (Get-Command duf.exe -ErrorAction Ignore) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # TODO: Completers
@@ -288,7 +288,7 @@ if (Get-Command duf.exe -ErrorAction SilentlyContinue) {
 #endregion duf
 
 #region dua  -  disk usage analyzer
-if (Get-Command dua.exe -ErrorAction SilentlyContinue) {
+if (Get-Command dua.exe -ErrorAction Ignore) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # TODO: Completers
@@ -297,7 +297,7 @@ if (Get-Command dua.exe -ErrorAction SilentlyContinue) {
 #endregion dua
 
 #region gdu  -  disk usage TUI
-if (Get-Command gdu.exe -ErrorAction SilentlyContinue) {
+if (Get-Command gdu.exe -ErrorAction Ignore) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # TODO: Completers
@@ -306,7 +306,7 @@ if (Get-Command gdu.exe -ErrorAction SilentlyContinue) {
 #endregion gdu
 
 #region ntop  -  TUI process monitor
-if (Get-Command ntop.exe -ErrorAction SilentlyContinue) {
+if (Get-Command ntop.exe -ErrorAction Ignore) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # TODO: Completers
@@ -315,7 +315,7 @@ if (Get-Command ntop.exe -ErrorAction SilentlyContinue) {
 #endregion ntop
 
 #region winfetch  -  system info
-if (Get-Command winfetch -ErrorAction SilentlyContinue) {
+if (Get-Command winfetch -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     $Env:WINFETCH_CONFIG_PATH = Join-Path $Env:XDG_CONFIG_HOME 'winfetch' 'config.ps1'
     $winfetchDir = Join-Path $Env:XDG_CONFIG_HOME 'winfetch'
@@ -333,7 +333,7 @@ if (Get-Command winfetch -ErrorAction SilentlyContinue) {
 # ==============================================================================
 
 #region curl  -  HTTP client
-if (Get-Command curl.exe -ErrorAction SilentlyContinue) {
+if (Get-Command curl.exe -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     $Env:CURL_HOME = Join-Path $Env:XDG_CONFIG_HOME 'curl'
     New-Item -ItemType Directory -Force -Path $Env:CURL_HOME | Out-Null
@@ -344,7 +344,7 @@ if (Get-Command curl.exe -ErrorAction SilentlyContinue) {
 #endregion curl
 
 #region wget  -  downloader
-if (Get-Command wget.exe -ErrorAction SilentlyContinue) {
+if (Get-Command wget.exe -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     $Env:WGETRC = Join-Path $Env:XDG_CONFIG_HOME 'wget' 'wgetrc'
     $wgetDir = Join-Path $Env:XDG_CONFIG_HOME 'wget'
@@ -362,7 +362,7 @@ if (Get-Command wget.exe -ErrorAction SilentlyContinue) {
 # Set DOCKER_CONFIG unconditionally so docker-compose and other tools use XDG path
 $Env:DOCKER_CONFIG = Join-Path $Env:XDG_CONFIG_HOME 'docker'
 New-Item -ItemType Directory -Force -Path $Env:DOCKER_CONFIG | Out-Null
-if (Get-Command docker -ErrorAction SilentlyContinue) {
+if (Get-Command docker -ErrorAction Ignore) {
     # TODO: Completers
     # TODO: Fzf Pickers
 }
@@ -373,7 +373,7 @@ if (Get-Command docker -ErrorAction SilentlyContinue) {
 # ==============================================================================
 
 #region nano  -  text editor
-if (Get-Command nano.exe -ErrorAction SilentlyContinue) {
+if (Get-Command nano.exe -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     $Env:NANORC = Join-Path $Env:XDG_CONFIG_HOME 'nano' 'nanorc'
     $nanoDir = Join-Path $Env:XDG_CONFIG_HOME 'nano'
@@ -388,7 +388,7 @@ if (Get-Command nano.exe -ErrorAction SilentlyContinue) {
 #endregion nano
 
 #region micro  -  modern terminal editor
-if (Get-Command micro.exe -ErrorAction SilentlyContinue) {
+if (Get-Command micro.exe -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     $Env:MICRO_CONF_DIR = Join-Path $Env:XDG_CONFIG_HOME 'micro'
     New-Item -ItemType Directory -Force -Path $Env:MICRO_CONF_DIR | Out-Null
@@ -412,7 +412,7 @@ if (Test-Path -Path 'C:\Program Files\Notepad++\notepad++.exe' -PathType Leaf) {
 # ==============================================================================
 
 #region fzf  -  fuzzy finder
-if (Get-Command fzf.exe -ErrorAction SilentlyContinue) {
+if (Get-Command fzf.exe -ErrorAction Ignore) {
     # --- Config ---
     $Env:FZF_DEFAULT_COMMAND = 'fd --type f --hidden --follow --exclude .git'
     $Env:FZF_ALT_C_COMMAND = 'fd -H -L -E .git -t d'
@@ -439,7 +439,7 @@ if (Get-Command fzf.exe -ErrorAction SilentlyContinue) {
 # ==============================================================================
 
 #region zoxide  -  smart cd
-if (Get-Command zoxide.exe -ErrorAction SilentlyContinue) {
+if (Get-Command zoxide.exe -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     $Env:_ZO_DATA_DIR = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'zoxide'
 
@@ -450,7 +450,7 @@ if (Get-Command zoxide.exe -ErrorAction SilentlyContinue) {
         })
 
     # --- Aliases ---
-    if (Get-Command z -ErrorAction SilentlyContinue) {
+    if (Get-Command z -ErrorAction Ignore) {
         Set-Alias -Name cd -Value z -Scope Global -Option AllScope
     }
     # TODO: Completers
@@ -473,14 +473,14 @@ if (Get-Command zoxide.exe -ErrorAction SilentlyContinue) {
 # ==============================================================================
 
 #region moor  -  modern pager
-if (Get-Command moor.exe -ErrorAction SilentlyContinue) {
+if (Get-Command moor.exe -ErrorAction Ignore) {
     # PAGER and $Env:MOOR are set in Env.ps1 (PAGER detection runs early)
     # TODO: Fzf Pickers
 }
 #endregion moor
 
 #region less  -  pager
-if (Get-Command less.exe -ErrorAction SilentlyContinue) {
+if (Get-Command less.exe -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     $Env:LESSHISTFILE = Join-Path $Env:XDG_STATE_HOME 'less' 'history'
     $Env:LESSKEY      = Join-Path $Env:XDG_CONFIG_HOME 'less' 'lesskey'
@@ -501,9 +501,9 @@ if (Get-Command less.exe -ErrorAction SilentlyContinue) {
 # ==============================================================================
 
 #region scoop  -  Windows package manager
-if (Get-Command scoop -ErrorAction SilentlyContinue) {
+if (Get-Command scoop -ErrorAction Ignore) {
     # --- scoop-search hook ---
-    if (Get-Command scoop-search -ErrorAction SilentlyContinue) {
+    if (Get-Command scoop-search -ErrorAction Ignore) {
         . ([ScriptBlock]::Create((& scoop-search --hook | Out-String)))
     }
     # --- Functions ---
@@ -543,7 +543,7 @@ if (Get-Command scoop -ErrorAction SilentlyContinue) {
 #endregion scoop
 
 #region sfsu  -  fast scoop CLI
-if (Get-Command sfsu.exe -ErrorAction SilentlyContinue) {
+if (Get-Command sfsu.exe -ErrorAction Ignore) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # --- Completers ---
@@ -561,7 +561,7 @@ if (Get-Command sfsu.exe -ErrorAction SilentlyContinue) {
 #endregion sfsu
 
 #region winget  -  Windows package manager
-if (Get-Command winget -ErrorAction SilentlyContinue) {
+if (Get-Command winget -ErrorAction Ignore) {
     # --- Functions ---
     function global:wstat { winget upgrade }
     function global:wupd { winget upgrade --all }
@@ -615,7 +615,7 @@ if (Get-Command winget -ErrorAction SilentlyContinue) {
 # ==============================================================================
 
 #region cargo  -  Rust package manager
-if (Get-Command cargo.exe -ErrorAction SilentlyContinue) {
+if (Get-Command cargo.exe -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     # CARGO_HOME and RUSTUP_HOME are set in Env.ps1 (PATH ordering requirement)
     # CARGO_HOME = $XDG_DATA_HOME/cargo, RUSTUP_HOME = $XDG_DATA_HOME/rustup
@@ -625,7 +625,7 @@ if (Get-Command cargo.exe -ErrorAction SilentlyContinue) {
 #endregion cargo
 
 #region rustup  -  Rust toolchain manager
-if (Get-Command rustup.exe -ErrorAction SilentlyContinue) {
+if (Get-Command rustup.exe -ErrorAction Ignore) {
     # --- Completers ---
     rustup completions powershell | Out-String | Invoke-Expression
     # --- Fzf Pickers ---
@@ -644,7 +644,7 @@ if (Get-Command rustup.exe -ErrorAction SilentlyContinue) {
 #endregion rustup
 
 #region nvm  -  Node version manager
-if (Get-Command nvm -ErrorAction SilentlyContinue) {
+if (Get-Command nvm -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     $Env:NVM_DIR = Join-Path $Env:XDG_DATA_HOME 'nvm'
     # Note: nvm for Windows (scoop) uses NVM_HOME/NVM_SYMLINK instead; NVM_DIR is for Unix nvm
@@ -677,7 +677,7 @@ if (Get-Command nvm -ErrorAction SilentlyContinue) {
 #endregion nvm
 
 #region npm  -  Node package manager
-if (Get-Command npm -ErrorAction SilentlyContinue) {
+if (Get-Command npm -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     $Env:NPM_CONFIG_USERCONFIG = Join-Path $Env:XDG_CONFIG_HOME 'npm' 'npmrc'
     $npmConfigDir = Join-Path $Env:XDG_CONFIG_HOME 'npm'
@@ -721,7 +721,7 @@ if (Get-Command npm -ErrorAction SilentlyContinue) {
 # ==============================================================================
 
 #region uv  -  fast Python package manager
-if (Get-Command uv.exe -ErrorAction SilentlyContinue) {
+if (Get-Command uv.exe -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     $Env:UV_CACHE_DIR = Join-Path $Env:XDG_CACHE_HOME 'uv'
     $Env:UV_DATA_DIR  = Join-Path $Env:XDG_DATA_HOME  'uv'
@@ -763,7 +763,7 @@ if (Get-Command uv.exe -ErrorAction SilentlyContinue) {
 # ==============================================================================
 
 #region chezmoi  -  dotfile manager
-if (Get-Command chezmoi.exe -ErrorAction SilentlyContinue) {
+if (Get-Command chezmoi.exe -ErrorAction Ignore) {
     # --- XDG / Config paths ---
     $Env:CHEZMOI_CONFIG_DIR = Join-Path $Env:XDG_CONFIG_HOME 'chezmoi'
     New-Item -ItemType Directory -Force -Path $Env:CHEZMOI_CONFIG_DIR | Out-Null
@@ -790,7 +790,7 @@ if (Get-Command chezmoi.exe -ErrorAction SilentlyContinue) {
 # ==============================================================================
 
 #region bitwarden  -  secrets manager
-if (Get-Command bw -ErrorAction SilentlyContinue) {
+if (Get-Command bw -ErrorAction Ignore) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # --- Completers ---
@@ -834,7 +834,7 @@ if (Get-Command bw -ErrorAction SilentlyContinue) {
 # ==============================================================================
 
 #region gemini  -  Gemini CLI
-if (Get-Command gemini -ErrorAction SilentlyContinue) {
+if (Get-Command gemini -ErrorAction Ignore) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # TODO: Completers
@@ -847,7 +847,7 @@ if (Get-Command gemini -ErrorAction SilentlyContinue) {
 # ==============================================================================
 
 #region win32yank  -  clipboard utility
-if (Get-Command win32yank.exe -ErrorAction SilentlyContinue) {
+if (Get-Command win32yank.exe -ErrorAction Ignore) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # TODO: Completers
@@ -871,7 +871,7 @@ if (Get-Module -Name gsudoModule -ListAvailable) {
 # ==============================================================================
 
 #region glazewm  -  tiling window manager
-if (Get-Command glazewm.exe -ErrorAction SilentlyContinue) {
+if (Get-Command glazewm.exe -ErrorAction Ignore) {
     # --- Functions ---
     function global:Start-GlazeWM {
         $wm = (Get-Command glazewm.exe).Path.ToString()
@@ -888,7 +888,7 @@ if (Get-Command glazewm.exe -ErrorAction SilentlyContinue) {
 # ==============================================================================
 
 #region mosquitto  -  MQTT client
-if (Get-Command mosquitto.exe -ErrorAction SilentlyContinue) {
+if (Get-Command mosquitto.exe -ErrorAction Ignore) {
     # --- Functions ---
     function global:Invoke-MQTT {
         $mqtt_config_file = Join-Path -Path $home -ChildPath '.mosquitto' 'config'
@@ -978,7 +978,7 @@ if (Get-Module -Name Terminal-Icons -ListAvailable) {
 #endregion Terminal-Icons
 
 #region oh-my-posh  -  prompt theme
-if (Get-Command oh-my-posh.exe -ErrorAction SilentlyContinue) {
+if (Get-Command oh-my-posh.exe -ErrorAction Ignore) {
     $Env:POSH_GIT_ENABLED = $true
     if (-not $isVSCodeTerm) {
         # Skip in VS Code integrated terminal — uses plain PS prompt there
