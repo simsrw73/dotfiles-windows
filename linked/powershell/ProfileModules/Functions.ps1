@@ -86,21 +86,6 @@ function global:Update-AllModules {
 }
 
 
-# nls moved to cli_tools_config.ps1
-
-# sstat/supd moved to cli_tools_config.ps1 (#region scoop)
-# wstat/wupd moved to cli_tools_config.ps1 (#region winget)
-
-function global:Test-Syntax {
-    # Demo PSReadLine syntax highlighting
-    [CmdletBinding()]
-    param([IO.FileInfo]$Path)
-    end {
-        Write-Verbose "Testing in $(Split-Path $PSScriptRoot -Leaf)" -Verbose
-        $Env:PSModulePath -split ';' -notcontains $Path.FullName
-    }
-}
-
 function global:cd...  { Set-Location ..\.. }
 function global:cd.... { Set-Location ..\..\.. }
 
@@ -123,14 +108,6 @@ function global:Remove-All {
 function global:Get-PubIP {
     (Invoke-WebRequest http://ifconfig.me/ip).Content
 }
-
-# Invoke-MQTT moved to cli_tools_config.ps1
-
-# bat/Join-Files moved to cli_tools_config.ps1
-
-# eza config moved to cli_tools_config.ps1
-
-# Start-GlazeWM moved to cli_tools_config.ps1
 
 function global:Copy-SSHID($dest) {
     try {

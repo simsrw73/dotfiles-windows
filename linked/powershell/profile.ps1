@@ -1,4 +1,4 @@
-# #Requires -Version 7.0
+#Requires -Version 7.0
 
 Set-StrictMode -Version 'Latest'
 $ErrorActionPreference = 'Stop'
@@ -16,7 +16,7 @@ $VerbosePreference = 'SilentlyContinue' # Normal: 'SilentlyContinue', Debugging:
 #   [LogLevel]::Info  — key status lines (default)
 #   [LogLevel]::Debug — full detail: modules, file loads, tool inventory
 enum LogLevel { Error = 0; Warn = 1; Info = 2; Debug = 3 }
-$Global:ProfileLogLevel = [LogLevel]::Info
+$Global:ProfileLogLevel = [LogLevel]::DEBUG
 
 function global:Write-ProfileMsg {
     param(

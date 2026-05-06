@@ -34,7 +34,6 @@ if (Get-Command python -ErrorAction Ignore) {
 }
 $Env:PYTHONPYCACHEPREFIX = Join-Path -Path $Env:XDG_CACHE_HOME -ChildPath 'python'
 $Env:PYTHONUSERBASE = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'python'
-$Env:Path += [IO.Path]::PathSeparator + (Join-Path $Env:XDG_DATA_HOME 'python' 'Python311' 'Scripts')
 
 # TODO: More XDG paths (https://wiki.archlinux.org/title/XDG_Base_Directory)
 # DOCKER_CONFIG=$XDG_CONFIG_HOME/docker
@@ -74,7 +73,6 @@ $PSDefaultParameterValues = @{
     'Install-Module:Scope'      = 'CurrentUser'
     'Install-Module:Repository' = 'PSGallery'
     'Format-Table:AutoSize'     = $true
-    'Get-Help:ShowWindow'       = $true
 }
 
 $Env:CLAUDE_CODE_USE_POWERSHELL_TOOL = '1'
