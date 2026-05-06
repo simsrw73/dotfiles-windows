@@ -545,7 +545,7 @@ if (_HasCmd 'scoop' -Exe 'scoop') {
                 --preview-window 'right:45%'
         if ($pkg) {
             $name = ($pkg -split '\s+')[0]
-            Write-Host "Installing $name..." -ForegroundColor Cyan
+            Write-Host "⚙  Installing $name…" -ForegroundColor Cyan
             scoop install $name
         }
     }
@@ -559,7 +559,7 @@ if (_HasCmd 'scoop' -Exe 'scoop') {
             fzf --header 'Select package to uninstall (Enter to scoop uninstall)'
         if ($pkg) {
             $name = ($pkg -split '\s+')[0]
-            Write-Host "Uninstalling $name..." -ForegroundColor Yellow
+            Write-Host "⚙  Uninstalling $name…" -ForegroundColor DarkYellow
             scoop uninstall $name
         }
     }
@@ -612,7 +612,7 @@ if (_HasCmd 'winget' -Exe 'winget') {
             fzf --header 'Select package to install (Enter to winget install)'
         if ($pkg) {
             $id = ($pkg -split '\s{2,}')[1]
-            Write-Host "Installing $id..." -ForegroundColor Cyan
+            Write-Host "⚙  Installing $id…" -ForegroundColor Cyan
             winget install --id $id
         }
     }
@@ -627,7 +627,7 @@ if (_HasCmd 'winget' -Exe 'winget') {
             fzf --header 'Select package to uninstall (Enter to winget uninstall)'
         if ($pkg) {
             $id = ($pkg -split '\s{2,}')[1]
-            Write-Host "Uninstalling $id..." -ForegroundColor Yellow
+            Write-Host "⚙  Uninstalling $id…" -ForegroundColor DarkYellow
             winget uninstall --id $id
         }
     }
@@ -847,7 +847,7 @@ if (_HasCmd 'bw' -Exe 'bw') {
         if ($selected) {
             $id = ($selected -split "`t")[1]
             bw get password $id | Set-Clipboard
-            Write-Host 'Password copied to clipboard.' -ForegroundColor Green
+            Write-Host '✓ Password copied to clipboard' -ForegroundColor Green
         }
     }
     Set-Alias -Name fbw -Value Select-BwItem -Scope Global
@@ -1023,7 +1023,8 @@ if (_HasCmd 'oh-my-posh') {
                 --header 'Select oh-my-posh theme (Enter to apply for this session)'
         if ($theme) {
             oh-my-posh init pwsh --config "$themesPath\$theme" | Invoke-Expression
-            Write-Host "Applied theme: $theme (add to cli_tools_config.ps1 to persist)" -ForegroundColor Cyan
+            Write-Host "✓ Theme applied: $theme" -ForegroundColor Green
+            Write-Host "  → To persist: update #region oh-my-posh in cli_tools_config.ps1" -ForegroundColor DarkGray
         }
     }
     Set-Alias -Name fpot -Value Select-PoshTheme -Scope Global
