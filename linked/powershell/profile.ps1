@@ -45,12 +45,17 @@ function global:Write-ProfileMsg {
 # Skips: oh-my-posh, VS Dev Shell, transcript, diagnostics, weekly updates.
 # Keeps: env vars, all aliases/functions, PSReadLine, fzf, tool completers.
 if ($Env:TERM_PROGRAM -eq 'vscode') {
+    $_modsOk = [System.Collections.Generic.List[string]]::new()
     foreach ($mod in @('PSReadLine', 'PSFzf')) {
         try {
             Import-Module -Name $mod -ErrorAction Stop
+            $null = $_modsOk.Add($mod)
         } catch {
             Write-Warning "Module '$mod' failed to load: $($_.Exception.Message)"
         }
+    }
+    if ($_modsOk.Count -gt 0) {
+        Write-ProfileMsg ("  Modules: " + (($_modsOk | ForEach-Object { "✓ $_" }) -join '  ')) -Level Debug -Color Green
     }
     . (Join-Path $moduleRoot 'Env.ps1')
     . (Join-Path $moduleRoot 'Aliases.ps1')
@@ -65,6 +70,8 @@ if ($Env:TERM_PROGRAM -eq 'vscode') {
 
 # Import modules before dot-sourcing ProfileModules (Completers.ps1 and PSReadline.ps1 depend on these)
 # Use SilentlyContinue so a broken/missing module never aborts the profile
+$_modsOk   = [System.Collections.Generic.List[string]]::new()
+$_modsFail = [System.Collections.Generic.List[string]]::new()
 foreach ($mod in @(
         'PSReadLine', 'PSFzf', 'powershell-yaml',
         'Microsoft.PowerShell.SecretManagement'
@@ -73,9 +80,17 @@ foreach ($mod in @(
     )) {
     try {
         Import-Module -Name $mod -ErrorAction Stop
+        $null = $_modsOk.Add($mod)
     } catch {
+        $null = $_modsFail.Add($mod)
         Write-Warning "Module '$mod' failed to load: $($_.Exception.Message)"
     }
+}
+if ($_modsOk.Count -gt 0) {
+    Write-ProfileMsg ("  Modules: " + (($_modsOk | ForEach-Object { "✓ $_" }) -join '  ')) -Level Debug -Color Green
+}
+if ($_modsFail.Count -gt 0) {
+    Write-ProfileMsg ("  Failed:  " + (($_modsFail | ForEach-Object { "· $_" }) -join '  ')) -Level Debug -Color DarkYellow
 }
 
 . (Join-Path $moduleRoot 'Env.ps1')
