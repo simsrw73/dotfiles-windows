@@ -33,7 +33,17 @@ if (Get-Command eza.exe -ErrorAction SilentlyContinue) {
         $flags | Where-Object { $_ -like "$wordToComplete*" } |
             ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
     }
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Select-File {
+        [CmdletBinding()]
+        param([string]$Path = '.')
+        $result = eza --icons -1 --color=always $Path |
+            fzf --ansi --preview 'bat --color=always --line-range=:200 {}' `
+                --preview-window 'right:55%' `
+                --header 'Select file (Enter to open, Ctrl-C to cancel)'
+        if ($result) { $result }
+    }
+    Set-Alias -Name ff -Value Select-File -Scope Global
 }
 #endregion eza
 
@@ -364,7 +374,17 @@ if (Get-Command zoxide.exe -ErrorAction SilentlyContinue) {
         Set-Alias -Name cd -Value z -Scope Global -Option AllScope
     }
     # TODO: Completers
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Select-Directory {
+        [CmdletBinding()]
+        param()
+        $dir = zoxide query --list |
+            fzf --preview 'eza --icons --color=always {}' `
+                --preview-window 'right:40%' `
+                --header 'Select directory (Enter to cd)'
+        if ($dir) { Set-Location $dir }
+    }
+    Set-Alias -Name fcd -Value Select-Directory -Scope Global
 }
 #endregion zoxide
 
@@ -667,7 +687,68 @@ if (Get-Command mosquitto.exe -ErrorAction SilentlyContinue) {
 #region posh-git  -  git prompt info
 if (Get-Module -Name posh-git -ListAvailable) {
     Import-Module posh-git -ErrorAction SilentlyContinue
-    # TODO: Completers / Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Select-GitBranch {
+        [CmdletBinding()]
+        param()
+        $branch = git branch --all --color=always |
+            fzf --ansi --preview 'git log --oneline --color=always {1}' `
+                --preview-window 'right:55%' `
+                --header 'Select branch (Enter to checkout)'
+        if ($branch) {
+            $branch = $branch.Trim() -replace '^\* ', '' -replace '^remotes/origin/', ''
+            git checkout $branch
+        }
+    }
+    Set-Alias -Name fco -Value Select-GitBranch -Scope Global
+
+    function global:Select-GitLog {
+        [CmdletBinding()]
+        param()
+        $commit = git log --oneline --color=always |
+            fzf --ansi --preview 'git show --color=always {1}' `
+                --preview-window 'right:55%' `
+                --header 'Select commit (Enter to show, Ctrl-C to cancel)'
+        if ($commit) {
+            $sha = ($commit -split ' ')[0]
+            git show $sha
+        }
+    }
+    Set-Alias -Name flog -Value Select-GitLog -Scope Global
+
+    function global:Select-GitFile {
+        [CmdletBinding()]
+        param()
+        $files = git status --short |
+            fzf --ansi --multi `
+                --preview 'git diff --color=always {2}' `
+                --preview-window 'right:55%' `
+                --header 'Select files to stage (Tab=multi-select, Enter to git add)'
+        if ($files) {
+            $files | ForEach-Object {
+                $file = ($_ -split '\s+', 2)[1]
+                git add $file
+            }
+            git status --short
+        }
+    }
+    Set-Alias -Name fga -Value Select-GitFile -Scope Global
+
+    function global:Select-GitStash {
+        [CmdletBinding()]
+        param()
+        $stash = git stash list |
+            fzf --preview 'git stash show -p {1}' `
+                --preview-window 'right:55%' `
+                --header 'Select stash (Enter to apply, Del to drop)'
+        if ($stash) {
+            $stashRef = ($stash -split ':')[0]
+            $action = Read-Host "Apply or drop? [a/d]"
+            if ($action -eq 'd') { git stash drop $stashRef }
+            else { git stash apply $stashRef }
+        }
+    }
+    Set-Alias -Name fstash -Value Select-GitStash -Scope Global
 }
 #endregion posh-git
 
