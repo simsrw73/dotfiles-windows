@@ -10,6 +10,37 @@ $moduleRoot = Join-Path $profileRoot 'ProfileModules'
 
 $VerbosePreference = 'SilentlyContinue' # Normal: 'SilentlyContinue', Debugging: 'Continue'
 
+# ── Output verbosity ─────────────────────────────────────────────────────────
+# Set $Global:ProfileLogLevel to control startup output:
+#   [LogLevel]::Warn  — warnings/errors only (scripting, CI)
+#   [LogLevel]::Info  — key status lines (default)
+#   [LogLevel]::Debug — full detail: modules, file loads, tool inventory
+enum LogLevel { Error = 0; Warn = 1; Info = 2; Debug = 3 }
+$Global:ProfileLogLevel = [LogLevel]::Info
+
+function global:Write-ProfileMsg {
+    param(
+        [Parameter(Mandatory)][string]$Message,
+        [LogLevel]$Level = [LogLevel]::Info,
+        [string]$Color = ''
+    )
+    $_effectiveLevel = if ($null -eq $Global:ProfileLogLevel) { [LogLevel]::Info } else { $Global:ProfileLogLevel }
+    if ([int]$Level -gt [int]$_effectiveLevel) { return }
+    switch ($Level) {
+        ([LogLevel]::Error) { Write-Error   $Message; return }
+        ([LogLevel]::Warn)  { Write-Warning $Message; return }
+    }
+    $c = if ($Color) { $Color } else {
+        switch ($Level) {
+            ([LogLevel]::Info)  { 'Cyan' }
+            ([LogLevel]::Debug) { 'DarkGray' }
+            default             { 'White' }
+        }
+    }
+    Write-Host $Message -ForegroundColor $c
+}
+# ─────────────────────────────────────────────────────────────────────────────
+
 # ── VS Code integrated terminal: fast / lite init ───────────────────────────
 # Skips: oh-my-posh, VS Dev Shell, transcript, diagnostics, weekly updates.
 # Keeps: env vars, all aliases/functions, PSReadLine, fzf, tool completers.
