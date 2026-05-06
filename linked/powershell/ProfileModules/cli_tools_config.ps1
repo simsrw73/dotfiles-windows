@@ -268,9 +268,9 @@ if (Get-Command procs.exe -ErrorAction SilentlyContinue) {
                 --header 'Select process to kill (Enter to Stop-Process, Ctrl-C to cancel)' `
                 --preview-window 'hidden'
         if ($proc) {
-            $pid = ($proc -split '\s+')[1]
-            if ($pid -match '^\d+$') {
-                Stop-Process -Id $pid -Confirm
+            $procId = ($proc -split '\s+')[1]
+            if ($procId -match '^\d+$') {
+                Stop-Process -Id $procId -Confirm
             }
         }
     }
