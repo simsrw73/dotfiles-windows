@@ -49,7 +49,8 @@ if (Get-Command bat.exe -ErrorAction SilentlyContinue) {
 if (Get-Command fd.exe -ErrorAction SilentlyContinue) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
-    # TODO: Completers
+    # --- Completers ---
+    fd --gen-completions powershell | Out-String | Invoke-Expression
     # TODO: Fzf Pickers
 }
 #endregion fd
@@ -65,7 +66,8 @@ if (Get-Command rg.exe -ErrorAction SilentlyContinue) {
         Set-Content -Path $Env:RIPGREP_CONFIG_PATH -Value "# ripgrep config`n--smart-case`n--hidden" -Encoding UTF8
     }
     # TODO: Functions / Aliases
-    # TODO: Completers
+    # --- Completers ---
+    rg --generate complete-powershell | Out-String | Invoke-Expression
     # TODO: Fzf Pickers
 }
 #endregion ripgrep
@@ -129,7 +131,8 @@ if (Get-Command glow.exe -ErrorAction SilentlyContinue) {
     $Env:GLOW_CONFIG_DIR = Join-Path $Env:XDG_CONFIG_HOME 'glow'
     New-Item -ItemType Directory -Force -Path $Env:GLOW_CONFIG_DIR | Out-Null
     # TODO: Functions / Aliases
-    # TODO: Completers
+    # --- Completers ---
+    glow completion powershell | Out-String | Invoke-Expression
     # TODO: Fzf Pickers
 }
 #endregion glow
@@ -142,7 +145,8 @@ if (Get-Command glow.exe -ErrorAction SilentlyContinue) {
 if (Get-Command procs.exe -ErrorAction SilentlyContinue) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
-    # TODO: Completers
+    # --- Completers ---
+    procs --gen-completion-out powershell | Out-String | Invoke-Expression
     # TODO: Fzf Pickers
 }
 #endregion procs
@@ -387,7 +391,17 @@ if (Get-Command winget -ErrorAction SilentlyContinue) {
     # --- Functions ---
     function global:wstat { winget upgrade }
     function global:wupd { winget upgrade --all }
-    # TODO: Completers
+    # --- Completers ---
+    Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {
+        param($wordToComplete, $commandAst, $cursorPosition)
+        [Console]::InputEncoding = [Console]::OutputEncoding = $OutputEncoding = [System.Text.Utf8Encoding]::new()
+        $Local:word = $wordToComplete.Replace('"', '""')
+        $Local:ast  = $commandAst.ToString().Replace('"', '""')
+        winget complete --word="$Local:word" --commandline "$Local:ast" --position $cursorPosition |
+            ForEach-Object {
+                [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
+            }
+    }
     # TODO: Fzf Pickers
 }
 #endregion winget
@@ -469,7 +483,8 @@ if (Get-Command chezmoi.exe -ErrorAction SilentlyContinue) {
     New-Item -ItemType Directory -Force -Path $Env:CHEZMOI_CONFIG_DIR | Out-Null
     # --- Aliases ---
     Set-Alias -Name cz -Value chezmoi -Scope Global
-    # TODO: Completers
+    # --- Completers ---
+    chezmoi completion powershell | Out-String | Invoke-Expression
     # TODO: Fzf Pickers
 }
 #endregion chezmoi
