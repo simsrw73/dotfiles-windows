@@ -112,7 +112,7 @@ if (Get-Command nvm -ErrorAction Ignore) {
 Write-Step 'PowerShell modules'
 
 $psModules = @(
-    'PSReadLine', 'PSFzf', 'posh-git', 'Terminal-Icons', 'oh-my-posh',
+    'PSReadLine', 'PSFzf', 'posh-git', 'Terminal-Icons',  # oh-my-posh is a scoop package, not a PSResource
     'PSAISuite', 'PowerType', 'DockerCompletion', 'PSWindowsUpdate',
     'Admin', 'powershell-yaml', 'Microsoft.PowerShell.SecretManagement',
     'Microsoft.PowerShell.SecretStore', 'scoop-completion'
