@@ -85,7 +85,27 @@ if (Get-Command fd.exe -ErrorAction SilentlyContinue) {
     # TODO: Functions / Aliases
     # --- Completers ---
     fd --gen-completions powershell | Out-String | Invoke-Expression
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Select-FdResult {
+        [CmdletBinding()]
+        param(
+            [string]$Pattern = '',
+            [string]$Path = '.',
+            [ValidateSet('file', 'directory', 'any')]
+            [string]$Type = 'file'
+        )
+        $fdArgs = @('--color=always')
+        if ($Pattern) { $fdArgs += $Pattern }
+        if ($Path -ne '.') { $fdArgs += $Path }
+        if ($Type -ne 'any') { $fdArgs += '--type'; $fdArgs += $Type }
+        $result = fd @fdArgs 2>$null |
+            fzf --ansi `
+                --preview 'bat --color=always --line-range=:100 {} 2>/dev/null || eza --icons --color=always {}' `
+                --preview-window 'right:50%' `
+                --header 'Select file/dir'
+        if ($result) { $result }
+    }
+    Set-Alias -Name ffd -Value Select-FdResult -Scope Global
 }
 #endregion fd
 
@@ -102,7 +122,26 @@ if (Get-Command rg.exe -ErrorAction SilentlyContinue) {
     # TODO: Functions / Aliases
     # --- Completers ---
     rg --generate complete-powershell | Out-String | Invoke-Expression
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Select-RipgrepResult {
+        [CmdletBinding()]
+        param(
+            [string]$Pattern = '',
+            [string]$Path = '.'
+        )
+        if (-not $Pattern) { $Pattern = Read-Host 'Search pattern' }
+        $result = rg --line-number --no-heading --color=always $Pattern $Path 2>$null |
+            fzf --ansi `
+                --delimiter ':' `
+                --preview 'bat --color=always --highlight-line {2} {1}' `
+                --preview-window 'right:55%:+{2}+3/3' `
+                --header 'Select result (Enter to open in $EDITOR)'
+        if ($result) {
+            $file, $line = ($result -split ':')[0..1]
+            & $Env:EDITOR $file
+        }
+    }
+    Set-Alias -Name frg -Value Select-RipgrepResult -Scope Global
 }
 #endregion ripgrep
 
@@ -150,7 +189,21 @@ if (Get-Command jq.exe -ErrorAction SilentlyContinue) {
     # TODO: XDG / Config paths
     # TODO: Functions / Aliases
     # TODO: Completers
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Select-JsonPath {
+        [CmdletBinding()]
+        param([string]$File = '')
+        if (-not $File) {
+            $File = fzf --header 'Select JSON file' --preview 'bat --color=always {}'
+        }
+        if (-not $File -or -not (Test-Path $File)) { return }
+        # Interactive jq filter: pipe JSON through fzf, updating preview with each keystroke
+        $json = Get-Content $File -Raw
+        $filter = Read-Host 'jq filter (default: .)'
+        if (-not $filter) { $filter = '.' }
+        $json | jq $filter
+    }
+    Set-Alias -Name fjq -Value Select-JsonPath -Scope Global
 }
 #endregion jq
 
@@ -194,7 +247,23 @@ if (Get-Command procs.exe -ErrorAction SilentlyContinue) {
     # TODO: Functions / Aliases
     # --- Completers ---
     procs --gen-completion-out powershell | Out-String | Invoke-Expression
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Select-Process {
+        [CmdletBinding()]
+        param()
+        $proc = procs --color=always 2>$null |
+            Select-Object -Skip 1 |
+            fzf --ansi `
+                --header 'Select process to kill (Enter to Stop-Process, Ctrl-C to cancel)' `
+                --preview-window 'hidden'
+        if ($proc) {
+            $pid = ($proc -split '\s+')[1]
+            if ($pid -match '^\d+$') {
+                Stop-Process -Id $pid -Confirm
+            }
+        }
+    }
+    Set-Alias -Name fkill -Value Select-Process -Scope Global
 }
 #endregion procs
 
@@ -430,7 +499,35 @@ if (Get-Command scoop -ErrorAction SilentlyContinue) {
     function global:sstat { scoop update; scoop status }
     function global:supd { scoop update *; scoop cleanup * }
     # TODO: Completers
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Select-ScoopPackage {
+        [CmdletBinding()]
+        param([string]$Query = '')
+        $pkg = sfsu search $Query 2>$null |
+            fzf --header 'Select package to install (Enter to scoop install)' `
+                --preview 'sfsu info {}' `
+                --preview-window 'right:45%'
+        if ($pkg) {
+            $name = ($pkg -split '\s+')[0]
+            Write-Host "Installing $name..." -ForegroundColor Cyan
+            scoop install $name
+        }
+    }
+    Set-Alias -Name sins -Value Select-ScoopPackage -Scope Global
+
+    function global:Remove-ScoopPackage {
+        [CmdletBinding()]
+        param()
+        $pkg = scoop list 2>$null | Select-Object -Skip 2 |
+            Where-Object { $_ -match '\S' } |
+            fzf --header 'Select package to uninstall (Enter to scoop uninstall)'
+        if ($pkg) {
+            $name = ($pkg -split '\s+')[0]
+            Write-Host "Uninstalling $name..." -ForegroundColor Yellow
+            scoop uninstall $name
+        }
+    }
+    Set-Alias -Name srm -Value Remove-ScoopPackage -Scope Global
 }
 #endregion scoop
 
@@ -468,7 +565,37 @@ if (Get-Command winget -ErrorAction SilentlyContinue) {
                 [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
             }
     }
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Select-WingetPackage {
+        [CmdletBinding()]
+        param([string]$Query = '')
+        if (-not $Query) { $Query = Read-Host 'Search winget packages' }
+        $pkg = winget search $Query 2>$null |
+            Select-Object -Skip 2 |
+            Where-Object { $_ -match '\S' } |
+            fzf --header 'Select package to install (Enter to winget install)'
+        if ($pkg) {
+            $id = ($pkg -split '\s{2,}')[1]
+            Write-Host "Installing $id..." -ForegroundColor Cyan
+            winget install --id $id
+        }
+    }
+    Set-Alias -Name wins -Value Select-WingetPackage -Scope Global
+
+    function global:Remove-WingetPackage {
+        [CmdletBinding()]
+        param()
+        $pkg = winget list 2>$null |
+            Select-Object -Skip 3 |
+            Where-Object { $_ -match '\S' } |
+            fzf --header 'Select package to uninstall (Enter to winget uninstall)'
+        if ($pkg) {
+            $id = ($pkg -split '\s{2,}')[1]
+            Write-Host "Uninstalling $id..." -ForegroundColor Yellow
+            winget uninstall --id $id
+        }
+    }
+    Set-Alias -Name wrm -Value Remove-WingetPackage -Scope Global
 }
 #endregion winget
 
