@@ -980,8 +980,11 @@ if (Get-Module -Name Terminal-Icons -ListAvailable) {
 #region oh-my-posh  -  prompt theme
 if (Get-Command oh-my-posh.exe -ErrorAction SilentlyContinue) {
     $Env:POSH_GIT_ENABLED = $true
-    $ompConfig = Join-Path $home '.config' 'oh-my-posh' 'catpow.omp.yaml'
-    oh-my-posh init pwsh --config $ompConfig | Invoke-Expression
+    if (-not $isVSCodeTerm) {
+        # Skip in VS Code integrated terminal — uses plain PS prompt there
+        $ompConfig = Join-Path $home '.config' 'oh-my-posh' 'catpow.omp.yaml'
+        oh-my-posh init pwsh --config $ompConfig | Invoke-Expression
+    }
     # --- Fzf Pickers ---
     function global:Select-PoshTheme {
         [CmdletBinding()]

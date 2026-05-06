@@ -10,6 +10,28 @@ $moduleRoot = Join-Path $profileRoot 'ProfileModules'
 
 $VerbosePreference = 'SilentlyContinue' # Normal: 'SilentlyContinue', Debugging: 'Continue'
 
+# ── VS Code integrated terminal: fast / lite init ───────────────────────────
+# Skips: oh-my-posh, VS Dev Shell, transcript, diagnostics, weekly updates.
+# Keeps: env vars, all aliases/functions, PSReadLine, fzf, tool completers.
+if ($Env:TERM_PROGRAM -eq 'vscode') {
+    foreach ($mod in @('PSReadLine', 'PSFzf')) {
+        try {
+            Import-Module -Name $mod -ErrorAction Stop
+        } catch {
+            Write-Warning "Module '$mod' failed to load: $($_.Exception.Message)"
+        }
+    }
+    . (Join-Path $moduleRoot 'Env.ps1')
+    . (Join-Path $moduleRoot 'Aliases.ps1')
+    . (Join-Path $moduleRoot 'Functions.ps1')
+    . (Join-Path $moduleRoot 'Completers.ps1')
+    . (Join-Path $moduleRoot 'PSReadline.ps1')
+    . (Join-Path $moduleRoot 'cli_tools_config.ps1')
+    . (Join-Path $moduleRoot 'Show-HelpColor.ps1')
+    return
+}
+# ── Full init (standard terminals) ──────────────────────────────────────────
+
 # Import modules before dot-sourcing ProfileModules (Completers.ps1 and PSReadline.ps1 depend on these)
 # Use SilentlyContinue so a broken/missing module never aborts the profile
 foreach ($mod in @(
