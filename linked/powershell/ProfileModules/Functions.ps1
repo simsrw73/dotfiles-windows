@@ -21,15 +21,15 @@ function global:Update-AllModules {
     $installed = Get-InstalledPSResource | Sort-Object Name
 
     # --- Phase 1: Prune stale entries ---
-    Write-Host "`n=== Phase 1: Pruning stale module entries ===" -ForegroundColor Yellow
+    Write-Host "`n⚙  Phase 1 — Pruning stale entries" -ForegroundColor Cyan
 
     $stale = $installed | Where-Object { -not (Test-Path $_.InstalledLocation) }
 
     if (-not $stale) {
-        Write-Host 'No stale entries found.' -ForegroundColor Green
+        Write-Host '  ✓ No stale entries' -ForegroundColor Green
     } else {
         foreach ($module in $stale) {
-            Write-Host "  Stale: $($module.Name) v$($module.Version) -> $($module.InstalledLocation)" -ForegroundColor Red
+            Write-Warning "Stale entry: $($module.Name) v$($module.Version) — $($module.InstalledLocation)"
             if ($PSCmdlet.ShouldProcess("$($module.Name) v$($module.Version)", 'Uninstall stale entry')) {
                 Uninstall-PSResource -Name $module.Name -Version $module.Version -ErrorAction SilentlyContinue
             }
@@ -37,7 +37,7 @@ function global:Update-AllModules {
     }
 
     # --- Phase 2: Update installed modules ---
-    Write-Host "`n=== Phase 2: Updating installed modules ===" -ForegroundColor Yellow
+    Write-Host "`n⚙  Phase 2 — Updating modules" -ForegroundColor Cyan
 
     $valid  = $installed | Where-Object { Test-Path $_.InstalledLocation }
     $unique = $valid | Sort-Object Name -Unique
@@ -49,11 +49,11 @@ function global:Update-AllModules {
         $scope = if ($module.InstalledLocation -like "*$env:USERPROFILE*") { 'CurrentUser' } else { 'AllUsers' }
 
         if ($scope -eq 'AllUsers' -and -not $global:isAdmin) {
-            Write-Host "  [$i/$total] SKIP (needs admin): $($module.Name) [$scope]" -ForegroundColor DarkYellow
+            Write-Host "  · [$i/$total] $($module.Name) — needs admin" -ForegroundColor DarkYellow
             continue
         }
 
-        Write-Host "  [$i/$total] $($module.Name) [$scope]..." -NoNewline
+        Write-Host "  [$i/$total] $($module.Name)…" -ForegroundColor DarkGray -NoNewline
 
         Update-PSResource -Name $module.Name -Scope $scope -ErrorAction SilentlyContinue
 
@@ -67,22 +67,22 @@ function global:Update-AllModules {
             }
         }
 
-        Write-Host ' Done.' -ForegroundColor Green
+        Write-Host ' ✓' -ForegroundColor Green
     }
 
     # --- Phase 3: Update help files ---
-    Write-Host "`n=== Phase 3: Updating help files ===" -ForegroundColor Yellow
+    Write-Host "`n⚙  Phase 3 — Updating help files" -ForegroundColor Cyan
 
     try {
         if ($PSCmdlet.ShouldProcess('PowerShell help content', 'Update help files')) {
             Update-Help -Force -ErrorAction Continue
         }
-        Write-Host 'Help update complete.' -ForegroundColor Green
+        Write-Host '  ✓ Help updated' -ForegroundColor Green
     } catch {
-        Write-Host "Help update encountered errors: $($_.Exception.Message)" -ForegroundColor DarkYellow
+        Write-Warning "Help update failed: $($_.Exception.Message)"
     }
 
-    Write-Host "`nAll done." -ForegroundColor Cyan
+    Write-Host "`n✓ Done" -ForegroundColor Green
 }
 
 
