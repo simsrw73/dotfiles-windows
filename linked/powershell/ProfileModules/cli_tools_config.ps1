@@ -233,7 +233,18 @@ if (Get-Command glow.exe -ErrorAction SilentlyContinue) {
     # TODO: Functions / Aliases
     # --- Completers ---
     glow completion powershell | Out-String | Invoke-Expression
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Read-MarkdownFile {
+        [CmdletBinding()]
+        param([string]$Path = '.')
+        $file = Get-ChildItem -Path $Path -Recurse -Filter '*.md' -ErrorAction SilentlyContinue |
+            Select-Object -ExpandProperty FullName |
+            fzf --preview 'glow --style dark {}' `
+                --preview-window 'right:60%' `
+                --header 'Select markdown file (Enter to render with glow)'
+        if ($file) { glow $file }
+    }
+    Set-Alias -Name fgl -Value Read-MarkdownFile -Scope Global
 }
 #endregion glow
 
@@ -617,7 +628,18 @@ if (Get-Command cargo.exe -ErrorAction SilentlyContinue) {
 if (Get-Command rustup.exe -ErrorAction SilentlyContinue) {
     # --- Completers ---
     rustup completions powershell | Out-String | Invoke-Expression
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Select-RustupToolchain {
+        [CmdletBinding()]
+        param()
+        $toolchain = rustup toolchain list 2>$null |
+            fzf --header 'Select Rust toolchain (Enter to rustup default)'
+        if ($toolchain) {
+            $name = ($toolchain -split '\s+')[0]
+            rustup default $name
+        }
+    }
+    Set-Alias -Name frtc -Value Select-RustupToolchain -Scope Global
 }
 #endregion rustup
 
@@ -638,7 +660,19 @@ if (Get-Command nvm -ErrorAction SilentlyContinue) {
         $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
             ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
     }
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Select-NodeVersion {
+        [CmdletBinding()]
+        param()
+        $version = nvm list 2>$null |
+            Where-Object { $_ -match '\d+\.\d+' } |
+            fzf --header 'Select Node.js version (Enter to nvm use)'
+        if ($version) {
+            $ver = ($version -replace '[^\d.]', '').Trim()
+            nvm use $ver
+        }
+    }
+    Set-Alias -Name fnv -Value Select-NodeVersion -Scope Global
 }
 #endregion nvm
 
@@ -665,7 +699,20 @@ if (Get-Command npm -ErrorAction SilentlyContinue) {
         $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
             ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
     }
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Select-NpmScript {
+        [CmdletBinding()]
+        param()
+        if (-not (Test-Path 'package.json')) {
+            Write-Warning 'No package.json in current directory'
+            return
+        }
+        $scripts = (Get-Content 'package.json' -Raw | ConvertFrom-Json).scripts.PSObject.Properties |
+            ForEach-Object { "$($_.Name)" }
+        $script = $scripts | fzf --header 'Select npm script (Enter to npm run)'
+        if ($script) { npm run $script }
+    }
+    Set-Alias -Name fns -Value Select-NpmScript -Scope Global
 }
 #endregion npm
 
@@ -692,7 +739,22 @@ if (Get-Command uv.exe -ErrorAction SilentlyContinue) {
         $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
             ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
     }
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Select-UvVenv {
+        [CmdletBinding()]
+        param([string]$SearchPath = $home)
+        $venv = Get-ChildItem -Path $SearchPath -Recurse -Depth 4 -Filter 'pyvenv.cfg' -ErrorAction SilentlyContinue |
+            Select-Object -ExpandProperty DirectoryName |
+            fzf --preview 'cat {}/pyvenv.cfg' `
+                --preview-window 'right:40%' `
+                --header 'Select Python venv to activate'
+        if ($venv) {
+            $activate = Join-Path $venv 'Scripts' 'Activate.ps1'
+            if (Test-Path $activate) { & $activate }
+            else { Write-Warning "No Activate.ps1 found in $venv" }
+        }
+    }
+    Set-Alias -Name fvenv -Value Select-UvVenv -Scope Global
 }
 #endregion uv
 
@@ -709,7 +771,17 @@ if (Get-Command chezmoi.exe -ErrorAction SilentlyContinue) {
     Set-Alias -Name cz -Value chezmoi -Scope Global
     # --- Completers ---
     chezmoi completion powershell | Out-String | Invoke-Expression
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Edit-DotFile {
+        [CmdletBinding()]
+        param()
+        $file = chezmoi managed 2>$null |
+            fzf --preview 'bat --color=always {}' `
+                --preview-window 'right:55%' `
+                --header 'Select dotfile to edit (Enter to chezmoi edit)'
+        if ($file) { chezmoi edit $file }
+    }
+    Set-Alias -Name czf -Value Edit-DotFile -Scope Global
 }
 #endregion chezmoi
 
@@ -733,7 +805,27 @@ if (Get-Command bw -ErrorAction SilentlyContinue) {
         $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
             ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
     }
-    # TODO: Fzf Pickers
+    # --- Fzf Pickers ---
+    function global:Select-BwItem {
+        [CmdletBinding()]
+        param(
+            [ValidateSet('login', 'note', 'card', 'identity', 'all')]
+            [string]$Type = 'all'
+        )
+        $bwArgs = @('list', 'items')
+        if ($Type -ne 'all') { $bwArgs += '--search'; $bwArgs += $Type }
+        $items = bw @bwArgs 2>$null | ConvertFrom-Json
+        if (-not $items) { Write-Warning 'No items found. Are you logged in? Run: bw login'; return }
+        $selected = $items | ForEach-Object { "$($_.name)`t$($_.id)" } |
+            fzf --delimiter "`t" --with-nth 1 `
+                --header 'Select vault item (Enter to copy password)'
+        if ($selected) {
+            $id = ($selected -split "`t")[1]
+            bw get password $id | Set-Clipboard
+            Write-Host 'Password copied to clipboard.' -ForegroundColor Green
+        }
+    }
+    Set-Alias -Name fbw -Value Select-BwItem -Scope Global
 }
 #endregion bitwarden
 
@@ -890,7 +982,23 @@ if (Get-Command oh-my-posh.exe -ErrorAction SilentlyContinue) {
     $Env:POSH_GIT_ENABLED = $true
     $ompConfig = Join-Path $home '.config' 'oh-my-posh' 'catpow.omp.yaml'
     oh-my-posh init pwsh --config $ompConfig | Invoke-Expression
-    # TODO: Fzf Pickers (Select-PoshTheme)
+    # --- Fzf Pickers ---
+    function global:Select-PoshTheme {
+        [CmdletBinding()]
+        param()
+        $themesPath = $Env:POSH_THEMES_PATH
+        if (-not $themesPath -or -not (Test-Path $themesPath)) { return }
+        $theme = Get-ChildItem $themesPath -Filter '*.omp.json' |
+            Select-Object -ExpandProperty Name |
+            fzf --preview "oh-my-posh print primary --config '$themesPath\{}' --shell pwsh" `
+                --preview-window 'bottom:3' `
+                --header 'Select oh-my-posh theme (Enter to apply for this session)'
+        if ($theme) {
+            oh-my-posh init pwsh --config "$themesPath\$theme" | Invoke-Expression
+            Write-Host "Applied theme: $theme (add to cli_tools_config.ps1 to persist)" -ForegroundColor Cyan
+        }
+    }
+    Set-Alias -Name fpot -Value Select-PoshTheme -Scope Global
 }
 #endregion oh-my-posh
 
