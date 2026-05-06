@@ -72,7 +72,10 @@ if (Get-Command rg.exe -ErrorAction SilentlyContinue) {
 
 #region broot  -  interactive file browser
 if (Get-Command broot.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
+    # --- XDG / Config paths ---
+    # broot respects $XDG_CONFIG_HOME on all platforms when set
+    $brootConfig = Join-Path $Env:XDG_CONFIG_HOME 'broot'
+    New-Item -ItemType Directory -Force -Path $brootConfig | Out-Null
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -182,7 +185,12 @@ if (Get-Command ntop.exe -ErrorAction SilentlyContinue) {
 
 #region winfetch  -  system info
 if (Get-Command winfetch -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
+    # --- XDG / Config paths ---
+    $Env:WINFETCH_CONFIG_PATH = Join-Path $Env:XDG_CONFIG_HOME 'winfetch' 'config.ps1'
+    $winfetchDir = Join-Path $Env:XDG_CONFIG_HOME 'winfetch'
+    if (-not (Test-Path $winfetchDir)) {
+        New-Item -ItemType Directory -Force -Path $winfetchDir | Out-Null
+    }
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -235,7 +243,13 @@ if (Get-Command docker -ErrorAction SilentlyContinue) {
 
 #region nano  -  text editor
 if (Get-Command nano.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
+    # --- XDG / Config paths ---
+    $Env:NANORC = Join-Path $Env:XDG_CONFIG_HOME 'nano' 'nanorc'
+    $nanoDir = Join-Path $Env:XDG_CONFIG_HOME 'nano'
+    if (-not (Test-Path $nanoDir)) {
+        New-Item -ItemType Directory -Force -Path $nanoDir | Out-Null
+        New-Item -ItemType File -Force -Path $Env:NANORC | Out-Null
+    }
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -244,7 +258,9 @@ if (Get-Command nano.exe -ErrorAction SilentlyContinue) {
 
 #region micro  -  modern terminal editor
 if (Get-Command micro.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
+    # --- XDG / Config paths ---
+    $Env:MICRO_CONF_DIR = Join-Path $Env:XDG_CONFIG_HOME 'micro'
+    New-Item -ItemType Directory -Force -Path $Env:MICRO_CONF_DIR | Out-Null
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -317,9 +333,7 @@ if (Get-Command zoxide.exe -ErrorAction SilentlyContinue) {
 
 #region moor  -  modern pager
 if (Get-Command moor.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
+    # PAGER and $Env:MOOR are set in Env.ps1 (PAGER detection runs early)
     # TODO: Fzf Pickers
 }
 #endregion moor
@@ -333,6 +347,8 @@ if (Get-Command less.exe -ErrorAction SilentlyContinue) {
     $lessConfigDir = Join-Path $Env:XDG_CONFIG_HOME 'less'
     New-Item -ItemType Directory -Force -Path $lessStateDir  | Out-Null
     New-Item -ItemType Directory -Force -Path $lessConfigDir | Out-Null
+    # --- Best-practice options ---
+    $Env:LESS = '--RAW-CONTROL-CHARS --quit-if-one-screen --no-init'
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -382,6 +398,9 @@ if (Get-Command winget -ErrorAction SilentlyContinue) {
 
 #region cargo  -  Rust package manager
 if (Get-Command cargo.exe -ErrorAction SilentlyContinue) {
+    # --- XDG / Config paths ---
+    # CARGO_HOME and RUSTUP_HOME are set in Env.ps1 (PATH ordering requirement)
+    # CARGO_HOME = $XDG_DATA_HOME/cargo, RUSTUP_HOME = $XDG_DATA_HOME/rustup
     # TODO: Completers
     # TODO: Fzf Pickers
 }
@@ -428,7 +447,11 @@ if (Get-Command npm -ErrorAction SilentlyContinue) {
 
 #region uv  -  fast Python package manager
 if (Get-Command uv.exe -ErrorAction SilentlyContinue) {
-    # TODO: XDG / Config paths
+    # --- XDG / Config paths ---
+    $Env:UV_CACHE_DIR = Join-Path $Env:XDG_CACHE_HOME 'uv'
+    $Env:UV_DATA_DIR  = Join-Path $Env:XDG_DATA_HOME  'uv'
+    New-Item -ItemType Directory -Force -Path $Env:UV_CACHE_DIR | Out-Null
+    New-Item -ItemType Directory -Force -Path $Env:UV_DATA_DIR  | Out-Null
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -441,6 +464,9 @@ if (Get-Command uv.exe -ErrorAction SilentlyContinue) {
 
 #region chezmoi  -  dotfile manager
 if (Get-Command chezmoi.exe -ErrorAction SilentlyContinue) {
+    # --- XDG / Config paths ---
+    $Env:CHEZMOI_CONFIG_DIR = Join-Path $Env:XDG_CONFIG_HOME 'chezmoi'
+    New-Item -ItemType Directory -Force -Path $Env:CHEZMOI_CONFIG_DIR | Out-Null
     # --- Aliases ---
     Set-Alias -Name cz -Value chezmoi -Scope Global
     # TODO: Completers
