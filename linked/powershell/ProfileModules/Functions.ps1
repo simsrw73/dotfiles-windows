@@ -8,7 +8,7 @@ function global:isAdminUser {
 
 $global:isAdmin = isAdminUser
 if ($global:isAdmin) {
-    Write-Output 'Running as Administrator'
+    Write-ProfileMsg '⚡ Administrator' -Color Cyan
 }
 
 

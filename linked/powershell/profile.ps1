@@ -88,25 +88,28 @@ foreach ($mod in @(
 
 # Weekly module update (every Friday)
 if ((Get-Date).DayOfWeek -eq 'Friday') {
-    Write-Host 'Running weekly module update...' -ForegroundColor Cyan
+    Write-ProfileMsg '⚙  Running weekly module update…'
     Update-AllModules
 }
 
 # Enable experimental features
-$experimentalFeatures = Get-ExperimentalFeature
-if ($experimentalFeatures.Name -contains 'PSFeedbackProvider') {
-    Write-Host 'Enabling experimental feature: PSFeedbackProvider'
-    Enable-ExperimentalFeature PSFeedbackProvider
+$experimentalFeature = Get-ExperimentalFeature -Name PSFeedbackProvider -ErrorAction Ignore
+if ($experimentalFeature -and -not $experimentalFeature.Enabled) {
+    Enable-ExperimentalFeature PSFeedbackProvider 3>$null
+    Write-ProfileMsg '  ⚙  PSFeedbackProvider enabled (restart to take effect)' -Level Debug
 }
 
 # oh-my-posh init moved to cli_tools_config.ps1
 
 # VS Dev Shell
-Write-Host 'Setting up MS Dev Environment... ' -ForegroundColor Green -NoNewline
 $vsWhere = "${Env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-$vsInstallationPath = & $vsWhere -products * -latest -property installationPath
-& "${vsInstallationPath}\Common7\Tools\Launch-VsDevShell.ps1" -Arch amd64 -SkipAutomaticLocation | Out-Null
-Write-Host 'Done.' -ForegroundColor Green
+if (Test-Path $vsWhere) {
+    $vsInstallationPath = & $vsWhere -products * -latest -property installationPath
+    if ($vsInstallationPath) {
+        & "${vsInstallationPath}\Common7\Tools\Launch-VsDevShell.ps1" -Arch amd64 -SkipAutomaticLocation | Out-Null
+        Write-ProfileMsg '⚙  Dev Shell ready'
+    }
+}
 
 # --- Transcript ---
 if ($Host.Name -eq 'ConsoleHost') {
@@ -128,6 +131,7 @@ if ($Host.Name -eq 'ConsoleHost') {
 
     try {
         Start-Transcript -LiteralPath $tsPath -Append -IncludeInvocationHeader -ErrorAction Stop | Out-Null
+        Write-ProfileMsg "  → Transcript: $tsPath" -Level Debug
     } catch {
         Write-Warning "Failed to start transcript: $($_.Exception.Message)"
     }
