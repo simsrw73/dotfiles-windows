@@ -6,7 +6,7 @@ $ErrorActionPreference = 'Continue'
 $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding
 
 $profileRoot = Split-Path -Parent $PROFILE
-$moduleRoot = Join-Path $profileRoot 'ProfileModules'
+$moduleRoot  = Join-Path $profileRoot 'ProfileModules'
 
 $VerbosePreference = 'SilentlyContinue' # Normal: 'SilentlyContinue', Debugging: 'Continue'
 
@@ -39,52 +39,42 @@ function global:Write-ProfileMsg {
     }
     Write-Host $Message -ForegroundColor $c
 }
-# ─────────────────────────────────────────────────────────────────────────────
 
-# ── VS Code integrated terminal: fast / lite init ───────────────────────────
+# ── DotForge config (set BEFORE Import-Module DotForge) ──────────────────────
+$DFConfig = @{
+    PackageManagerOrder = @('scoop', 'winget')
+    SkipTools           = @('lsd')  # lsd conflicts with eza — keep only one ls replacement
+}
+
+# ── VS Code integrated terminal: fast / lite init ────────────────────────────
 # Skips: oh-my-posh, VS Dev Shell, transcript, diagnostics, weekly updates.
 # Keeps: env vars, all aliases/functions, PSReadLine, fzf, tool completers.
 if ($Env:TERM_PROGRAM -eq 'vscode') {
-    $_modsOk = [System.Collections.Generic.List[string]]::new()
-    foreach ($mod in @('PSReadLine', 'PSFzf')) {
-        try {
-            Import-Module -Name $mod -ErrorAction Stop
-            $null = $_modsOk.Add($mod)
-        } catch {
-            Write-Warning "Module '$mod' failed to load: $($_.Exception.Message)"
-        }
-    }
-    if ($_modsOk.Count -gt 0) {
-        Write-ProfileMsg ("  Modules: " + (($_modsOk | ForEach-Object { "✓ $_" }) -join '  ')) -Level Debug -Color Green
-    }
+    Import-Module PSReadLine -ErrorAction SilentlyContinue
     . (Join-Path $moduleRoot 'Env.ps1')
-    Write-ProfileMsg "  Terminal: $($Env:TERM_PROGRAM ?? 'unknown')" -Level Debug
-    Write-ProfileMsg '  · Aliases.ps1' -Level Debug
     . (Join-Path $moduleRoot 'Aliases.ps1')
-    Write-ProfileMsg '  · Functions.ps1' -Level Debug
     . (Join-Path $moduleRoot 'Functions.ps1')
-    Write-ProfileMsg '  · Completers.ps1' -Level Debug
     . (Join-Path $moduleRoot 'Completers.ps1')
-    Write-ProfileMsg '  · PSReadline.ps1' -Level Debug
-    . (Join-Path $moduleRoot 'PSReadline.ps1')
-    Write-ProfileMsg '  · cli_tools_config.ps1' -Level Debug
-    . (Join-Path $moduleRoot 'cli_tools_config.ps1')
-    Write-ProfileMsg '  · Show-HelpColor.ps1' -Level Debug
+    . (Join-Path $moduleRoot 'PSReadline.ps1')  # removes Ctrl+T/R before PSFzf reclaims them
+    Import-Module DotForge -ErrorAction SilentlyContinue
+    Register-DFTool -All
+    if (Get-Module DockerCompletion -ListAvailable -ErrorAction Ignore) {
+        Import-Module DockerCompletion -ErrorAction SilentlyContinue
+    }
+    if (Get-Module PowerType -ListAvailable -ErrorAction Ignore) {
+        Import-Module PowerType -ErrorAction SilentlyContinue
+        Enable-PowerType
+    }
     . (Join-Path $moduleRoot 'Show-HelpColor.ps1')
     return
 }
-# ── Full init (standard terminals) ──────────────────────────────────────────
 
-# Import modules before dot-sourcing ProfileModules (Completers.ps1 and PSReadline.ps1 depend on these)
-# Use SilentlyContinue so a broken/missing module never aborts the profile
+# ── Full init (standard terminals) ───────────────────────────────────────────
+
+# PSReadLine must load before PSFzf (PSReadline.ps1 removes Ctrl+T/R before PSFzf reclaims them)
 $_modsOk   = [System.Collections.Generic.List[string]]::new()
 $_modsFail = [System.Collections.Generic.List[string]]::new()
-foreach ($mod in @(
-        'PSReadLine', 'PSFzf', 'powershell-yaml',
-        'Microsoft.PowerShell.SecretManagement'
-        # DockerCompletion: imported in cli_tools_config.ps1 (#region DockerCompletion)
-        # scoop-completion: handled by PSFzf -EnableAliasFuzzyScoop in cli_tools_config.ps1
-    )) {
+foreach ($mod in @('PSReadLine', 'powershell-yaml', 'Microsoft.PowerShell.SecretManagement')) {
     try {
         Import-Module -Name $mod -ErrorAction Stop
         $null = $_modsOk.Add($mod)
@@ -100,27 +90,39 @@ if ($_modsFail.Count -gt 0) {
     Write-ProfileMsg ("  Failed:  " + (($_modsFail | ForEach-Object { "· $_" }) -join '  ')) -Level Debug -Color DarkYellow
 }
 
-if ($Global:ProfileLogLevel -ge [LogLevel]::Debug) {
-    $_sshAgent = Get-Service ssh-agent -ErrorAction Ignore
-    if (-not $_sshAgent -or $_sshAgent.Status -ne 'Running') {
-        Write-ProfileMsg '  · ssh-agent not running — run: Start-Service ssh-agent (requires admin)' -Level Debug
-    }
+$_sshAgent = Get-Service ssh-agent -ErrorAction Ignore
+if (-not $_sshAgent -or $_sshAgent.Status -ne 'Running') {
+    Write-ProfileMsg '  · ssh-agent not running — run: Start-Service ssh-agent (requires admin)' -Level Debug
 }
 
 . (Join-Path $moduleRoot 'Env.ps1')
 Write-ProfileMsg "  Terminal: $($Env:TERM_PROGRAM ?? 'unknown')" -Level Debug
-Write-ProfileMsg '  · Aliases.ps1' -Level Debug
 . (Join-Path $moduleRoot 'Aliases.ps1')
-Write-ProfileMsg '  · Functions.ps1' -Level Debug
 . (Join-Path $moduleRoot 'Functions.ps1')
-Write-ProfileMsg '  · Completers.ps1' -Level Debug
 . (Join-Path $moduleRoot 'Completers.ps1')
-Write-ProfileMsg '  · PSReadline.ps1' -Level Debug
-. (Join-Path $moduleRoot 'PSReadline.ps1')
-Write-ProfileMsg '  · cli_tools_config.ps1' -Level Debug
-. (Join-Path $moduleRoot 'cli_tools_config.ps1')
-Write-ProfileMsg '  · Show-HelpColor.ps1' -Level Debug
+. (Join-Path $moduleRoot 'PSReadline.ps1')  # ← removes Ctrl+T/R before PSFzf reclaims them
+
+Import-Module DotForge -ErrorAction SilentlyContinue
+Register-DFTool -All  # ← PSFzf companion reclaims Ctrl+T/R, posh-git and zoxide are initialized here
+
+if (Get-Module DockerCompletion -ListAvailable -ErrorAction Ignore) {
+    Import-Module DockerCompletion -ErrorAction SilentlyContinue
+}
+if (Get-Module PowerType -ListAvailable -ErrorAction Ignore) {
+    Import-Module PowerType -ErrorAction SilentlyContinue
+    Enable-PowerType
+}
+
 . (Join-Path $moduleRoot 'Show-HelpColor.ps1')
+
+# Prompt: oh-my-posh (standard terminals only)
+if (Get-Command oh-my-posh -ErrorAction Ignore) {
+    $Env:POSH_GIT_ENABLED = $true
+    $ompConfig = Join-Path $HOME '.config' 'oh-my-posh' 'catpow.omp.yaml'
+    if (Test-Path $ompConfig) {
+        oh-my-posh init pwsh --config $ompConfig | Invoke-Expression
+    }
+}
 
 # Weekly module update (every Friday)
 if ((Get-Date).DayOfWeek -eq 'Friday') {
@@ -135,23 +137,21 @@ if ($experimentalFeature -and -not $experimentalFeature.Enabled) {
     Write-ProfileMsg '  ⚙  PSFeedbackProvider enabled (restart to take effect)' -Level Debug
 }
 
-# oh-my-posh init moved to cli_tools_config.ps1
-
 # VS Dev Shell
 $vsWhere = "${Env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
 if (Test-Path $vsWhere) {
     $vsInstallationPath = & $vsWhere -products * -latest -property installationPath
     if ($vsInstallationPath) {
         & "${vsInstallationPath}\Common7\Tools\Launch-VsDevShell.ps1" -Arch amd64 -SkipAutomaticLocation | Out-Null
-        Write-ProfileMsg '⚙  Dev Shell ready'
+        Write-ProfileMsg '⚙  VS Dev Shell ready'
     }
 }
 
-# --- Transcript ---
+# Transcript
 if ($Host.Name -eq 'ConsoleHost') {
-    $myDocuments = [Environment]::GetFolderPath('MyDocuments')
+    $myDocuments    = [Environment]::GetFolderPath('MyDocuments')
     $TranscriptRoot = Join-Path $myDocuments 'PowerShell.Transcripts'
-    $RetentionDays = 7
+    $RetentionDays  = 7
 
     if (-not (Test-Path $TranscriptRoot)) {
         New-Item -Path $TranscriptRoot -ItemType Directory -Force | Out-Null
@@ -175,11 +175,9 @@ if ($Host.Name -eq 'ConsoleHost') {
     # Prune transcripts older than $RetentionDays
     try {
         $cutoff = (Get-Date).AddDays(-$RetentionDays)
-
         Get-ChildItem -Path $TranscriptRoot -Recurse -File -ErrorAction SilentlyContinue |
             Where-Object { $_.LastWriteTime -lt $cutoff } |
             Remove-Item -Force -ErrorAction SilentlyContinue
-
         Get-ChildItem -Path $TranscriptRoot -Directory -ErrorAction SilentlyContinue |
             Where-Object { -not (Get-ChildItem -Path $_.FullName -Recurse -File -ErrorAction SilentlyContinue) } |
             Remove-Item -Force -Recurse -ErrorAction SilentlyContinue

@@ -1,6 +1,6 @@
 # PowerShell Profile
 
-Personal PowerShell 7+ profile for Windows 11. The profile is split across a main entry point and dot-sourced module files.
+Personal PowerShell 7+ profile for Windows 11. The profile is split across a main entry point and dot-sourced module files. CLI tool configuration is handled by the **DotForge** module (`~/projects/DotForge`).
 
 ## Structure
 
@@ -10,117 +10,114 @@ Documents/PowerShell/
 └── ProfileModules/
     ├── Env.ps1              # Profile-wide env vars (XDG dirs, PATH, PAGER, EDITOR)
     ├── Aliases.ps1          # Non-tool aliases (printenv, touch, rmrf, ssh-copy-id)
-    ├── Functions.ps1        # Non-tool utilities (isAdmin, Update-AllModules, Show-*, cd...)
+    ├── Functions.ps1        # Non-tool utilities (Test-AdminRole, Update-AllModules, Show-*, cd...)
     ├── Completers.ps1       # Microsoft.WinGet.CommandNotFound import (guarded)
     ├── PSReadline.ps1       # PSReadLine options and key handlers
-    ├── cli_tools_config.ps1 # Per-tool config: XDG paths, aliases, completers, fzf pickers
     └── Show-HelpColor.ps1   # Show-HelpColor function + shc alias
 ```
 
 `profile.ps1` has two code paths:
 
 - **VS Code fast-path** (top of file): detected via `$Env:TERM_PROGRAM -eq 'vscode'`. Imports
-  only PSReadLine+PSFzf, dot-sources all ProfileModules files, returns early — skips VS Dev
-  Shell, transcript, diagnostics, and weekly module updates.
+  PSReadLine, dot-sources ProfileModules, runs `Register-DFTool -All`, returns early — skips
+  oh-my-posh, VS Dev Shell, transcript, and weekly module updates.
 - **Full init** (remainder of file): standard terminals get the complete startup sequence.
 
-## cli_tools_config.ps1
+## DotForge
 
-The central file for all CLI tool configuration. Organized by tool — each tool has one
-`#region`/`#endregion` block containing its XDG paths, functions, aliases, argument completers,
-and fzf picker functions. ~1050 lines, 50 tool sections.
-
-**Dot-source order:**
-
-```
-Env.ps1 → Aliases.ps1 → Functions.ps1 → Completers.ps1 → PSReadline.ps1 → cli_tools_config.ps1 → Show-HelpColor.ps1
-```
-
-PSReadline.ps1 must precede cli_tools_config.ps1 so PSReadLine removes its default Ctrl+T/R
-bindings before PSFzf reclaims them.
-
-**Section template:**
+All CLI tool configuration (XDG paths, aliases, completers, fzf pickers) is handled by the
+DotForge module at `~/projects/DotForge`. The profile calls:
 
 ```powershell
-#region toolname  -  description
-if (Get-Command toolname.exe -ErrorAction Ignore) {
-    # --- XDG / Config paths ---
-    $Env:TOOL_CONFIG = Join-Path $Env:XDG_CONFIG_HOME 'tool'
-    # --- Functions / Aliases ---
-    function global:Verb-Noun { ... }
-    Set-Alias -Name shortcut -Value Verb-Noun -Scope Global
-    # --- Completers ---
-    toolname completion powershell | Out-String | Invoke-Expression
-    # --- Fzf Pickers ---
-    function global:Select-Something { ... | fzf ... }
-    Set-Alias -Name fxx -Value Select-Something -Scope Global
+$DFConfig = @{
+    PackageManagerOrder = @('scoop', 'winget')
+    SkipTools           = @('lsd')
 }
-#endregion toolname
+Import-Module DotForge
+Register-DFTool -All
 ```
 
-**Guard rules:**
+DotForge reads `~/projects/DotForge/Tools/*.json` records and processes each installed tool.
+Per-tool companion scripts at `Tools/<name>.ps1` handle complex initialization:
 
-- CLI tools: `Get-Command toolname -ErrorAction Ignore` — use `Ignore` (not `SilentlyContinue`)
-  to prevent entries appearing in `$Error` when optional tools are absent
-- PS modules: `if (Get-Module -Name ModName)` — checks if **loaded**, not just installed;
-  `Set-PsFzfOption` and similar cmdlets require the module to be imported
+| Companion       | Purpose                                           |
+| --------------- | ------------------------------------------------- |
+| `PSFzf.ps1`     | Import-Module PSFzf + Set-PsFzfOption calls       |
+| `posh-git.ps1`  | Import-Module posh-git + fzf pickers              |
+| `Terminal-Icons.ps1` | Import-Module Terminal-Icons                 |
+| `zoxide.ps1`    | zoxide init invocation + cd alias (AllScope)      |
+| `oh-my-posh.ps1`| fpot theme picker                                 |
+| `ripgrep.ps1`   | frg interactive code search                       |
+| `procs.ps1`     | fkill fuzzy process kill                          |
+| `winget.ps1`    | wins/wrm install/uninstall pickers                |
+
+**Dot-source order in profile.ps1:**
+
+```
+Env.ps1 → Aliases.ps1 → Functions.ps1 → Completers.ps1 → PSReadline.ps1
+  → Import-Module DotForge → Register-DFTool -All → Show-HelpColor.ps1
+```
+
+PSReadline.ps1 must precede `Register-DFTool` so PSReadLine removes its default Ctrl+T/R
+bindings before PSFzf's companion reclaims them.
 
 ## Key Tools & Modules
 
 | Tool           | Purpose                  | Config location                                                                    |
 | -------------- | ------------------------ | ---------------------------------------------------------------------------------- |
-| oh-my-posh     | Prompt theme             | `~/.config/oh-my-posh/catpow.omp.yaml`; skipped in VS Code terminal                |
+| oh-my-posh     | Prompt theme             | `~/.config/oh-my-posh/catpow.omp.yaml`; initialized in profile.ps1 (standard terminals only) |
 | PSReadLine     | Input experience         | `PSReadline.ps1`                                                                   |
-| PSFzf          | Fuzzy finder integration | `cli_tools_config.ps1` #region PSFzf                                               |
-| eza            | Modern ls replacement    | `cli_tools_config.ps1` #region eza; ls/ll/la/tree aliases                          |
-| bat            | Modern cat replacement   | `cli_tools_config.ps1` #region bat; cat alias                                      |
-| zoxide         | Smart cd                 | `cli_tools_config.ps1` #region zoxide; cd alias                                    |
-| fzf            | Fuzzy finder             | `cli_tools_config.ps1` #region fzf; Catppuccin Mocha                               |
-| posh-git       | Git prompt info          | `cli_tools_config.ps1` #region posh-git                                            |
-| Terminal-Icons | File icons in terminal   | `cli_tools_config.ps1` #region Terminal-Icons (⚠ v0.11.0 has a bug — pin to 0.9.0) |
-| scoop          | Package manager          | `cli_tools_config.ps1` #region scoop; sstat/supd                                   |
-| winget         | Package manager          | `cli_tools_config.ps1` #region winget; wstat/wupd                                  |
-| gsudo          | Elevation                | `cli_tools_config.ps1` #region gsudo                                               |
-| chezmoi        | Dotfile manager          | `cli_tools_config.ps1` #region chezmoi; cz alias                                   |
+| PSFzf          | Fuzzy finder integration | DotForge `Tools/PSFzf.ps1` companion                                               |
+| eza            | Modern ls replacement    | DotForge `Tools/eza.json`; ls/ll/la/tree aliases                                   |
+| bat            | Modern cat replacement   | DotForge `Tools/bat.json`; cat alias                                               |
+| zoxide         | Smart cd                 | DotForge `Tools/zoxide.json` + `zoxide.ps1` companion; cd alias                   |
+| fzf            | Fuzzy finder             | DotForge `Tools/fzf.json`; Catppuccin Mocha colors                                 |
+| posh-git       | Git prompt info          | DotForge `Tools/posh-git.json` + `posh-git.ps1` companion                         |
+| Terminal-Icons | File icons in terminal   | DotForge `Tools/Terminal-Icons.json` + companion (⚠ pin to v0.9.0 — v0.11.0 bug) |
+| scoop          | Package manager          | DotForge `Tools/scoop.json`; sstat/supd                                            |
+| winget         | Package manager          | DotForge `Tools/winget.json` + `winget.ps1` companion; wstat/wupd                  |
+| gsudo          | Elevation                | DotForge `Tools/gsudo.json`                                                        |
+| chezmoi        | Dotfile manager          | DotForge `Tools/chezmoi.json`; cz alias                                            |
 | moor/bat/less  | Pager                    | `Env.ps1` pager detection; $PAGER set accordingly                                  |
+| DockerCompletion | Docker tab completions | Inline in profile.ps1 (not in DotForge registry)                                  |
+| PowerType      | AI tab completions       | Inline in profile.ps1 (not in DotForge registry)                                  |
 
-## Fzf Picker Functions (22 total)
+## Fzf Picker Functions
 
-All defined in `cli_tools_config.ps1` alongside their tool's section. Pattern: `Select-Verb-Noun`
-PowerShell name + short alias.
+Pickers are defined in DotForge companion scripts or declaratively in JSON records.
+Pattern: `Select-Verb-Noun` PowerShell name + short alias.
 
-| Alias    | Function                 | Tool       | Purpose                       |
-| -------- | ------------------------ | ---------- | ----------------------------- |
-| `ff`     | `Select-File`            | eza+bat    | Browse files with bat preview |
-| `fcd`    | `Select-Directory`       | zoxide     | Fuzzy cd from zoxide history  |
-| `fco`    | `Select-GitBranch`       | posh-git   | Fuzzy branch checkout         |
-| `flog`   | `Select-GitLog`          | posh-git   | Browse commit log with diff   |
-| `fga`    | `Select-GitFile`         | git        | Stage files interactively     |
-| `fstash` | `Select-GitStash`        | git        | Fuzzy stash apply/drop        |
-| `fkill`  | `Select-Process`         | procs      | Fuzzy kill process            |
-| `sins`   | `Select-ScoopPackage`    | sfsu/scoop | Search + install package      |
-| `srm`    | `Remove-ScoopPackage`    | scoop      | Pick installed → uninstall    |
-| `wins`   | `Select-WingetPackage`   | winget     | Search + install package      |
-| `wrm`    | `Remove-WingetPackage`   | winget     | Pick installed → uninstall    |
-| `frg`    | `Select-RipgrepResult`   | rg+fzf     | Interactive code search       |
-| `ffd`    | `Select-FdResult`        | fd+fzf     | Interactive file find         |
-| `fjq`    | `Select-JsonPath`        | jq+fzf     | Interactive JSON filter       |
-| `fkill`  | `Select-Process`         | procs      | Fuzzy process kill            |
-| `fgl`    | `Read-MarkdownFile`      | glow       | Pick + render markdown        |
-| `fbw`    | `Select-BwItem`          | bitwarden  | Fuzzy vault lookup            |
-| `czf`    | `Edit-DotFile`           | chezmoi    | Pick managed file to edit     |
-| `fpot`   | `Select-PoshTheme`       | oh-my-posh | Preview + apply theme         |
-| `fnv`    | `Select-NodeVersion`     | nvm        | Fuzzy switch Node version     |
-| `fns`    | `Select-NpmScript`       | npm        | Run npm script from picker    |
-| `frtc`   | `Select-RustupToolchain` | rustup     | Fuzzy toolchain switch        |
-| `fvenv`  | `Select-UvVenv`          | uv         | Pick + activate Python venv   |
+| Alias    | Function                 | Source                      | Purpose                       |
+| -------- | ------------------------ | --------------------------- | ----------------------------- |
+| `ff`     | `Select-File`            | `eza.json` declarative      | Browse files with bat preview |
+| `fcd`    | `Select-Directory`       | `zoxide.json` declarative   | Fuzzy cd from zoxide history  |
+| `fco`    | `Select-GitBranch`       | `posh-git.ps1`              | Fuzzy branch checkout         |
+| `flog`   | `Select-GitLog`          | `posh-git.ps1`              | Browse commit log with diff   |
+| `fga`    | `Select-GitFile`         | `posh-git.ps1`              | Stage files interactively     |
+| `fstash` | `Select-GitStash`        | `posh-git.ps1`              | Fuzzy stash apply/drop        |
+| `fkill`  | `Select-Process`         | `procs.ps1`                 | Fuzzy kill process            |
+| `sins`   | `Select-ScoopPackage`    | `scoop.json` declarative    | Search + install package      |
+| `srm`    | `Remove-ScoopPackage`    | `scoop.json` declarative    | Pick installed → uninstall    |
+| `wins`   | `Select-WingetPackage`   | `winget.ps1`                | Search + install package      |
+| `wrm`    | `Remove-WingetPackage`   | `winget.ps1`                | Pick installed → uninstall    |
+| `frg`    | `Select-RipgrepResult`   | `ripgrep.ps1`               | Interactive code search       |
+| `ffd`    | `Select-FdResult`        | `fd.json` declarative       | Interactive file find         |
+| `fjq`    | `Select-JsonPath`        | `jq.json` declarative       | Interactive JSON filter       |
+| `fgl`    | `Read-MarkdownFile`      | `glow.json` declarative     | Pick + render markdown        |
+| `fbw`    | `Select-BwItem`          | `bitwarden.json` declarative| Fuzzy vault lookup            |
+| `czf`    | `Edit-DotFile`           | `chezmoi.json` declarative  | Pick managed file to edit     |
+| `fpot`   | `Select-PoshTheme`       | `oh-my-posh.ps1`            | Preview + apply theme         |
+| `fnv`    | `Select-NodeVersion`     | `nvm.json` declarative      | Fuzzy switch Node version     |
+| `fns`    | `Select-NpmScript`       | `npm.json` declarative      | Run npm script from picker    |
+| `frtc`   | `Select-RustupToolchain` | `rustup.json` declarative   | Fuzzy toolchain switch        |
+| `fvenv`  | `Select-UvVenv`          | `uv.json` declarative       | Pick + activate Python venv   |
 
 ## Theme
 
 Everything uses **Catppuccin Mocha** consistently:
 
 - PSReadLine syntax colors: set in `PSReadline.ps1`
-- FZF: `$FZF_DEFAULT_OPTS` color string in `cli_tools_config.ps1` #region fzf
+- FZF: `$FZF_DEFAULT_OPTS` color string in DotForge `Tools/fzf.json`
 - oh-my-posh: `catpow.omp.yaml` (custom theme)
 - bat: `~/.config/bat/bat.conf`
 
@@ -129,39 +126,45 @@ Everything uses **Catppuccin Mocha** consistently:
 ```
 ~/.config/     → $Env:XDG_CONFIG_HOME   (bat, ripgrep, glow, wget, curl, nano, chezmoi, gnupg, oh-my-posh, glazewm, komorebi)
 ~/.local/share → $Env:XDG_DATA_HOME    (rustup, cargo, python, zoxide, nvm, node, uv)
-~/.local/state → $Env:XDG_STATE_HOME   (less history)
-~/.cache/      → $Env:XDG_CACHE_HOME   (python pycache, uv cache)
+~/.local/state → $Env:XDG_STATE_HOME   (ps_history, less history)
+~/.cache/      → $Env:XDG_CACHE_HOME   (python pycache, uv cache, ps-completions)
 ~/scripts/     → added to $PATH
 ```
 
-XDG env vars for each tool are set inside that tool's `#region` in `cli_tools_config.ps1`,
-not in `Env.ps1` (Env.ps1 only sets the four base XDG dirs and PATH additions that must
-be available before cli_tools_config.ps1 loads).
+XDG env vars for each tool are set by DotForge's `Register-DFTool` processing the `xdg.vars`
+field in each tool's JSON record. `Env.ps1` only sets the four base XDG dirs and PATH additions
+that must be available before DotForge loads.
 
 ## Startup Behavior
 
 **VS Code terminal (fast-path):**
 
 1. Detects `$Env:TERM_PROGRAM -eq 'vscode'`
-2. Imports PSReadLine + PSFzf
-3. Dot-sources all ProfileModules (including cli_tools_config.ps1)
-4. Returns — skips everything below
+2. Imports PSReadLine
+3. Dot-sources Env, Aliases, Functions, Completers, PSReadline modules
+4. `Import-Module DotForge; Register-DFTool -All`
+5. Imports DockerCompletion, PowerType (if installed)
+6. Dot-sources Show-HelpColor
+7. Returns — skips everything below
 
 **Standard terminal (full init):**
 
-1. Detects terminal type, sets `$Env:TERM_PROGRAM` and `$isVSCodeTerm`
-2. Imports modules: PSReadLine, PSFzf, powershell-yaml, Microsoft.PowerShell.SecretManagement
-3. Dot-sources all ProfileModules
-4. Runs startup diagnostics (shell info, terminal size)
-5. On Fridays: runs `Update-AllModules`
-6. Enables PSFeedbackProvider experimental feature if available
-7. Initializes VS Dev Shell via vswhere
-8. Starts transcript (saved to `~/Documents/PowerShell.Transcripts/YYYY-MM-DD/`)
+1. Imports PSReadLine, powershell-yaml, Microsoft.PowerShell.SecretManagement
+2. SSH agent status check (Debug level)
+3. Dot-sources Env, Aliases, Functions, Completers, PSReadline modules
+4. `Import-Module DotForge; Register-DFTool -All`
+5. Imports DockerCompletion, PowerType (if installed)
+6. Dot-sources Show-HelpColor
+7. Initializes oh-my-posh prompt
+8. On Fridays: runs `Update-AllModules`
+9. Enables PSFeedbackProvider experimental feature if available
+10. Initializes VS Dev Shell via vswhere
+11. Starts transcript (saved to `~/Documents/PowerShell.Transcripts/YYYY-MM-DD/`)
 
 ## Admin / Elevation
 
-`$isAdmin` is set at startup via `isAdminUser` in `Functions.ps1`. `gsudo` (via gsudoModule)
-provides elevation. `ssh-copy-id` alias wraps `Copy-SSHID`.
+`$Global:IsAdmin` is set at startup via `Test-AdminRole` in `Functions.ps1`. `gsudo` (via
+gsudoModule) provides elevation. `ssh-copy-id` alias wraps `Copy-SSHID`.
 
 ## Tools
 
@@ -170,6 +173,4 @@ provides elevation. `ssh-copy-id` alias wraps `Copy-SSHID`.
 
 ## Known TODOs
 
-- Move PSReadLine history and transcript files to `$XDG_STATE_HOME`
-- Create an install script that bootstraps the profile on a new machine (clone repo, install PS modules, install scoop tools)
 - Terminal-Icons 0.11.0 generates corrupt CliXml theme files — pin to 0.9.0 as a workaround
