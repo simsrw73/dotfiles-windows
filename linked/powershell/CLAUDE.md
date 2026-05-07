@@ -166,6 +166,7 @@ provides elevation. `ssh-copy-id` alias wraps `Copy-SSHID`.
 ## Tools
 
 - Always use Context7 MCP for library docs without me asking
+- git add/git commit at logical milestones
 
 ## Known TODOs
 
