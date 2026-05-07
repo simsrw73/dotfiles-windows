@@ -10,4 +10,4 @@ Set-Alias -Name ssh-copy-id -Value Copy-SSHID       -Scope Global
 
 # Note: ls/ll/la/tree aliases are set in Functions.ps1 alongside the eza function definitions
 
-Set-Alias -Name rp -Value Reload-Profile -Scope Global
+Set-Alias -Name rp -Value Reload-Profile -Scope Global -Force
