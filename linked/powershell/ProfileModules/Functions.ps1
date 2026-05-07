@@ -1,13 +1,13 @@
 #Requires -Version 7.0
 
-function global:isAdminUser {
-    $wi = [Security.Principal.WindowsIdentity]::GetCurrent()
-    $wp = New-Object Security.Principal.WindowsPrincipal($wi)
-    $wp.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+function global:Test-AdminRole {
+    $identity  = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = [Security.Principal.WindowsPrincipal]::new($identity)
+    $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
-$global:isAdmin = isAdminUser
-if ($global:isAdmin) {
+$Global:IsAdmin = Test-AdminRole
+if ($Global:IsAdmin) {
     Write-ProfileMsg '⚡ Administrator' -Color Cyan
 }
 
@@ -48,7 +48,7 @@ function global:Update-AllModules {
         $i++
         $scope = if ($module.InstalledLocation -like "*$env:USERPROFILE*") { 'CurrentUser' } else { 'AllUsers' }
 
-        if ($scope -eq 'AllUsers' -and -not $global:isAdmin) {
+        if ($scope -eq 'AllUsers' -and -not $Global:IsAdmin) {
             Write-Host "  · [$i/$total] $($module.Name) — needs admin" -ForegroundColor DarkYellow
             continue
         }
@@ -97,24 +97,38 @@ function global:Show-Path {
     Write-Output $Env:Path.Split(';')
 }
 
-function global:New-File($filename) {
-    Write-Output $null | Out-File $filename -Encoding utf8
+function global:New-File {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)][string]$Name)
+    if (-not (Test-Path $Name)) {
+        New-Item -ItemType File -Path $Name | Out-Null
+    }
 }
 
 function global:Remove-All {
-    Remove-Item -Force -Recurse $args
+    [CmdletBinding()]
+    param([Parameter(Mandatory, ValueFromRemainingArguments)][string[]]$Path)
+    Remove-Item -Force -Recurse @Path
 }
 
 function global:Get-PubIP {
-    (Invoke-WebRequest http://ifconfig.me/ip).Content
+    [CmdletBinding()]
+    param()
+    try {
+        (Invoke-WebRequest 'https://ifconfig.me/ip' -UseBasicParsing).Content.Trim()
+    } catch {
+        Write-Warning "Could not reach ifconfig.me: $($_.Exception.Message)"
+    }
 }
 
-function global:Copy-SSHID($dest) {
+function global:Copy-SSHID {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)][string]$Destination)
     try {
-        Get-Content $Env:USERPROFILE\.ssh\id_rsa.pub | ssh $dest 'mkdir ~/.ssh; cat >> ~/.ssh/authorized_keys'
+        Get-Content "$Env:USERPROFILE\.ssh\id_rsa.pub" |
+            ssh $Destination 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'
     } catch {
-        Write-Warning "Error copying key to $dest"
-        Write-Host $_
+        Write-Warning "Error copying key to $Destination`: $($_.Exception.Message)"
     }
 }
 

@@ -1,7 +1,6 @@
 #Requires -Version 7.0
 
-Set-PSReadLineOption -EditMode Windows
-Set-PSReadLineOption -HistorySearchCursorMovesToEnd
+Set-PSReadLineOption -EditMode Windows -HistorySearchCursorMovesToEnd
 try {
     # PredictionSource and ListView require a real VT-capable terminal
     Set-PSReadLineOption -PredictionSource HistoryAndPlugin
@@ -46,41 +45,6 @@ $catppuccinMochaTheme = @{
 
 $catppuccin = $catppuccinMochaTheme
 
-$catppuccinSyntaxTheme2 = @{
-    Command            = $catppuccin.Green
-    Comment            = $catppuccin.Surface2
-    ContinuationPrompt = $catppuccin.Text
-    Default            = $catppuccin.Text
-    Emphasis           = $catppuccin.Yellow
-    Error              = $catppuccin.Red
-    Keyword            = $catppuccin.Green
-    Member             = $catppuccin.Blue
-    Number             = $catppuccin.Peach
-    Operator           = $catppuccin.Sky
-    Parameter          = $catppuccin.Pink
-    String             = $catppuccin.Lavender
-    Type               = $catppuccin.Blue
-    Variable           = $catppuccin.Flamingo
-}
-
-$catppuccinSyntaxTheme3 = @{
-    Command            = $catppuccin.Blue
-    Comment            = $catppuccin.Blue
-    ContinuationPrompt = $catppuccin.Yellow
-    Default            = $catppuccin.Text
-    Emphasis           = $catppuccin.Yellow
-    Error              = $catppuccin.Red
-    Keyword            = $catppuccin.Red
-    Member             = $catppuccin.Lavender
-    Number             = $catppuccin.Peach
-    Operator           = $catppuccin.Sky
-    Parameter          = $catppuccin.Pink
-    Selection          = $catppuccin.Surface2
-    String             = $catppuccin.Green
-    Type               = $catppuccin.Peach
-    Variable           = $catppuccin.Flamingo
-}
-
 $catppuccinSyntaxTheme = @{
     Command            = $catppuccin.Blue
     Comment            = $catppuccin.Overlay0
@@ -102,8 +66,9 @@ $catppuccinSyntaxTheme = @{
 Set-PSReadLineOption -Colors $catppuccinSyntaxTheme
 
 # History — XDG path, deduplication, sensible limit
-$_psHistoryPath = Join-Path $Env:XDG_STATE_HOME 'ps_history.txt'
-New-Item -ItemType Directory -Force -Path $Env:XDG_STATE_HOME | Out-Null
-Set-PSReadLineOption -HistorySavePath   $_psHistoryPath
-Set-PSReadLineOption -MaximumHistoryCount 10000
-Set-PSReadLineOption -HistoryNoDuplicates $true
+$psrlHistoryOpts = @{
+    HistorySavePath     = Join-Path $Env:XDG_STATE_HOME 'ps_history.txt'
+    MaximumHistoryCount = 10000
+    HistoryNoDuplicates = $true
+}
+Set-PSReadLineOption @psrlHistoryOpts

@@ -1,5 +1,24 @@
 #Requires -Version 7.0
 
+# ── PATH helper ────────────────────────────────────────────────────────────────
+function script:Add-ToPath {
+    param([string]$Dir, [switch]$Prepend)
+    if (-not $Dir) { return }
+    if (-not [IO.Path]::IsPathRooted($Dir)) {
+        Write-Warning "Add-ToPath: '$Dir' is not an absolute path — skipped."
+        return
+    }
+    $normalized = [IO.Path]::GetFullPath($Dir)
+    $existing = ($Env:Path -split [IO.Path]::PathSeparator) |
+        Where-Object { $_ -and [IO.Path]::IsPathRooted($_) } |
+        ForEach-Object { try { [IO.Path]::GetFullPath($_) } catch { $_ } }
+    if ($normalized -notin $existing) {
+        if ($Prepend) { $Env:Path = $normalized + [IO.Path]::PathSeparator + $Env:Path }
+        else          { $Env:Path += [IO.Path]::PathSeparator + $normalized }
+    }
+}
+# ─────────────────────────────────────────────────────────────────────────────
+
 # Editor
 $env:EDITOR     = 'code --wait'   # wait for VS Code tab to close (needed by git, etc.)
 $env:VISUAL     = 'code --wait'   # POSIX tools that prefer VISUAL over EDITOR
@@ -14,31 +33,25 @@ if (-not $Env:TERM_PROGRAM) {
 }
 
 # XDG Base Directory
-$Env:XDG_CONFIG_HOME = Join-Path -Path $home -ChildPath '.config'
-$Env:XDG_DATA_HOME = Join-Path -Path $home -ChildPath '.local' 'share'
-$Env:XDG_STATE_HOME = Join-Path -Path $home -ChildPath '.local' 'state'
-$Env:XDG_CACHE_HOME = Join-Path -Path $home -ChildPath '.cache'
+$Env:XDG_CONFIG_HOME = Join-Path $home '.config'
+$Env:XDG_DATA_HOME   = Join-Path $home '.local' 'share'
+$Env:XDG_STATE_HOME  = Join-Path $home '.local' 'state'
+$Env:XDG_CACHE_HOME  = Join-Path $home '.cache'
+New-Item -ItemType Directory -Force -Path $Env:XDG_STATE_HOME -ErrorAction SilentlyContinue | Out-Null
 
 # PATH: personal scripts
-$_scripts = Join-Path $home 'scripts'
-if ($Env:Path -split [IO.Path]::PathSeparator -notcontains $_scripts) {
-    $Env:Path += [IO.Path]::PathSeparator + $_scripts
-}
+Add-ToPath (Join-Path $home 'scripts')
 
 # Rust / Cargo — kept in Env.ps1 because PATH must be set before cli_tools_config.ps1
 $Env:RUSTUP_HOME = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'rustup'
 $Env:CARGO_HOME = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'cargo'
-$_cargoBin = Join-Path $Env:CARGO_HOME 'bin'
-if ($Env:Path -split [IO.Path]::PathSeparator -notcontains $_cargoBin) {
-    $Env:Path += [IO.Path]::PathSeparator + $_cargoBin
-}
+Add-ToPath (Join-Path $Env:CARGO_HOME 'bin')
 
 # Python
 if (Get-Command python -ErrorAction Ignore) {
-    $pythonScriptsPath = python -c "import sysconfig; print(sysconfig.get_path('scripts'))" 2>$null
-    if ($pythonScriptsPath -and ($env:Path -split [IO.Path]::PathSeparator -notcontains $pythonScriptsPath)) {
-        $env:Path = "$pythonScriptsPath;$env:Path"
-    }
+    $pythonScripts = python -c "import sysconfig; print(sysconfig.get_path('scripts'))" 2>$null
+    if ($LASTEXITCODE -ne 0) { $pythonScripts = $null }
+    if ($pythonScripts) { Add-ToPath $pythonScripts -Prepend }
 }
 $Env:PYTHONPYCACHEPREFIX = Join-Path -Path $Env:XDG_CACHE_HOME -ChildPath 'python'
 $Env:PYTHONUSERBASE = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'python'
@@ -51,10 +64,7 @@ $Env:PYTHONUSERBASE = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'python'
 # GOPATH=$XDG_DATA_HOME/go
 
 # Other tool paths
-$_pulsarBin = Join-Path $env:LOCALAPPDATA 'Programs' 'Pulsar'
-if ($Env:Path -split [IO.Path]::PathSeparator -notcontains $_pulsarBin) {
-    $Env:Path += [IO.Path]::PathSeparator + $_pulsarBin
-}
+Add-ToPath (Join-Path $env:LOCALAPPDATA 'Programs' 'Pulsar')
 $Env:GNUPGHOME = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'gnupg'
 
 # Pager
