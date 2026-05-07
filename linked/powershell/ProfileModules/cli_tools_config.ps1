@@ -37,22 +37,17 @@ function script:_GetCachedCompletion {
     )
     $cacheDir  = Join-Path $Env:XDG_CACHE_HOME 'ps-completions'
     $cacheFile = Join-Path $cacheDir "$CacheKey.ps1"
-    $needsRegen = $true
+    $cacheItem = Get-Item $cacheFile -ErrorAction Ignore
+    $exeItem   = Get-Item $ExePath   -ErrorAction Ignore
 
-    if (Test-Path $cacheFile) {
-        $exe = Get-Item $ExePath -ErrorAction Ignore
-        if ($exe -and (Get-Item $cacheFile).LastWriteTime -gt $exe.LastWriteTime) {
-            $needsRegen = $false
-        }
-    }
-
-    if ($needsRegen) {
+    if (-not ($cacheItem -and $exeItem -and $cacheItem.LastWriteTime -gt $exeItem.LastWriteTime)) {
         New-Item -ItemType Directory -Force -Path $cacheDir | Out-Null
         $content = & $Generate
         if ($content) { Set-Content -Path $cacheFile -Value $content -Encoding UTF8 }
+        $cacheItem = Get-Item $cacheFile -ErrorAction Ignore
     }
 
-    if (Test-Path $cacheFile) { . $cacheFile }
+    if ($cacheItem) { . $cacheFile }
 }
 
 # ==============================================================================
@@ -793,7 +788,7 @@ if (_HasCmd 'npm' -Exe 'npm') {
 #region gh  -  GitHub CLI
 if (_HasCmd 'gh') {
     # --- Completers ---
-    gh completion -s powershell | Out-String | Invoke-Expression
+    _GetCachedCompletion 'gh' (Get-Command gh.exe).Path { gh completion -s powershell }
 
     # --- Fzf Pickers ---
     function global:Select-GHPr {

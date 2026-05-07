@@ -36,7 +36,7 @@ if ($Env:Path -split [IO.Path]::PathSeparator -notcontains $_cargoBin) {
 # Python
 if (Get-Command python -ErrorAction Ignore) {
     $pythonScriptsPath = python -c "import sysconfig; print(sysconfig.get_path('scripts'))" 2>$null
-    if ($pythonScriptsPath -and ($env:Path -split ';' -notcontains $pythonScriptsPath)) {
+    if ($pythonScriptsPath -and ($env:Path -split [IO.Path]::PathSeparator -notcontains $pythonScriptsPath)) {
         $env:Path = "$pythonScriptsPath;$env:Path"
     }
 }
@@ -51,7 +51,10 @@ $Env:PYTHONUSERBASE = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'python'
 # GOPATH=$XDG_DATA_HOME/go
 
 # Other tool paths
-$Env:Path += [IO.Path]::PathSeparator + (Join-Path $env:LOCALAPPDATA 'Programs' 'Pulsar')
+$_pulsarBin = Join-Path $env:LOCALAPPDATA 'Programs' 'Pulsar'
+if ($Env:Path -split [IO.Path]::PathSeparator -notcontains $_pulsarBin) {
+    $Env:Path += [IO.Path]::PathSeparator + $_pulsarBin
+}
 $Env:GNUPGHOME = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'gnupg'
 
 # Pager
@@ -65,13 +68,6 @@ if (Get-Command moor.exe -ErrorAction Ignore) {
 } else {
     $Env:PAGER = 'more'
 }
-
-# bat config moved to cli_tools_config.ps1
-
-# POSH_GIT_ENABLED moved to cli_tools_config.ps1
-
-# fzf config moved to cli_tools_config.ps1
-# zoxide config moved to cli_tools_config.ps1
 
 # Window manager configs
 $Env:KOMOREBI_CONFIG_HOME = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'komorebi'

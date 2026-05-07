@@ -125,5 +125,5 @@ function global:Reload-Profile {
 
 function global:Measure-Profile {
     $t = Measure-Command { . $PROFILE }
-    Write-Host "Profile load: $([math]::Round($t.TotalMilliseconds))ms" -ForegroundColor Cyan
+    Write-ProfileMsg "Profile load: $([math]::Round($t.TotalMilliseconds))ms" -Color Cyan
 }

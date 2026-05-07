@@ -69,10 +69,11 @@ $scoopPackages = @(
     'sfsu', 'sysinternals', 'vcpkg', 'wget', 'which', 'win32yank', 'winfetch', 'zoxide'
 )
 
+$scoopInstalled = scoop list 2>$null
+
 foreach ($pkg in $scoopPackages) {
     if ($PSCmdlet.ShouldProcess($pkg, 'scoop install')) {
-        $installed = scoop list 2>$null | Select-String "^$pkg\s"
-        if ($installed) {
+        if ($scoopInstalled | Select-String "^$pkg\s") {
             Write-Ok "$pkg already installed"
         } else {
             Write-Host "  Installing $pkg…" -ForegroundColor DarkGray -NoNewline
@@ -101,7 +102,8 @@ if (Get-Command nvm -ErrorAction Ignore) {
         if ($PSCmdlet.ShouldProcess($pkg, 'npm install -g')) {
             Write-Host "  Installing $pkg…" -ForegroundColor DarkGray -NoNewline
             npm install -g $pkg 2>$null | Out-Null
-            Write-Host ' ✓' -ForegroundColor Green
+            if ($LASTEXITCODE -eq 0) { Write-Host ' ✓' -ForegroundColor Green }
+            else                     { Write-Host ' failed' -ForegroundColor Red }
         }
     }
 } else {
@@ -127,8 +129,12 @@ foreach ($mod in $psModules) {
             Write-Ok "$mod already installed"
         } else {
             Write-Host "  Installing $mod…" -ForegroundColor DarkGray -NoNewline
-            Install-PSResource -Name $mod -Scope CurrentUser -ErrorAction Continue | Out-Null
-            Write-Host ' ✓' -ForegroundColor Green
+            try {
+                Install-PSResource -Name $mod -Scope CurrentUser -ErrorAction Stop | Out-Null
+                Write-Host ' ✓' -ForegroundColor Green
+            } catch {
+                Write-Host ' failed' -ForegroundColor Red
+            }
         }
     }
 }

@@ -16,7 +16,7 @@ $VerbosePreference = 'SilentlyContinue' # Normal: 'SilentlyContinue', Debugging:
 #   [LogLevel]::Info  — key status lines (default)
 #   [LogLevel]::Debug — full detail: modules, file loads, tool inventory
 enum LogLevel { Error = 0; Warn = 1; Info = 2; Debug = 3 }
-$Global:ProfileLogLevel = [LogLevel]::DEBUG
+$Global:ProfileLogLevel = [LogLevel]::Info
 
 function global:Write-ProfileMsg {
     param(
@@ -100,10 +100,11 @@ if ($_modsFail.Count -gt 0) {
     Write-ProfileMsg ("  Failed:  " + (($_modsFail | ForEach-Object { "· $_" }) -join '  ')) -Level Debug -Color DarkYellow
 }
 
-# SSH agent — check OpenSSH service is available
-$_sshAgent = Get-Service ssh-agent -ErrorAction Ignore
-if (-not $_sshAgent -or $_sshAgent.Status -ne 'Running') {
-    Write-ProfileMsg '  · ssh-agent not running — run: Start-Service ssh-agent (requires admin)' -Level ([LogLevel]::Debug)
+if ($Global:ProfileLogLevel -ge [LogLevel]::Debug) {
+    $_sshAgent = Get-Service ssh-agent -ErrorAction Ignore
+    if (-not $_sshAgent -or $_sshAgent.Status -ne 'Running') {
+        Write-ProfileMsg '  · ssh-agent not running — run: Start-Service ssh-agent (requires admin)' -Level Debug
+    }
 }
 
 . (Join-Path $moduleRoot 'Env.ps1')
