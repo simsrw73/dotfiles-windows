@@ -2,8 +2,6 @@
 # cli_tools_config.ps1  -  Per-tool configuration: XDG paths, functions, aliases, completers, fzf pickers
 # Each tool gets one #region/#endregion block. Guards check tool availability before applying config.
 
-$ErrorActionPreference = 'Stop'
-
 # ── Tool availability tracking ────────────────────────────────────────────────
 $script:_toolsFound   = [System.Collections.Generic.List[string]]::new()
 $script:_toolsMissing = [System.Collections.Generic.List[string]]::new()
@@ -50,6 +48,11 @@ function script:_GetCachedCompletion {
     if ($cacheItem) { . $cacheFile }
 }
 
+function script:Ensure-Dir {
+    param([string]$Path)
+    if ($Path) { New-Item -ItemType Directory -Force -Path $Path -ErrorAction SilentlyContinue | Out-Null }
+}
+
 # ==============================================================================
 # Group 1  -  File/directory tools
 # ==============================================================================
@@ -57,11 +60,10 @@ function script:_GetCachedCompletion {
 #region eza  -  modern ls replacement
 if (_HasCmd 'eza') {
     # --- Functions / Aliases ---
-    $eza = (Get-Command eza.exe).Path.ToString()
-    function global:_ls { & $eza --color=auto --icons --group-directories-first @args }
-    function global:_ll { & $eza --all --long --header @args }
-    function global:_la { & $eza --all --group @args }
-    function global:_tree { & $eza --tree @args }
+    function global:_ls   { eza --color=auto --icons --group-directories-first @args }
+    function global:_ll   { eza --all --long --header @args }
+    function global:_la   { eza --all --group @args }
+    function global:_tree { eza --tree @args }
     Set-Alias -Name ls -Value _ls -Scope Global
     Set-Alias -Name ll -Value _ll -Scope Global
     Set-Alias -Name la -Value _la -Scope Global
@@ -85,7 +87,7 @@ if (_HasCmd 'eza') {
         param([string]$Path = '.')
         $result = eza --icons -1 --color=always $Path |
             fzf --ansi --preview 'bat --color=always --line-range=:200 {}' `
-                --preview-window 'right:55%' `
+                --preview-window 'right:60%' `
                 --header 'Select file (Enter to open, Ctrl-C to cancel)'
         if ($result) { $result }
     }
@@ -94,20 +96,9 @@ if (_HasCmd 'eza') {
 #endregion eza
 
 #region bat  -  modern cat replacement
-# Join-Files works with or without bat (falls back to Get-Content)
-function global:Join-Files {
-    if (Get-Command bat.exe -ErrorAction Ignore) {
-        $bat = (Get-Command bat.exe).Path.ToString()
-        & $bat -pp $args
-    } else {
-        Get-Content $args
-    }
-}
-Set-Alias -Name cat -Value Join-Files -Scope Global -Force
-
 if (_HasCmd 'bat') {
     # --- XDG / Config paths ---
-    $Env:BAT_CONFIG_PATH = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'bat' 'bat.conf'
+    $Env:BAT_CONFIG_PATH = Join-Path $Env:XDG_CONFIG_HOME 'bat' 'bat.conf'
     # --- Completers ---
     Register-ArgumentCompleter -Native -CommandName bat -ScriptBlock {
         param($wordToComplete, $commandAst, $cursorPosition)
@@ -121,8 +112,19 @@ if (_HasCmd 'bat') {
         $flags | Where-Object { $_ -like "$wordToComplete*" } |
             ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
     }
-    # TODO: Fzf Pickers
+    function global:Join-Files {
+        [CmdletBinding()]
+        param([Parameter(ValueFromRemainingArguments)][string[]]$Path)
+        bat -pp @Path
+    }
+} else {
+    function global:Join-Files {
+        [CmdletBinding()]
+        param([Parameter(ValueFromRemainingArguments)][string[]]$Path)
+        Get-Content @Path
+    }
 }
+Set-Alias -Name cat -Value Join-Files -Scope Global -Force
 #endregion bat
 
 #region fd  -  modern find replacement
@@ -147,7 +149,7 @@ if (_HasCmd 'fd') {
         $result = fd @fdArgs 2>$null |
             fzf --ansi `
                 --preview 'bat --color=always --line-range=:100 {} 2>/dev/null || eza --icons --color=always {}' `
-                --preview-window 'right:50%' `
+                --preview-window 'right:60%' `
                 --header 'Select file/dir'
         if ($result) { $result }
     }
@@ -160,9 +162,8 @@ if (_HasCmd 'rg') {
     # --- XDG / Config paths ---
     $Env:RIPGREP_CONFIG_PATH = Join-Path $Env:XDG_CONFIG_HOME 'ripgrep' 'ripgreprc'
     # Create a default ripgreprc if it doesn't exist
-    $ripgrepDir = Join-Path $Env:XDG_CONFIG_HOME 'ripgrep'
-    if (-not (Test-Path $ripgrepDir)) {
-        New-Item -ItemType Directory -Force -Path $ripgrepDir | Out-Null
+    Ensure-Dir (Join-Path $Env:XDG_CONFIG_HOME 'ripgrep')
+    if (-not (Test-Path $Env:RIPGREP_CONFIG_PATH)) {
         Set-Content -Path $Env:RIPGREP_CONFIG_PATH -Value "# ripgrep config`n--smart-case`n--hidden" -Encoding UTF8
     }
     # TODO: Functions / Aliases
@@ -180,8 +181,8 @@ if (_HasCmd 'rg') {
             fzf --ansi `
                 --delimiter ':' `
                 --preview 'bat --color=always --highlight-line {2} {1}' `
-                --preview-window 'right:55%:+{2}+3/3' `
-                --header 'Select result (Enter to open in $EDITOR)'
+                --preview-window 'right:60%:+{2}+3/3' `
+                --header 'Select result  [Enter to open in editor]'
         if ($result) {
             $file, $line = ($result -split ':')[0..1]
             & $Env:EDITOR $file
@@ -196,7 +197,7 @@ if (_HasCmd 'broot') {
     # --- XDG / Config paths ---
     # broot respects $XDG_CONFIG_HOME on all platforms when set
     $brootConfig = Join-Path $Env:XDG_CONFIG_HOME 'broot'
-    New-Item -ItemType Directory -Force -Path $brootConfig | Out-Null
+    Ensure-Dir $brootConfig
     # TODO: Functions / Aliases
     # --- Completers ---
     Register-ArgumentCompleter -Native -CommandName broot -ScriptBlock {
@@ -216,15 +217,6 @@ if (_HasCmd 'broot') {
 }
 #endregion broot
 
-#region lsd  -  another ls alternative
-# NOTE: lsd conflicts with eza; enable only if eza is removed
-if (_HasCmd 'lsd') {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
-#endregion lsd
 
 # ==============================================================================
 # Group 2  -  Text/data tools
@@ -254,28 +246,18 @@ if (_HasCmd 'jq') {
 #endregion jq
 
 #region fx  -  interactive JSON viewer
-if (_HasCmd 'fx') {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
+# not yet configured
 #endregion fx
 
 #region jid  -  interactive JSON editor
-if (_HasCmd 'jid') {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
+# not yet configured
 #endregion jid
 
 #region glow  -  markdown reader
 if (_HasCmd 'glow') {
     # --- XDG / Config paths ---
     $Env:GLOW_CONFIG_DIR = Join-Path $Env:XDG_CONFIG_HOME 'glow'
-    New-Item -ItemType Directory -Force -Path $Env:GLOW_CONFIG_DIR | Out-Null
+    Ensure-Dir $Env:GLOW_CONFIG_DIR
     # TODO: Functions / Aliases
     # --- Completers ---
     _GetCachedCompletion 'glow' (Get-Command glow.exe).Path { glow completion powershell }
@@ -325,49 +307,26 @@ if (_HasCmd 'procs') {
 #endregion procs
 
 #region duf  -  modern df replacement
-if (_HasCmd 'duf') {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
+# not yet configured
 #endregion duf
 
 #region dua  -  disk usage analyzer
-if (_HasCmd 'dua') {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
+# not yet configured
 #endregion dua
 
 #region gdu  -  disk usage TUI
-if (_HasCmd 'gdu') {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
+# not yet configured
 #endregion gdu
 
 #region ntop  -  TUI process monitor
-if (_HasCmd 'ntop') {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
+# not yet configured
 #endregion ntop
 
 #region winfetch  -  system info
 if (_HasCmd 'winfetch' -Exe 'winfetch') {
     # --- XDG / Config paths ---
     $Env:WINFETCH_CONFIG_PATH = Join-Path $Env:XDG_CONFIG_HOME 'winfetch' 'config.ps1'
-    $winfetchDir = Join-Path $Env:XDG_CONFIG_HOME 'winfetch'
-    if (-not (Test-Path $winfetchDir)) {
-        New-Item -ItemType Directory -Force -Path $winfetchDir | Out-Null
-    }
+    Ensure-Dir (Join-Path $Env:XDG_CONFIG_HOME 'winfetch')
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -382,7 +341,7 @@ if (_HasCmd 'winfetch' -Exe 'winfetch') {
 if (_HasCmd 'curl') {
     # --- XDG / Config paths ---
     $Env:CURL_HOME = Join-Path $Env:XDG_CONFIG_HOME 'curl'
-    New-Item -ItemType Directory -Force -Path $Env:CURL_HOME | Out-Null
+    Ensure-Dir $Env:CURL_HOME
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -393,11 +352,8 @@ if (_HasCmd 'curl') {
 if (_HasCmd 'wget') {
     # --- XDG / Config paths ---
     $Env:WGETRC = Join-Path $Env:XDG_CONFIG_HOME 'wget' 'wgetrc'
-    $wgetDir = Join-Path $Env:XDG_CONFIG_HOME 'wget'
-    if (-not (Test-Path $wgetDir)) {
-        New-Item -ItemType Directory -Force -Path $wgetDir | Out-Null
-        New-Item -ItemType File -Force -Path $Env:WGETRC | Out-Null
-    }
+    Ensure-Dir (Join-Path $Env:XDG_CONFIG_HOME 'wget')
+    $null = New-Item -ItemType File -Force -Path $Env:WGETRC -ErrorAction SilentlyContinue
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -407,7 +363,7 @@ if (_HasCmd 'wget') {
 #region docker  -  container runtime
 # Set DOCKER_CONFIG unconditionally so docker-compose and other tools use XDG path
 $Env:DOCKER_CONFIG = Join-Path $Env:XDG_CONFIG_HOME 'docker'
-New-Item -ItemType Directory -Force -Path $Env:DOCKER_CONFIG | Out-Null
+Ensure-Dir $Env:DOCKER_CONFIG
 if (_HasCmd 'docker' -Exe 'docker') {
     # TODO: Completers
     # --- Fzf Pickers ---
@@ -417,7 +373,8 @@ if (_HasCmd 'docker' -Exe 'docker') {
         $dockerArgs = if ($All) { @('ps', '--all') } else { @('ps') }
         $container = docker @dockerArgs --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}' 2>$null |
             Select-Object -Skip 1 |
-            fzf --header 'Select container (Enter to exec shell)'
+            fzf --preview-window 'hidden' `
+                --header 'Select container (Enter to exec shell)'
         if ($container) {
             $id = ($container -split '\s+')[0]
             docker exec -it $id sh
@@ -430,7 +387,8 @@ if (_HasCmd 'docker' -Exe 'docker') {
         param()
         $image = docker images --format 'table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.Size}}' 2>$null |
             Select-Object -Skip 1 |
-            fzf --header 'Select image'
+            fzf --preview-window 'hidden' `
+                --header 'Select image'
         if ($image) { ($image -split '\s+')[2] }
     }
     Set-Alias -Name fdi -Value Select-DockerImage -Scope Global
@@ -445,11 +403,8 @@ if (_HasCmd 'docker' -Exe 'docker') {
 if (_HasCmd 'nano') {
     # --- XDG / Config paths ---
     $Env:NANORC = Join-Path $Env:XDG_CONFIG_HOME 'nano' 'nanorc'
-    $nanoDir = Join-Path $Env:XDG_CONFIG_HOME 'nano'
-    if (-not (Test-Path $nanoDir)) {
-        New-Item -ItemType Directory -Force -Path $nanoDir | Out-Null
-        New-Item -ItemType File -Force -Path $Env:NANORC | Out-Null
-    }
+    Ensure-Dir (Join-Path $Env:XDG_CONFIG_HOME 'nano')
+    $null = New-Item -ItemType File -Force -Path $Env:NANORC -ErrorAction SilentlyContinue
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -460,7 +415,7 @@ if (_HasCmd 'nano') {
 if (_HasCmd 'micro') {
     # --- XDG / Config paths ---
     $Env:MICRO_CONF_DIR = Join-Path $Env:XDG_CONFIG_HOME 'micro'
-    New-Item -ItemType Directory -Force -Path $Env:MICRO_CONF_DIR | Out-Null
+    Ensure-Dir $Env:MICRO_CONF_DIR
     # TODO: Functions / Aliases
     # TODO: Completers
     # TODO: Fzf Pickers
@@ -529,7 +484,7 @@ if (_HasCmd 'zoxide') {
         param()
         $dir = zoxide query --list |
             fzf --preview 'eza --icons --color=always {}' `
-                --preview-window 'right:40%' `
+                --preview-window 'right:60%' `
                 --header 'Select directory (Enter to cd)'
         if ($dir) { Set-Location $dir }
     }
@@ -542,10 +497,7 @@ if (_HasCmd 'zoxide') {
 # ==============================================================================
 
 #region moor  -  modern pager
-if (_HasCmd 'moor') {
-    # PAGER and $Env:MOOR are set in Env.ps1 (PAGER detection runs early)
-    # TODO: Fzf Pickers
-}
+# not yet configured
 #endregion moor
 
 #region less  -  pager
@@ -555,8 +507,8 @@ if (_HasCmd 'less') {
     $Env:LESSKEY      = Join-Path $Env:XDG_CONFIG_HOME 'less' 'lesskey'
     $lessStateDir  = Join-Path $Env:XDG_STATE_HOME 'less'
     $lessConfigDir = Join-Path $Env:XDG_CONFIG_HOME 'less'
-    New-Item -ItemType Directory -Force -Path $lessStateDir  | Out-Null
-    New-Item -ItemType Directory -Force -Path $lessConfigDir | Out-Null
+    Ensure-Dir $lessStateDir
+    Ensure-Dir $lessConfigDir
     # --- Best-practice options ---
     $Env:LESS = '--RAW-CONTROL-CHARS --quit-if-one-screen --no-init'
     # TODO: Functions / Aliases
@@ -576,8 +528,16 @@ if (_HasCmd 'scoop' -Exe 'scoop') {
         . ([ScriptBlock]::Create((& scoop-search --hook | Out-String)))
     }
     # --- Functions ---
-    function global:sstat { scoop update; scoop status }
-    function global:supd { scoop update *; scoop cleanup * }
+    function global:sstat {
+        [CmdletBinding()]
+        param()
+        scoop update; scoop status
+    }
+    function global:supd {
+        [CmdletBinding()]
+        param()
+        scoop update *; scoop cleanup *
+    }
     # TODO: Completers
     # --- Fzf Pickers ---
     function global:Select-ScoopPackage {
@@ -586,7 +546,7 @@ if (_HasCmd 'scoop' -Exe 'scoop') {
         $pkg = sfsu search $Query 2>$null |
             fzf --header 'Select package to install (Enter to scoop install)' `
                 --preview 'sfsu info {}' `
-                --preview-window 'right:45%'
+                --preview-window 'right:60%'
         if ($pkg) {
             $name = ($pkg -split '\s+')[0]
             Write-Host "⚙  Installing $name…" -ForegroundColor Cyan
@@ -632,8 +592,16 @@ if (_HasCmd 'sfsu') {
 #region winget  -  Windows package manager
 if (_HasCmd 'winget' -Exe 'winget') {
     # --- Functions ---
-    function global:wstat { winget upgrade }
-    function global:wupd { winget upgrade --all }
+    function global:wstat {
+        [CmdletBinding()]
+        param()
+        winget upgrade
+    }
+    function global:wupd {
+        [CmdletBinding()]
+        param()
+        winget upgrade --all
+    }
     # --- Completers ---
     Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {
         param($wordToComplete, $commandAst, $cursorPosition)
@@ -702,7 +670,8 @@ if (_HasCmd 'rustup') {
         [CmdletBinding()]
         param()
         $toolchain = rustup toolchain list 2>$null |
-            fzf --header 'Select Rust toolchain (Enter to rustup default)'
+            fzf --preview-window 'hidden' `
+                --header 'Select Rust toolchain (Enter to rustup default)'
         if ($toolchain) {
             $name = ($toolchain -split '\s+')[0]
             rustup default $name
@@ -735,7 +704,8 @@ if (_HasCmd 'nvm' -Exe 'nvm') {
         param()
         $version = nvm list 2>$null |
             Where-Object { $_ -match '\d+\.\d+' } |
-            fzf --header 'Select Node.js version (Enter to nvm use)'
+            fzf --preview-window 'hidden' `
+                --header 'Select Node.js version (Enter to nvm use)'
         if ($version) {
             $ver = ($version -replace '[^\d.]', '').Trim()
             nvm use $ver
@@ -749,13 +719,14 @@ if (_HasCmd 'nvm' -Exe 'nvm') {
 if (_HasCmd 'npm' -Exe 'npm') {
     # --- XDG / Config paths ---
     $Env:NPM_CONFIG_USERCONFIG = Join-Path $Env:XDG_CONFIG_HOME 'npm' 'npmrc'
-    $npmConfigDir = Join-Path $Env:XDG_CONFIG_HOME 'npm'
-    if (-not (Test-Path $npmConfigDir)) {
-        New-Item -ItemType Directory -Force -Path $npmConfigDir | Out-Null
-    }
+    Ensure-Dir (Join-Path $Env:XDG_CONFIG_HOME 'npm')
     $Env:NODE_REPL_HISTORY = Join-Path $Env:XDG_DATA_HOME 'node_repl_history'
     # --- Functions ---
-    function global:nls { npm list -g --depth=0 }
+    function global:nls {
+        [CmdletBinding()]
+        param()
+        npm list -g --depth=0
+    }
     # --- Completers ---
     Register-ArgumentCompleter -Native -CommandName npm -ScriptBlock {
         param($wordToComplete, $commandAst, $cursorPosition)
@@ -778,7 +749,8 @@ if (_HasCmd 'npm' -Exe 'npm') {
         }
         $scripts = (Get-Content 'package.json' -Raw | ConvertFrom-Json).scripts.PSObject.Properties |
             ForEach-Object { "$($_.Name)" }
-        $script = $scripts | fzf --header 'Select npm script (Enter to npm run)'
+        $script = $scripts | fzf --preview-window 'hidden' `
+            --header 'Select npm script (Enter to npm run)'
         if ($script) { npm run $script }
     }
     Set-Alias -Name fns -Value Select-NpmScript -Scope Global
@@ -797,7 +769,8 @@ if (_HasCmd 'gh') {
         $pr = gh pr list --json number,title,author,headRefName 2>$null |
             ConvertFrom-Json |
             ForEach-Object { "$($_.number)`t$($_.title)`t($($_.author.login))" } |
-            fzf --header 'Select PR to checkout' --delimiter "`t" --with-nth '1,2'
+            fzf --preview-window 'hidden' `
+                --header 'Select PR to checkout' --delimiter "`t" --with-nth '1,2'
         if ($pr) {
             $num = ($pr -split "`t")[0].Trim()
             gh pr checkout $num
@@ -810,10 +783,11 @@ if (_HasCmd 'gh') {
         param()
         $issue = gh issue list --json number,title,assignees,state 2>$null |
             ConvertFrom-Json |
-            ForEach-Object { "#$($_.number)`t$($_.title)" } |
-            fzf --header 'Select issue to view' --delimiter "`t" --with-nth '1,2'
+            ForEach-Object { "$($_.number)`t$($_.title)" } |
+            fzf --preview-window 'hidden' `
+                --header 'Select issue to view' --delimiter "`t" --with-nth '1,2'
         if ($issue) {
-            $num = ($issue -split "`t")[0].TrimStart('#').Trim()
+            $num = ($issue -split "`t")[0].Trim()
             gh issue view $num --web
         }
     }
@@ -833,7 +807,7 @@ if (_HasCmd 'delta') {
 if (_HasCmd 'lazygit') {
     # --- XDG / Config paths ---
     $Env:LG_CONFIG_FILE = Join-Path $Env:XDG_CONFIG_HOME 'lazygit' 'config.yml'
-    New-Item -ItemType Directory -Force -Path (Split-Path $Env:LG_CONFIG_FILE) | Out-Null
+    Ensure-Dir (Split-Path $Env:LG_CONFIG_FILE)
     # --- Aliases ---
     Set-Alias -Name lg -Value lazygit -Scope Global
 }
@@ -848,8 +822,8 @@ if (_HasCmd 'uv') {
     # --- XDG / Config paths ---
     $Env:UV_CACHE_DIR = Join-Path $Env:XDG_CACHE_HOME 'uv'
     $Env:UV_DATA_DIR  = Join-Path $Env:XDG_DATA_HOME  'uv'
-    New-Item -ItemType Directory -Force -Path $Env:UV_CACHE_DIR | Out-Null
-    New-Item -ItemType Directory -Force -Path $Env:UV_DATA_DIR  | Out-Null
+    Ensure-Dir $Env:UV_CACHE_DIR
+    Ensure-Dir $Env:UV_DATA_DIR
     # TODO: Functions / Aliases
     # --- Completers ---
     Register-ArgumentCompleter -Native -CommandName uv -ScriptBlock {
@@ -869,7 +843,7 @@ if (_HasCmd 'uv') {
         $venv = Get-ChildItem -Path $SearchPath -Recurse -Depth 4 -Filter 'pyvenv.cfg' -ErrorAction SilentlyContinue |
             Select-Object -ExpandProperty DirectoryName |
             fzf --preview 'cat {}/pyvenv.cfg' `
-                --preview-window 'right:40%' `
+                --preview-window 'right:60%' `
                 --header 'Select Python venv to activate'
         if ($venv) {
             $activate = Join-Path $venv 'Scripts' 'Activate.ps1'
@@ -889,7 +863,7 @@ if (_HasCmd 'uv') {
 if (_HasCmd 'chezmoi') {
     # --- XDG / Config paths ---
     $Env:CHEZMOI_CONFIG_DIR = Join-Path $Env:XDG_CONFIG_HOME 'chezmoi'
-    New-Item -ItemType Directory -Force -Path $Env:CHEZMOI_CONFIG_DIR | Out-Null
+    Ensure-Dir $Env:CHEZMOI_CONFIG_DIR
     # --- Aliases ---
     Set-Alias -Name cz -Value chezmoi -Scope Global
     # --- Completers ---
@@ -900,7 +874,7 @@ if (_HasCmd 'chezmoi') {
         param()
         $file = chezmoi managed 2>$null |
             fzf --preview 'bat --color=always {}' `
-                --preview-window 'right:55%' `
+                --preview-window 'right:60%' `
                 --header 'Select dotfile to edit (Enter to chezmoi edit)'
         if ($file) { chezmoi edit $file }
     }
@@ -941,6 +915,7 @@ if (_HasCmd 'bw' -Exe 'bw') {
         if (-not $items) { Write-Warning 'No items found. Are you logged in? Run: bw login'; return }
         $selected = $items | ForEach-Object { "$($_.name)`t$($_.id)" } |
             fzf --delimiter "`t" --with-nth 1 `
+                --preview-window 'hidden' `
                 --header 'Select vault item (Enter to copy password)'
         if ($selected) {
             $id = ($selected -split "`t")[1]
@@ -957,12 +932,7 @@ if (_HasCmd 'bw' -Exe 'bw') {
 # ==============================================================================
 
 #region gemini  -  Gemini CLI
-if (_HasCmd 'gemini' -Exe 'gemini') {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
+# not yet configured
 #endregion gemini
 
 # ==============================================================================
@@ -970,12 +940,7 @@ if (_HasCmd 'gemini' -Exe 'gemini') {
 # ==============================================================================
 
 #region win32yank  -  clipboard utility
-if (_HasCmd 'win32yank') {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
+# not yet configured
 #endregion win32yank
 
 # ==============================================================================
@@ -997,9 +962,9 @@ if (_HasMod 'gsudo' -Module 'gsudoModule') {
 if (_HasCmd 'glazewm') {
     # --- Functions ---
     function global:Start-GlazeWM {
-        $wm = (Get-Command glazewm.exe).Path.ToString()
-        $glaze_config = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'glazewm' 'config.yaml'
-        & $wm --config=$glaze_config $args
+        [CmdletBinding()]
+        param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
+        glazewm --config (Join-Path $Env:XDG_CONFIG_HOME 'glazewm' 'config.yaml') @Arguments
     }
     # --- Aliases ---
     Set-Alias -Name glazewm -Value Start-GlazeWM -Scope Global
@@ -1035,7 +1000,7 @@ if (_HasMod 'posh-git') {
         param()
         $branch = git branch --all --color=always |
             fzf --ansi --preview 'git log --oneline --color=always {1}' `
-                --preview-window 'right:55%' `
+                --preview-window 'right:60%' `
                 --header 'Select branch (Enter to checkout)'
         if ($branch) {
             $branch = $branch.Trim() -replace '^\* ', '' -replace '^remotes/origin/', ''
@@ -1049,7 +1014,7 @@ if (_HasMod 'posh-git') {
         param()
         $commit = git log --oneline --color=always |
             fzf --ansi --preview 'git show --color=always {1}' `
-                --preview-window 'right:55%' `
+                --preview-window 'right:60%' `
                 --header 'Select commit (Enter to show, Ctrl-C to cancel)'
         if ($commit) {
             $sha = ($commit -split ' ')[0]
@@ -1064,7 +1029,7 @@ if (_HasMod 'posh-git') {
         $files = git status --short |
             fzf --ansi --multi `
                 --preview 'git diff --color=always {2}' `
-                --preview-window 'right:55%' `
+                --preview-window 'right:60%' `
                 --header 'Select files to stage (Tab=multi-select, Enter to git add)'
         if ($files) {
             $files | ForEach-Object {
@@ -1080,8 +1045,8 @@ if (_HasMod 'posh-git') {
         [CmdletBinding()]
         param()
         $stash = git stash list |
-            fzf --preview 'git stash show -p {1}' `
-                --preview-window 'right:55%' `
+            fzf --ansi --preview 'git stash show -p {1}' `
+                --preview-window 'right:60%' `
                 --header 'Select stash (Enter to apply, Del to drop)'
         if ($stash) {
             $stashRef = ($stash -split ':')[0]
@@ -1147,11 +1112,7 @@ if (_HasMod 'PSFzf') {
 #endregion PSFzf
 
 #region scoop-completion  -  scoop tab completions
-if (_HasMod 'scoop-completion') {
-    # TODO: Import
-    # TODO: Config
-    # TODO: Completers / Fzf Pickers
-}
+# not yet configured
 #endregion scoop-completion
 
 #region DockerCompletion  -  Docker tab completions
@@ -1168,27 +1129,15 @@ if (_HasMod 'PowerType') {
 #endregion PowerType
 
 #region PSAISuite  -  AI PS suite
-if (_HasMod 'PSAISuite') {
-    # TODO: Import
-    # TODO: Config
-    # TODO: Completers / Fzf Pickers
-}
+# not yet configured
 #endregion PSAISuite
 
 #region PSWindowsUpdate  -  Windows Update
-if (_HasMod 'PSWindowsUpdate') {
-    # TODO: Import
-    # TODO: Config
-    # TODO: Completers / Fzf Pickers
-}
+# not yet configured
 #endregion PSWindowsUpdate
 
 #region Admin  -  admin utilities
-if (_HasMod 'Admin') {
-    # TODO: Import
-    # TODO: Config
-    # TODO: Completers / Fzf Pickers
-}
+# not yet configured
 #endregion Admin
 
 # ── Tool availability summary (emitted at Debug level) ───────────────────────
