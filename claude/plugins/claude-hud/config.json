@@ -1,0 +1,23 @@
+{
+  "display": {
+    "showTools": true,
+    "showAgents": true,
+    "showTodos": true,
+    "showDuration": true,
+    "showConfigCounts": true,
+    "showSessionName": true
+  },
+  "colors": {
+    "model": "#cba6f7",
+    "project": "#f9e2af",
+    "git": "#f5c2e7",
+    "gitBranch": "#94e2d5",
+    "context": "#a6e3a1",
+    "usage": "#89b4fa",
+    "usageWarning": "#cba6f7",
+    "warning": "#f9e2af",
+    "critical": "#f38ba8",
+    "label": "#7f849c",
+    "custom": "#fab387"
+  }
+}

@@ -1,0 +1,252 @@
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Crates.ps1-117-        -RepositoryUrl ([string]$crate.repository) `
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Crates.ps1-118-        -DocsUrl ([string]$crate.documentation) `
+Private\DFCatalog.Crates.ps1:119:        -InstallHint "cargo install $($crate.name)" `
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Crates.ps1-120-        -Extra $extra
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Crates.ps1-121-}
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\specs\2026-07-04-trifle-detail-view-design.md-126-Source, PackageId, Publisher, Maintainers[], Dependencies[], Tags[],
+C:\Users\simsr\projects\DotForge\docs\superpowers\specs\2026-07-04-trifle-detail-view-design.md-127-Downloads, ReleaseNotes, ReleaseNotesUrl, RepositoryUrl, DocsUrl,
+docs\superpowers\specs\2026-07-04-trifle-detail-view-design.md:128:InstallHint, Notes, Extra (ordered dict for source-specific leftovers)
+C:\Users\simsr\projects\DotForge\docs\superpowers\specs\2026-07-04-trifle-detail-view-design.md-129-```
+C:\Users\simsr\projects\DotForge\docs\superpowers\specs\2026-07-04-trifle-detail-view-design.md-130-
+docs\superpowers\specs\2026-07-04-trifle-detail-view-design.md:131:`InstallHint` is the copy-pasteable install command for that catalog
+C:\Users\simsr\projects\DotForge\docs\superpowers\specs\2026-07-04-trifle-detail-view-design.md-132-(`scoop install extras/zed`, `winget install --id Zed.Zed`, `npm i -g zed`, …)
+C:\Users\simsr\projects\DotForge\docs\superpowers\specs\2026-07-04-trifle-detail-view-design.md-133-built by the provider.
+--
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.ps1-275-        [string]$RepositoryUrl,
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.ps1-276-        [string]$DocsUrl,
+Private\DFCatalog.ps1:277:        [string]$InstallHint,
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.ps1-278-        [string]$Notes,
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.ps1-279-        [string]$Readme,
+--
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.ps1-294-        RepositoryUrl   = $RepositoryUrl
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.ps1-295-        DocsUrl         = $DocsUrl
+Private\DFCatalog.ps1:296:        InstallHint     = $InstallHint
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.ps1-297-        Notes           = $Notes
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.ps1-298-        Readme          = $Readme
+--
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Npm.ps1-160-        -Tags @(@($doc.keywords) | ForEach-Object { [string]$_ }) `
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Npm.ps1-161-        -RepositoryUrl ([string]$doc.repository.url) `
+Private\DFCatalog.Npm.ps1:162:        -InstallHint "npm install -g $($doc.name)" `
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Npm.ps1-163-        -Readme ([string]$doc.readme) `
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Npm.ps1-164-        -Extra $extra
+--
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Winget.ps1-361-        -ReleaseNotesUrl (& $joined 'Release Notes Url') `
+Private\DFCatalog.Winget.ps1-362-        -RepositoryUrl (((& $joined 'Homepage') -match 'github\.com') ? (& $joined 'Homepage') : '') `
+Private\DFCatalog.Winget.ps1:363:        -InstallHint "winget install --id $PackageId --exact" `
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Winget.ps1-364-        -Notes (& $joined 'Description')
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Winget.ps1-365-}
+--
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Scoop.ps1-364-        -Dependencies (& $flat $manifest.depends) `
+Private\DFCatalog.Scoop.ps1-365-        -RepositoryUrl ((([string]$manifest.homepage) -match 'github\.com') ? [string]$manifest.homepage : '') `
+Private\DFCatalog.Scoop.ps1:366:        -InstallHint "scoop install $bucket/$name" `
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Scoop.ps1-367-        -Notes ((& $flat $manifest.notes) -join ' ') `
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Scoop.ps1-368-        -Extra $extra
+--
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetail.Tests.ps1-10-            -Publisher 'npm, Inc.' -Maintainers @('alice') -Dependencies @('lodash@^4') `
+tests\DFCatalogDetail.Tests.ps1-11-            -Tags @('cli') -Downloads 12345 -RepositoryUrl 'https://github.com/x/y' `
+tests\DFCatalogDetail.Tests.ps1:12:            -InstallHint 'npm install -g left-pad' -Readme '# hi'
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetail.Tests.ps1-13-        $d.PSObject.TypeNames[0] | Should -Be 'DotForge.ToolSourceDetail'
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetail.Tests.ps1-14-        $d.Source | Should -Be 'npm'
+--
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetailProviders.Scoop.Winget.Tests.ps1-31-        $d.Notes | Should -Be 'First note. Second note.'
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetailProviders.Scoop.Winget.Tests.ps1-32-        $d.Dependencies | Should -Be @('extras/vcredist2022')
+tests\DFCatalogDetailProviders.Scoop.Winget.Tests.ps1:33:        $d.InstallHint | Should -Be 'scoop install extras/zed'
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetailProviders.Scoop.Winget.Tests.ps1-34-        $d.Extra['bin'] | Should -Be @('zed', 'zeditor.cmd')
+tests\DFCatalogDetailProviders.Scoop.Winget.Tests.ps1-35-        $d.Extra['suggest'] | Should -Be @('extras: windows-terminal')
+--
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetailProviders.Scoop.Winget.Tests.ps1-70-        $d.Tags | Should -Be @('editor', 'rust')
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetailProviders.Scoop.Winget.Tests.ps1-71-        $d.Notes | Should -Be 'A high-performance editor. Built in Rust.'
+tests\DFCatalogDetailProviders.Scoop.Winget.Tests.ps1:72:        $d.InstallHint | Should -Be 'winget install --id Zed.Zed --exact'
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetailProviders.Scoop.Winget.Tests.ps1-73-    }
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetailProviders.Scoop.Winget.Tests.ps1-74-
+--
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Pypi.ps1-140-        -RepositoryUrl $repo `
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Pypi.ps1-141-        -DocsUrl $docsUrl `
+Private\DFCatalog.Pypi.ps1:142:        -InstallHint "pipx install $($info.name)" `
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Pypi.ps1-143-        -Extra $extra
+C:\Users\simsr\projects\DotForge\Private\DFCatalog.Pypi.ps1-144-}
+--
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetailProviders.Web.Tests.ps1-35-        $d.Tags | Should -Be @('string', 'pad')
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetailProviders.Web.Tests.ps1-36-        $d.Readme | Should -Be '# left-pad'
+tests\DFCatalogDetailProviders.Web.Tests.ps1:37:        $d.InstallHint | Should -Be 'npm install -g left-pad'
+tests\DFCatalogDetailProviders.Web.Tests.ps1-38-        $d.Extra['dist-tags'] | Should -Contain 'latest: 1.3.0'
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetailProviders.Web.Tests.ps1-39-    }
+--
+tests\DFCatalogDetailProviders.Web.Tests.ps1-55-        $d.RepositoryUrl | Should -Be 'https://github.com/httpie/cli'
+tests\DFCatalogDetailProviders.Web.Tests.ps1-56-        $d.DocsUrl | Should -Be 'https://httpie.io/docs'
+tests\DFCatalogDetailProviders.Web.Tests.ps1:57:        $d.InstallHint | Should -Be 'pipx install httpie'
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetailProviders.Web.Tests.ps1-58-        $d.Extra['requires_python'] | Should -Be '>=3.7'
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetailProviders.Web.Tests.ps1-59-        $d.Extra['description_content_type'] | Should -Be 'text/markdown'
+--
+tests\DFCatalogDetailProviders.Web.Tests.ps1-76-        $d.RepositoryUrl | Should -Be 'https://github.com/BurntSushi/ripgrep'
+tests\DFCatalogDetailProviders.Web.Tests.ps1-77-        $d.DocsUrl | Should -Be 'https://docs.rs/ripgrep'
+tests\DFCatalogDetailProviders.Web.Tests.ps1:78:        $d.InstallHint | Should -Be 'cargo install ripgrep'
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetailProviders.Web.Tests.ps1-79-        $d.Extra['recent_downloads'] | Should -Be 54321
+C:\Users\simsr\projects\DotForge\tests\DFCatalogDetailProviders.Web.Tests.ps1-80-    }
+--
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-37-- Consumes: `ConvertTo-DFCatalogQueryKey`, `Get-DFCatalogCacheRoot`, `Read-DFCatalogCacheFile`, `Write-DFCatalogCacheFile`, `$script:DFCatalogTtl`, `$script:DFCatalogProviders`.
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-38-- Produces (later tasks rely on these exact signatures):
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:39:  - `New-DFToolSourceDetail -Source <string> -PackageId <string> [-Publisher <string>] [-Maintainers <string[]>] [-Dependencies <string[]>] [-Tags <string[]>] [-Downloads <nullable[long]>] [-ReleaseNotes <string>] [-ReleaseNotesUrl <string>] [-RepositoryUrl <string>] [-DocsUrl <string>] [-InstallHint <string>] [-Notes <string>] [-Readme <string>] [-Extra <OrderedDictionary>]` → `PSCustomObject` (PSTypeName `DotForge.ToolSourceDetail`)
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-40-  - `Get-DFCatalogDetailCache -Provider <string> -PackageId <string> -Fetch <scriptblock> [-Fresh]` → detail object or `$null` (fetch scriptblock receives the raw PackageId, returns one object or `$null`)
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-41-  - `Get-DFCatalogDetail -Source <string> -PackageId <string> [-Fresh]` → detail object or `$null` (dispatcher over `$script:DFCatalogProviders[<source>].Detail`)
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-59-            -Publisher 'npm, Inc.' -Maintainers @('alice') -Dependencies @('lodash@^4') `
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-60-            -Tags @('cli') -Downloads 12345 -RepositoryUrl 'https://github.com/x/y' `
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:61:            -InstallHint 'npm install -g left-pad' -Readme '# hi'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-62-        $d.PSObject.TypeNames[0] | Should -Be 'DotForge.ToolSourceDetail'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-63-        $d.Source | Should -Be 'npm'
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-203-        [string]$RepositoryUrl,
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-204-        [string]$DocsUrl,
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:205:        [string]$InstallHint,
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-206-        [string]$Notes,
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-207-        [string]$Readme,
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-222-        RepositoryUrl   = $RepositoryUrl
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-223-        DocsUrl         = $DocsUrl
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:224:        InstallHint     = $InstallHint
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-225-        Notes           = $Notes
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-226-        Readme          = $Readme
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-443-        $d.Notes | Should -Be 'First note. Second note.'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-444-        $d.Dependencies | Should -Be @('extras/vcredist2022')
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:445:        $d.InstallHint | Should -Be 'scoop install extras/zed'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-446-        $d.Extra['bin'] | Should -Be @('zed', 'zeditor.cmd')
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-447-        $d.Extra['suggest'] | Should -Be @('extras: windows-terminal')
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-482-        $d.Tags | Should -Be @('editor', 'rust')
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-483-        $d.Notes | Should -Be 'A high-performance editor. Built in Rust.'
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:484:        $d.InstallHint | Should -Be 'winget install --id Zed.Zed --exact'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-485-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-486-
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-586-        -Dependencies (& $flat $manifest.depends) `
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-587-        -RepositoryUrl ((([string]$manifest.homepage) -match 'github\.com') ? [string]$manifest.homepage : '') `
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:588:        -InstallHint "scoop install $bucket/$name" `
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-589-        -Notes ((& $flat $manifest.notes) -join ' ') `
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-590-        -Extra $extra
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-667-        -ReleaseNotesUrl (& $joined 'Release Notes Url') `
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-668-        -RepositoryUrl (((& $joined 'Homepage') -match 'github\.com') ? (& $joined 'Homepage') : '') `
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:669:        -InstallHint "winget install --id $PackageId --exact" `
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-670-        -Notes (& $joined 'Description')
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-671-}
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-767-        $d.Tags | Should -Be @('string', 'pad')
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-768-        $d.Readme | Should -Be '# left-pad'
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:769:        $d.InstallHint | Should -Be 'npm install -g left-pad'
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-770-        $d.Extra['dist-tags'] | Should -Contain 'latest: 1.3.0'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-771-    }
+--
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-787-        $d.RepositoryUrl | Should -Be 'https://github.com/httpie/cli'
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-788-        $d.DocsUrl | Should -Be 'https://httpie.io/docs'
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:789:        $d.InstallHint | Should -Be 'pipx install httpie'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-790-        $d.Extra['requires_python'] | Should -Be '>=3.7'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-791-        $d.Extra['description_content_type'] | Should -Be 'text/markdown'
+--
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-808-        $d.RepositoryUrl | Should -Be 'https://github.com/BurntSushi/ripgrep'
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-809-        $d.DocsUrl | Should -Be 'https://docs.rs/ripgrep'
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:810:        $d.InstallHint | Should -Be 'cargo install ripgrep'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-811-        $d.Extra['recent_downloads'] | Should -Be 54321
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-812-    }
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-863-        -Tags @(@($doc.keywords) | ForEach-Object { [string]$_ }) `
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-864-        -RepositoryUrl ([string]$doc.repository.url) `
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:865:        -InstallHint "npm install -g $($doc.name)" `
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-866-        -Readme ([string]$doc.readme) `
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-867-        -Extra $extra
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-929-        -RepositoryUrl $repo `
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-930-        -DocsUrl $docsUrl `
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:931:        -InstallHint "pipx install $($info.name)" `
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-932-        -Extra $extra
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-933-}
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-987-        -RepositoryUrl ([string]$crate.repository) `
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-988-        -DocsUrl ([string]$crate.documentation) `
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:989:        -InstallHint "cargo install $($crate.name)" `
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-990-        -Extra $extra
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-991-}
+--
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1038-**Interfaces:**
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1039-- Consumes: `New-DFToolSourceDetail`, `Get-DFCatalogDetailCache` (Task 1).
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:1040:- Produces: `ConvertFrom-DFCatalogODataDetailEntry -Source <string> -Entry <object> -InstallHint <string>` → detail or `$null`; `Get-DFCatalogChocoDetail / Get-DFCatalogPSGalleryDetail -PackageId <string> [-Fresh]`.
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1041-- OData note: typed elements (`m:type` attribute, e.g. `DownloadCount`) come back as XmlElement with a `'#text'` property — handle exactly like the existing `ConvertFrom-DFCatalogODataEntry` does for `Published`. Dependency strings look like `id:ver:fx|id2:ver2:fx` → keep `id (ver)` pairs.
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1042-
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1076-    It 'maps a full OData entry' {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1077-        $d = ConvertFrom-DFCatalogODataDetailEntry -Source choco -Entry (New-FakeODataEntry -Id ripgrep -Downloads 998877) `
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:1078:            -InstallHint 'choco install ripgrep'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1079-        $d.Publisher | Should -Be 'BurntSushi'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1080-        $d.Downloads | Should -Be 998877
+--
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1083-        $d.RepositoryUrl | Should -Be 'https://github.com/BurntSushi/ripgrep'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1084-        $d.ReleaseNotes | Should -Be 'Fixed things.'
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:1085:        $d.InstallHint | Should -Be 'choco install ripgrep'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1086-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1087-    It 'returns null for a null entry' {
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:1088:        ConvertFrom-DFCatalogODataDetailEntry -Source choco -Entry $null -InstallHint 'x' | Should -BeNullOrEmpty
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1089-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1090-}
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1103-        $d = Get-DFCatalogChocoDetail -PackageId ripgrep -Fresh
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1104-        $d.Publisher | Should -Be 'BurntSushi'
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:1105:        $d.InstallHint | Should -Be 'choco install ripgrep'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1106-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1107-
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1111-        }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1112-        $d = Get-DFCatalogPSGalleryDetail -PackageId PSFzf -Fresh
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:1113:        $d.InstallHint | Should -Be 'Install-PSResource PSFzf'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1114-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1115-
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1138-    .PARAMETER Entry
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1139-        One feed entry as returned by Invoke-RestMethod.
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:1140:    .PARAMETER InstallHint
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1141-        The catalog's install one-liner for this package.
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1142-    #>
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1150-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1151-        [Parameter(Mandatory)]
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:1152:        [string]$InstallHint
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1153-    )
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1154-
+--
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1179-        -RepositoryUrl ((& $text $props.ProjectSourceUrl) ? (& $text $props.ProjectSourceUrl) : (& $text $props.ProjectUrl)) `
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1180-        -DocsUrl (& $text $props.DocsUrl) `
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:1181:        -InstallHint $InstallHint
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1182-}
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1183-
+--
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1198-    $uri = "https://community.chocolatey.org/api/v2/FindPackagesById()?id='$term'&`$filter=IsLatestVersion"
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1199-    $entry = @(Invoke-RestMethod -Uri $uri -TimeoutSec 15) | Select-Object -First 1
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:1200:    ConvertFrom-DFCatalogODataDetailEntry -Source 'choco' -Entry $entry -InstallHint "choco install $PackageId"
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1201-}
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1202-
+--
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1246-    $uri = "https://www.powershellgallery.com/api/v2/FindPackagesById()?id='$term'&`$filter=IsLatestVersion"
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1247-    $entry = @(Invoke-RestMethod -Uri $uri -TimeoutSec 15) | Select-Object -First 1
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:1248:    ConvertFrom-DFCatalogODataDetailEntry -Source 'psgallery' -Entry $entry -InstallHint "Install-PSResource $PackageId"
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1249-}
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1250-
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1751-        $details = [ordered]@{
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1752-            scoop = New-DFToolSourceDetail -Source scoop -PackageId 'extras/zed' `
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:1753:                -Dependencies @('extras/vcredist2022') -InstallHint 'scoop install extras/zed' `
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1754-                -Notes 'Run zed once to install CLI.'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1755-            crates = New-DFToolSourceDetail -Source crates -PackageId zed `
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1756-                -Publisher 'Zed Industries' -Tags @('editor', 'rust') -Downloads 1234567 `
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:1757:                -InstallHint 'cargo install zed'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1758-        }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1759-        $out = (Format-DFToolDetailCard -Info (New-TestInfo -Details $details) -Color $false) -join "`n"
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1912-    if ($downloads) { $lines.Add((& $label 'Downloads') + ($downloads -join ' · ')) }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1913-
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md:1914:    $hints = @($details | ForEach-Object { $_.InstallHint } | Where-Object { $_ })
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1915-    for ($i = 0; $i -lt $hints.Count; $i++) {
+docs\superpowers\plans\2026-07-04-trifle-detail-view.md-1916-        $lines.Add(($i -eq 0 ? (& $label 'Install') : $indent) + $hints[$i])
+--
+
+[Showing results with pagination = limit: 250]

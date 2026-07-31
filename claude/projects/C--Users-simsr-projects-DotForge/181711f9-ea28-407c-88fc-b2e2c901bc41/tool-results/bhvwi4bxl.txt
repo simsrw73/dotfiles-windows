@@ -1,0 +1,400 @@
+[92mDescribing Invoke-DFGitHubApi transport selection[0m
+[32m  [+] uses anonymous REST when gh is unavailable[0m[90m 19ms (18ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Get-DFHelpTopicList.Tests.ps1'[0m
+[92mDescribing Get-DFHelpTopicList[0m
+[32m  [+] returns topics as NameCategory lines[0m[90m 34ms (33ms|1ms)[0m
+[32m  [+] writes help-topics.txt and help-topics.key on first run[0m[90m 15ms (13ms|2ms)[0m
+[32m  [+] returns cached list without calling Get-Help when fingerprint matches[0m[90m 24ms (23ms|1ms)[0m
+[32m  [+] regenerates cache when fingerprint changes[0m[90m 22ms (21ms|0ms)[0m
+[32m  [+] -Force regenerates cache even when fingerprint matches[0m[90m 20ms (20ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Get-DFPackageReadme.Tests.ps1'[0m
+[92mDescribing Get-DFPackageReadme[0m
+[32m  [+] prefers the npm detail readme[0m[90m 8ms (6ms|1ms)[0m
+[32m  [+] falls back to the GitHub readme when npm has none[0m[90m 16ms (16ms|0ms)[0m
+[32m  [+] falls back to the PyPI markdown description[0m[90m 9ms (8ms|1ms)[0m
+[32m  [+] returns null when nothing resolves[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] pypi fallback works on cache-rehydrated details (Extra is a PSCustomObject)[0m[90m 3ms (3ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Get-DFTool.Tests.ps1'[0m
+[92mDescribing Get-DFTool[0m
+[32m  [+] returns all tools when called with no parameters[0m[90m 11ms (10ms|1ms)[0m
+[32m  [+] returns one tool by exact name[0m[90m 7ms (7ms|1ms)[0m
+[32m  [+] returns null for an unknown name[0m[90m 6ms (6ms|1ms)[0m
+[32m  [+] returns all tools with a matching tag[0m[90m 9ms (9ms|1ms)[0m
+[32m  [+] returns nothing when no tools match the tag[0m[90m 8ms (7ms|1ms)[0m
+[0m
+[92mDescribing Find-DFTool[0m
+[32m  [+] finds tools by name pattern[0m[90m 15ms (13ms|1ms)[0m
+[32m  [+] finds tools by description pattern[0m[90m 7ms (7ms|1ms)[0m
+[32m  [+] finds tools by tag pattern[0m[90m 7ms (7ms|1ms)[0m
+[32m  [+] returns empty when pattern matches nothing[0m[90m 7ms (6ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Get-DFToolIdentityGuide.Tests.ps1'[0m
+[92mDescribing Get-DFToolIdentityGuide[0m
+[32m  [+] loads a valid fixture[0m[90m 22ms (20ms|2ms)[0m
+[32m  [+] builds an id index from each tool's packages[0m[90m 6ms (6ms|1ms)[0m
+[32m  [+] caches the -Path load as a singleton until -Force[0m[90m 8ms (7ms|1ms)[0m
+[32m  [+] returns an empty-but-valid object when the shipped file is unreadable, and warns once[0m[90m 6ms (6ms|1ms)[0m
+[32m  [+] a refreshed copy newer than shipped wins[0m[90m 15ms (14ms|1ms)[0m
+[32m  [+] a refreshed copy OLDER than shipped is ignored[0m[90m 15ms (14ms|1ms)[0m
+[32m  [+] a refreshed copy that fails schema validation falls back to shipped[0m[90m 19ms (18ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Import-DFToolDb.Tests.ps1'[0m
+[92mDescribing Import-DFToolDb[0m
+[32m  [+] returns a hashtable keyed by tool name[0m[90m 11ms (10ms|1ms)[0m
+[32m  [+] returns cached result on second call without -Force[0m[90m 8ms (7ms|1ms)[0m
+[32m  [+] reloads when -Force is specified[0m[90m 12ms (12ms|1ms)[0m
+[32m  [+] emits a warning and skips files that fail schema validation[0m[90m 11ms (10ms|1ms)[0m
+[32m  [+] returns empty hashtable when ToolsPath does not exist[0m[90m 8ms (7ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Initialize-DFEnvironment.Tests.ps1'[0m
+[92mDescribing Initialize-DFEnvironment[0m
+[33;1mWARNING: DotForge: No supported package managers found (scoop, winget, choco). Install one to use Install-DFTool.[0m
+[32m  [+] sets XDG env vars when they are absent[0m[90m 21ms (20ms|1ms)[0m
+[33;1mWARNING: DotForge: No supported package managers found (scoop, winget, choco). Install one to use Install-DFTool.[0m
+[32m  [+] does not override XDG vars that are already set[0m[90m 17ms (16ms|1ms)[0m
+[33;1mWARNING: DotForge: No supported package managers found (scoop, winget, choco). Install one to use Install-DFTool.[0m
+[32m  [+] creates the four XDG base directories[0m[90m 20ms (19ms|1ms)[0m
+[32m  [+] emits a warning when no package managers are found[0m[90m 15ms (14ms|1ms)[0m
+DotForge: Environment ready. Package managers: scoop, winget, choco
+[32m  [+] does not warn when at least one package manager is found[0m[90m 17ms (16ms|1ms)[0m
+[33;1mWARNING: DotForge: No supported package managers found (scoop, winget, choco). Install one to use Install-DFTool.[0m
+[33;1mWARNING: DotForge: No supported package managers found (scoop, winget, choco). Install one to use Install-DFTool.[0m
+[32m  [+] is idempotent - calling twice does not throw[0m[90m 26ms (25ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Install-DFTool.Tests.ps1'[0m
+[92mDescribing Install-DFTool[0m
+[32m  [+] warns for an unknown tool name[0m[90m 32ms (31ms|1ms)[0m
+[32m  [+] warns when no package manager is available for the tool[0m[90m 27ms (26ms|1ms)[0m
+[32m  [+] warns when the available PM has no package for the tool[0m[90m 17ms (16ms|1ms)[0m
+  Installing pkgtool via scoop (pkgtool-scoop). û
+[32m  [+] uses -PackageManager override when specified[0m[90m 17ms (16ms|1ms)[0m
+  Installing pkgtool via winget (Vendor.pkgtool). û
+[32m  [+] uses $DFConfig.PackageManagerOrder when set[0m[90m 17ms (16ms|1ms)[0m
+What if: Performing the operation "Install" on target "pkgtool via scoop (pkgtool-scoop)".
+[32m  [+] does not throw when -WhatIf is specified[0m[90m 15ms (15ms|1ms)[0m
+[32m  [+] processes multiple tool names in a single call[0m[90m 16ms (15ms|0ms)[0m
+  Installing psmod via psresource (PsMod). û
+[32m  [+] installs via Install-PSResource when psresource package is specified[0m[90m 20ms (19ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Invoke-DFCommandCapture.Tests.ps1'[0m
+[92mDescribing Invoke-DFCommandCapture[0m
+[32m  [+] captures stdout text and a zero exit code[0m[90m 286ms (285ms|1ms)[0m
+[32m  [+] reports a non-zero exit code[0m[90m 221ms (220ms|1ms)[0m
+[32m  [+] preserves original line breaks (no console-width rewrapping)[0m[90m 281ms (280ms|1ms)[0m
+[32m  [+] returns an object with Text and ExitCode properties[0m[90m 282ms (281ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Invoke-DFFzf.Tests.ps1'[0m
+[92mDescribing Invoke-DFFzf[0m
+[32m  [+] defaults to fzf when $Env:Picker is not set[0m[90m 21ms (20ms|1ms)[0m
+[32m  [+] uses the picker named in $Env:Picker[0m[90m 13ms (12ms|1ms)[0m
+[32m  [+] errors with a helpful message when the picker is not on PATH[0m[90m 10ms (10ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Invoke-DFPicker.Tests.ps1'[0m
+[92mDescribing Invoke-DFPicker[0m
+[32m  [+] outputs the selected item when no Action is given[0m[90m 8ms (7ms|1ms)[0m
+[32m  [+] calls Action with the selected item[0m[90m 11ms (10ms|1ms)[0m
+[32m  [+] applies Parse before Action - $_ is the raw line[0m[90m 9ms (8ms|1ms)[0m
+[32m  [+] returns nothing when fzf produces no selection (user cancelled)[0m[90m 7ms (7ms|1ms)[0m
+[32m  [+] passes --preview-window to fzf[0m[90m 9ms (8ms|0ms)[0m
+[32m  [+] passes --ansi to fzf when -Ansi is specified[0m[90m 10ms (9ms|1ms)[0m
+[32m  [+] passes --header to fzf when -Header is specified[0m[90m 10ms (9ms|1ms)[0m
+[32m  [+] handles multi-select - Action called once per selected item[0m[90m 13ms (13ms|1ms)[0m
+[32m  [+] passes --multi to fzf when -Multi is specified[0m[90m 9ms (8ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Invoke-DFSqliteQuery.Tests.ps1'[0m
+[92mDescribing Invoke-DFSqliteQuery[0m
+[32m  [+] queries rows from a SQLite database as PSCustomObjects[0m[90m 6ms (5ms|1ms)[0m
+[32m  [+] reads the metadata version table[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] returns $null for a missing database file[0m[90m 2ms (2ms|1ms)[0m
+[32m  [+] returns $null for an invalid query instead of throwing[0m[90m 3ms (2ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\New-DFDirectory.Tests.ps1'[0m
+[92mDescribing New-DFDirectory[0m
+[32m  [+] creates a directory that does not exist[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] is idempotent - no error when directory already exists[0m[90m 6ms (6ms|1ms)[0m
+[32m  [+] creates nested directories[0m[90m 4ms (4ms|0ms)[0m
+[32m  [+] silently skips empty string[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] silently skips null[0m[90m 2ms (2ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\New-DFShim.Tests.ps1'[0m
+[92mDescribing New-DFShim[0m
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims' is not on PATH - shims won't be invocable until it is added[0m
+[32m  [+] derives shim name from target basename when -Name is omitted[0m[90m 22ms (21ms|1ms)[0m
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims' is not on PATH - shims won't be invocable until it is added[0m
+[32m  [+] accepts -Target positionally and uses explicit -Name when provided[0m[90m 12ms (11ms|1ms)[0m
+[32m  [+] errors when neither -Target nor -Name is given[0m[90m 7ms (7ms|0ms)[0m
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims' is not on PATH - shims won't be invocable until it is added[0m
+[32m  [+] creates a .cmd file in the specified shims dir[0m[90m 9ms (8ms|0ms)[0m
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims' is not on PATH - shims won't be invocable until it is added[0m
+[32m  [+] generated .cmd contains the correct target path[0m[90m 13ms (12ms|0ms)[0m
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims' is not on PATH - shims won't be invocable until it is added[0m
+[32m  [+] generated .cmd contains cd /d to the app directory[0m[90m 13ms (13ms|0ms)[0m
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims' is not on PATH - shims won't be invocable until it is added[0m
+[32m  [+] generated .cmd uses endlocal & exit on one line to preserve exit code[0m[90m 12ms (11ms|0ms)[0m
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\config-shims' is not on PATH - shims won't be invocable until it is added[0m
+[32m  [+] uses ShimsPath from $DFConfig when -ShimsPath is not specified[0m[90m 11ms (11ms|0ms)[0m
+[32m  [+] falls back to $HOME\.local\bin when no $DFConfig ShimsPath is set[0m[90m 11ms (10ms|1ms)[0m
+[32m  [+] warns when shims dir is not on $PATH[0m[90m 10ms (10ms|1ms)[0m
+[32m  [+] does not warn when shims dir is already on $PATH[0m[90m 20ms (19ms|0ms)[0m
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims' is not on PATH - shims won't be invocable until it is added[0m
+[32m  [+] resolves target from tool DB when -Target is omitted[0m[90m 26ms (26ms|0ms)[0m
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims' is not on PATH - shims won't be invocable until it is added[0m
+[32m  [+] -Target bypasses the tool DB entirely[0m[90m 13ms (13ms|0ms)[0m
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims' is not on PATH - shims won't be invocable until it is added[0m
+[32m  [+] errors when -Target file does not exist[0m[90m 12ms (11ms|1ms)[0m
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims' is not on PATH - shims won't be invocable until it is added[0m
+[32m  [+] errors when tool name is not in DB and -Target is omitted[0m[90m 13ms (13ms|0ms)[0m
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims' is not on PATH - shims won't be invocable until it is added[0m
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims' is not on PATH - shims won't be invocable until it is added[0m
+[32m  [+] -Force overwrites an existing shim[0m[90m 24ms (24ms|1ms)[0m
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims' is not on PATH - shims won't be invocable until it is added[0m
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims' is not on PATH - shims won't be invocable until it is added[0m
+[32m  [+] errors without -Force when shim already exists[0m[90m 18ms (17ms|0ms)[0m
+What if: Performing the operation "Create Directory" on target "Destination: C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims".
+[33;1mWARNING: DotForge: 'C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims' is not on PATH - shims won't be invocable until it is added[0m
+What if: Performing the operation "Create shim" on target "C:\Users\simsr\AppData\Local\Temp\f5ea5b88-1db6-49a3-a5d1-108bb7671497\shims\myapp.cmd".
+[32m  [+] -WhatIf does not create the shim file[0m[90m 10ms (10ms|0ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\psreadline.Tests.ps1'[0m
+[92mDescribing psreadline tool sidecar[0m
+[33;1mWARNING: DotForge: PSReadLine option 'PredictionSource' not supported in this terminal - skipping[0m
+[32m  [+] registers Select-PSReadLineTheme as a global function[0m[90m 178ms (176ms|1ms)[0m
+[33;1mWARNING: DotForge: PSReadLine option 'PredictionSource' not supported in this terminal - skipping[0m
+[32m  [+] registers fprl as an alias for Select-PSReadLineTheme[0m[90m 59ms (59ms|1ms)[0m
+[33;1mWARNING: DotForge: PSReadLine option 'PredictionSource' not supported in this terminal - skipping[0m
+[32m  [+] registers Invoke-DFApplyPSReadLineTheme as a global function[0m[90m 56ms (56ms|1ms)[0m
+[33;1mWARNING: DotForge: PSReadLine option 'PredictionSource' not supported in this terminal - skipping[0m
+[32m  [+] applies PSReadLine settings from tool JSON[0m[90m 64ms (63ms|1ms)[0m
+[33;1mWARNING: DotForge: PSReadLine option 'PredictionSource' not supported in this terminal - skipping[0m
+[32m  [+] applies the dark theme by default (Colors.Command is non-null)[0m[90m 49ms (48ms|0ms)[0m
+[33;1mWARNING: DotForge: PSReadLine option 'PredictionSource' not supported in this terminal - skipping[0m
+[32m  [+] applies the theme named in $DFConfig[PSReadLineTheme][0m[90m 50ms (50ms|1ms)[0m
+[33;1mWARNING: DotForge: PSReadLine option 'PredictionSource' not supported in this terminal - skipping[0m
+[32m  [+] applies a theme from XDG user dir, overriding bundled name[0m[90m 55ms (54ms|1ms)[0m
+[32m  [+] warns and continues when an invalid hex color is in the theme[0m[90m 54ms (53ms|0ms)[0m
+[32m  [+] warns when named theme is not found[0m[90m 58ms (58ms|1ms)[0m
+[33;1mWARNING: DotForge: PSReadLine option 'PredictionSource' not supported in this terminal - skipping[0m
+[32m  [+] Invoke-DFApplyPSReadLineTheme accepts an absolute path directly[0m[90m 58ms (58ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Register-DFTool.Tests.ps1'[0m
+[92mDescribing Register-DFTool[0m
+[32m  [+] skips tools not found on PATH (no error)[0m[90m 17ms (16ms|1ms)[0m
+[32m  [+] sets XDG env vars when method is env[0m[90m 21ms (21ms|0ms)[0m
+[32m  [+] creates XDG dirs when method is env[0m[90m 20ms (19ms|0ms)[0m
+[32m  [+] creates a Set-Alias for zero-arg aliases[0m[90m 16ms (15ms|1ms)[0m
+[32m  [+] creates a wrapper function for arg-bearing aliases[0m[90m 15ms (15ms|1ms)[0m
+[32m  [+] wrapper function overrides a pre-existing alias of the same name[0m[90m 19ms (19ms|1ms)[0m
+[32m  [+] creates a global picker function from declarative picker JSON[0m[90m 15ms (14ms|0ms)[0m
+[32m  [+] creates a picker alias when picker.alias is set[0m[90m 15ms (14ms|1ms)[0m
+[32m  [+] dot-sources a companion .ps1 when it exists[0m[90m 23ms (23ms|0ms)[0m
+[32m  [+] warns for unknown tool name[0m[90m 14ms (14ms|1ms)[0m
+[32m  [+] registers all installed tools when -All is specified[0m[90m 20ms (20ms|0ms)[0m
+[32m  [+] skips tools listed in $Global:DFConfig.SkipTools when -All is used[0m[90m 27ms (27ms|0ms)[0m
+[32m  [+] does not skip tools when $Global:DFConfig is not set[0m[90m 22ms (22ms|0ms)[0m
+[32m  [+] list_accepts_path: creates picker function without error (path safety)[0m[90m 17ms (16ms|1ms)[0m
+[32m  [+] xdg method config: creates config file if it does not exist[0m[90m 27ms (27ms|0ms)[0m
+[32m  [+] uses Get-Module -ListAvailable for type=module tools[0m[90m 22ms (22ms|0ms)[0m
+[32m  [+] xdg method config: does not overwrite existing config file[0m[90m 19ms (18ms|1ms)[0m
+[32m  [+] registers psreadline before PSFzf when PSFzf has dependsOn = ["psreadline"][0m[90m 80ms (79ms|0ms)[0m
+[32m  [+] injects $DFCurrentTool before dot-sourcing companion[0m[90m 25ms (24ms|1ms)[0m
+[0m
+[92mDescribing Invoke-DFTopoSort[0m
+[32m  [+] returns tools unchanged when no dependsOn fields present[0m[90m 4ms (3ms|2ms)[0m
+[32m  [+] places dependency before dependent tool[0m[90m 3ms (2ms|0ms)[0m
+[32m  [+] handles three-tool chain: a -> b -> c[0m[90m 3ms (3ms|0ms)[0m
+[32m  [+] ignores dep not present in the tool set (no error, tool still registered)[0m[90m 8ms (8ms|0ms)[0m
+[32m  [+] emits a warning and returns original order on cycle[0m[90m 3ms (2ms|1ms)[0m
+[32m  [+] returns empty array for empty input[0m[90m 2ms (2ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Resolve-DFCatalogQueryMerge.Tests.ps1'[0m
+[92mDescribing Resolve-DFCatalogQueryMerge identity resolution[0m
+[32m  [+] splits two different-source same-named hits with no identity link at all[0m[90m 31ms (30ms|1ms)[0m
+[32m  [+] merges two different-source same-named hits when the tool-identity guide links them[0m[90m 19ms (19ms|0ms)[0m
+[32m  [+] still merges via the live Tools/*.json IdentityMap (existing behavior preserved)[0m[90m 21ms (21ms|0ms)[0m
+[32m  [+] resolves a scoop bucket-qualified id against the guide's bare-name entry[0m[90m 19ms (18ms|0ms)[0m
+[32m  [+] prefers Tools/*.json over a conflicting guide entry for the same (source, packageId)[0m[90m 21ms (21ms|0ms)[0m
+[32m  [+] still groups same-source same-name hits together (unaffected by the identity change)[0m[90m 21ms (20ms|0ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Resolve-DFCliHelpFlag.Tests.ps1'[0m
+[92mDescribing Resolve-DFCliHelpFlag[0m
+[32m  [+] returns the first candidate that produces help-looking output[0m[90m 20ms (19ms|1ms)[0m
+[32m  [+] rejects an unknown-option error and moves to the next candidate[0m[90m 13ms (13ms|1ms)[0m
+[32m  [+] tries -h last[0m[90m 21ms (20ms|1ms)[0m
+[32m  [+] writes the discovered flag to the cache[0m[90m 16ms (15ms|1ms)[0m
+[32m  [+] returns the cached flag without running the command[0m[90m 18ms (18ms|1ms)[0m
+[32m  [+] re-guesses when -Force is passed even with a cache entry[0m[90m 18ms (17ms|0ms)[0m
+[32m  [+] returns $null when every candidate produces empty output[0m[90m 15ms (15ms|0ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Resolve-DFPackageManager.Tests.ps1'[0m
+[92mDescribing Resolve-DFPackageManager[0m
+[32m  [+] returns only managers found on PATH[0m[90m 12ms (11ms|1ms)[0m
+[32m  [+] returns empty array when no managers are found[0m[90m 9ms (9ms|0ms)[0m
+[32m  [+] caches result on second call (Get-Command not called again)[0m[90m 18ms (18ms|0ms)[0m
+[32m  [+] reloads when -Force is specified[0m[90m 15ms (15ms|0ms)[0m
+[32m  [+] respects custom -Priority order[0m[90m 9ms (9ms|0ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1'[0m
+[92mDescribing ConvertTo-DFNormalizedHomepage[0m
+[32m  [+] strips scheme, www, and trailing slash, and lowercases[0m[90m 3ms (2ms|1ms)[0m
+[32m  [+] normalizes differently-formatted urls for the same site identically[0m[90m 2ms (1ms|0ms)[0m
+[32m  [+] returns an empty string for null or empty input, without throwing[0m[90m 2ms (2ms|0ms)[0m
+[0m
+[92mDescribing Resolve-DFToolIdentityCandidateRepo[0m
+[32m  [+] resolves via detail-level RepositoryUrl when the repo is on GitHub[0m[90m 13ms (12ms|1ms)[0m
+[32m  [+] falls back to a live search's Homepage when detail has no repo[0m[90m 7ms (7ms|1ms)[0m
+[32m  [+] falls back to the normalized homepage when neither detail nor search homepage is GitHub[0m[90m 7ms (7ms|0ms)[0m
+[32m  [+] never throws when Get-DFCatalogDetail throws[0m[90m 7ms (7ms|0ms)[0m
+[32m  [+] never throws when the provider Search throws, returning null fields[0m[90m 10ms (10ms|0ms)[0m
+[32m  [+] returns null fields (no throw) when no provider is registered for the source[0m[90m 6ms (5ms|0ms)[0m
+[32m  [+] only invokes Search when detail-level resolution already succeeded is false[0m[90m 6ms (5ms|0ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityLinkage.Tests.ps1'[0m
+[92mDescribing Resolve-DFToolIdentityLinkage[0m
+[32m  [+] links via repo when two or more candidates resolve to the same repo[0m[90m 15ms (14ms|1ms)[0m
+[32m  [+] does not claim the repo tier when only one candidate resolves a repo[0m[90m 12ms (12ms|1ms)[0m
+[32m  [+] does not claim the repo tier when candidates disagree[0m[90m 8ms (7ms|1ms)[0m
+[32m  [+] falls back to the homepage tier when no repo corroborates but homepages agree[0m[90m 7ms (7ms|0ms)[0m
+[32m  [+] defaults to curated when nothing automated corroborates[0m[90m 7ms (7ms|0ms)[0m
+[32m  [+] skips a null or empty package value without calling the resolver for it[0m[90m 10ms (10ms|0ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Select-DFPackage.Tests.ps1'[0m
+[92mDescribing Get-DFCatalogLocalPackages[0m
+[32m  [+] aggregates local caches into one entry per package with merged sources[0m[90m 38ms (37ms|1ms)[0m
+[32m  [+] returns nothing when no cache root is configured[0m[90m 16ms (15ms|0ms)[0m
+[0m
+[92mDescribing Select-DFPackage[0m
+[32m  [+] shows the info card for the picked package[0m[90m 53ms (51ms|2ms)[0m
+[32m  [+] does nothing when the picker is cancelled[0m[90m 30ms (30ms|0ms)[0m
+[32m  [+] warns when no local catalog data exists yet[0m[90m 33ms (32ms|1ms)[0m
+[32m  [+] is aliased to ftrifle[0m[90m 20ms (19ms|1ms)[0m
+[96m Context query mode[0m
+[32m   [+] searches, pre-renders preview files, and passes a preview command[0m[90m 36ms (35ms|2ms)[0m
+[32m   [+] cleans the preview temp dir after the picker exits[0m[90m 42ms (41ms|0ms)[0m
+[32m   [+] invokes Find-DFPackage with the qualified id and passthrough switches on selection[0m[90m 39ms (37ms|2ms)[0m
+[32m   [+] warns when the query has no matches[0m[90m 22ms (22ms|0ms)[0m
+[96m Context -Categories browse mode[0m
+[32m   [+] -Categories lists function and worksWith values with counts, divided[0m[90m 27ms (27ms|1ms)[0m
+[33;1mWARNING: DotForge: no matches for category 'search'.[0m
+[32m   [+] recurses into -Category when a function value is picked[0m[90m 34ms (33ms|0ms)[0m
+[33;1mWARNING: DotForge: no matches for works-with 'text'.[0m
+[32m   [+] recurses into -WorksWith when a worksWith value is picked[0m[90m 30ms (30ms|1ms)[0m
+[32m   [+] does nothing when the divider row is selected[0m[90m 24ms (23ms|0ms)[0m
+[32m   [+] -Category  searches, previews, and selects exactly like query mode[0m[90m 38ms (38ms|0ms)[0m
+[32m   [+] warns when -Category  has no matches[0m[90m 24ms (24ms|0ms)[0m
+[32m   [+] warns when the category database is unavailable[0m[90m 26ms (25ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Show-DFCliHelp.Tests.ps1'[0m
+[92mDescribing Show-DFCliHelp[0m
+[32m  [+] warns and returns when the command is not found[0m[90m 20ms (20ms|1ms)[0m
+[32m  [+] uses an explicit -Flag and does not call the resolver[0m[90m 28ms (27ms|0ms)[0m
+[32m  [+] calls the resolver when no flag is given[0m[90m 21ms (20ms|0ms)[0m
+[32m  [+] writes colorized output to the pipeline by default[0m[90m 19ms (18ms|0ms)[0m
+[32m  [+] routes through the pager when -Paged is set[0m[90m 22ms (21ms|0ms)[0m
+[32m  [+] warns when the resolver returns no flag[0m[90m 22ms (22ms|0ms)[0m
+[32m  [+] Show-DFCliHelpPaged delegates with -Paged[0m[90m 17ms (17ms|0ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Test-DFCategoryDbSchema.Tests.ps1'[0m
+[92mDescribing Test-DFCategoryDbSchema[0m
+[32m  [+] accepts a valid document[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] rejects a missing schemaVersion[0m[90m 3ms (3ms|0ms)[0m
+[32m  [+] rejects an unknown function value[0m[90m 3ms (3ms|0ms)[0m
+[32m  [+] rejects an unknown worksWith value[0m[90m 4ms (4ms|0ms)[0m
+[32m  [+] rejects a missing interface[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] rejects an invalid interface value[0m[90m 4ms (4ms|0ms)[0m
+[32m  [+] rejects an out-of-range popularity[0m[90m 3ms (3ms|0ms)[0m
+[32m  [+] rejects a tool with an empty function array[0m[90m 3ms (2ms|0ms)[0m
+[32m  [+] accumulates multiple errors in one pass[0m[90m 3ms (2ms|0ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Test-DFToolIdentityGuideSchema.Tests.ps1'[0m
+[92mDescribing Test-DFToolIdentityGuideSchema[0m
+[32m  [+] accepts a valid document[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] rejects a missing schemaVersion[0m[90m 3ms (3ms|1ms)[0m
+[32m  [+] rejects a tool with an empty packages object[0m[90m 3ms (3ms|0ms)[0m
+[32m  [+] rejects a missing linkedVia[0m[90m 3ms (2ms|0ms)[0m
+[32m  [+] rejects an invalid linkedVia value[0m[90m 3ms (3ms|1ms)[0m
+[32m  [+] rejects an empty-string repo when present[0m[90m 4ms (4ms|1ms)[0m
+[32m  [+] accepts a tool entry with no repo field at all[0m[90m 3ms (2ms|1ms)[0m
+[32m  [+] rejects a (source, packageId) pair claimed by two different tool keys[0m[90m 3ms (2ms|0ms)[0m
+[32m  [+] accumulates multiple errors in one pass[0m[90m 2ms (2ms|0ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Test-DFToolSchema.Tests.ps1'[0m
+[92mDescribing Test-DFToolSchema[0m
+[96m Context valid records[0m
+[32m   [+] passes a minimal valid tool record[0m[90m 3ms (2ms|1ms)[0m
+[32m   [+] passes a tool with type = "exe"[0m[90m 2ms (1ms|0ms)[0m
+[32m   [+] passes a tool with type = "module"[0m[90m 2ms (1ms|0ms)[0m
+[32m   [+] passes a fully populated valid record[0m[90m 2ms (1ms|0ms)[0m
+[96m Context invalid records[0m
+[32m   [+] fails when name is missing[0m[90m 3ms (2ms|1ms)[0m
+[32m   [+] fails when executable is missing[0m[90m 2ms (2ms|0ms)[0m
+[32m   [+] fails when xdg.method is not a valid value[0m[90m 3ms (2ms|0ms)[0m
+[32m   [+] fails when type is not a valid value[0m[90m 2ms (2ms|0ms)[0m
+[0m
+[92mDescribing Seed tool JSON files[0m
+[32m  [+] seed file bat.json exists and passes schema validation[0m[90m 5ms (3ms|2ms)[0m
+[32m  [+] seed file eza.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file fzf.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file ripgrep.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file zoxide.json exists and passes schema validation[0m[90m 3ms (2ms|0ms)[0m
+[32m  [+] seed file fd.json exists and passes schema validation[0m[90m 4ms (4ms|0ms)[0m
+[32m  [+] seed file broot.json exists and passes schema validation[0m[90m 3ms (2ms|0ms)[0m
+[32m  [+] seed file jq.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file glow.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file procs.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file winfetch.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file curl.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file wget.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file docker.json exists and passes schema validation[0m[90m 3ms (3ms|0ms)[0m
+[32m  [+] seed file less.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file gh.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file delta.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file lazygit.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file rustup.json exists and passes schema validation[0m[90m 7ms (7ms|0ms)[0m
+[32m  [+] seed file uv.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file chezmoi.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file micro.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file bitwarden.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file npm.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file scoop.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file winget.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file posh-git.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file psreadline.json exists and passes schema validation[0m[90m 2ms (2ms|0ms)[0m
+[32m  [+] seed file PSFzf.json exists and passes schema validation[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] seed file Terminal-Icons.json exists and passes schema validation[0m[90m 3ms (2ms|1ms)[0m
+[32m  [+] seed file oh-my-posh.json exists and passes schema validation[0m[90m 3ms (2ms|1ms)[0m
+[32m  [+] seed file gsudo.json exists and passes schema validation[0m[90m 4ms (3ms|1ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Update-DFCategoryDb.Tests.ps1'[0m
+[92mDescribing Update-DFCategoryDb[0m
+Updated category database at C:\Users\simsr\AppData\Local\Temp\60e336d9-f105-48eb-a957-459773d3824f\ac975bb4-4b04-435c-8397-edc51b7d579d\data\dotforge\tool-categories.json (1 tools).
+[32m  [+] downloads, validates, and atomically writes the destination[0m[90m 20ms (19ms|1ms)[0m
+What if: Performing the operation "Update category database" on target "C:\Users\simsr\AppData\Local\Temp\60e336d9-f105-48eb-a957-459773d3824f\73e4a78d-f660-456a-9954-74a63d5b707c\data\dotforge\tool-categories.json".
+[32m  [+] leaves no file behind on -WhatIf[0m[90m 8ms (7ms|1ms)[0m
+[32m  [+] warns and writes nothing when the download fails[0m[90m 7ms (7ms|0ms)[0m
+[32m  [+] warns and leaves the existing copy untouched when validation fails[0m[90m 13ms (12ms|0ms)[0m
+[32m  [+] warns when XDG_DATA_HOME is unset[0m[90m 7ms (7ms|0ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Update-DFPackageCache.Tests.ps1'[0m
+[92mDescribing Update-DFPackageCache[0m
+[32m  [+] refreshes snapshot provider indexes[0m[90m 17ms (16ms|1ms)[0m
+[32m  [+] re-warms every seen query against each query-cache provider[0m[90m 19ms (19ms|0ms)[0m
+[32m  [+] re-warms installed tool names[0m[90m 7ms (6ms|0ms)[0m
+[32m  [+] does not re-warm the same query twice[0m[90m 17ms (16ms|0ms)[0m
+[32m  [+] honors -Source[0m[90m 8ms (8ms|0ms)[0m
+[32m  [+] keeps going when one provider refresh fails[0m[90m 9ms (9ms|0ms)[0m
+[32m  [+] re-warms cached detail entries with the stored raw PackageId[0m[90m 19ms (19ms|0ms)[0m
+[95m
+[95mRunning tests from 'C:\Users\simsr\projects\DotForge\tests\Update-DFToolIdentityGuide.Tests.ps1'[0m
+[92mDescribing Update-DFToolIdentityGuide[0m
+Updated tool-identity guide at C:\Users\simsr\AppData\Local\Temp\c621f1eb-82f7-4bb5-989d-7adcadeb91f6\32de50e5-fb9d-4cae-932f-e857fd7432ad\data\dotforge\tool-identities.json (1 tools).
+[32m  [+] downloads, validates, and atomically writes the destination[0m[90m 19ms (18ms|1ms)[0m
+What if: Performing the operation "Update tool-identity guide" on target "C:\Users\simsr\AppData\Local\Temp\c621f1eb-82f7-4bb5-989d-7adcadeb91f6\24cc336a-ebc0-401c-a833-2669ae1a7eb7\data\dotforge\tool-identities.json".
+[32m  [+] leaves no file behind on -WhatIf[0m[90m 7ms (6ms|0ms)[0m
+[32m  [+] warns and writes nothing when the download fails[0m[90m 7ms (7ms|0ms)[0m
+[32m  [+] warns and leaves the existing copy untouched when validation fails[0m[90m 10ms (9ms|0ms)[0m
+[32m  [+] warns when XDG_DATA_HOME is unset[0m[90m 6ms (6ms|0ms)[0m
+[97mTests completed in 22.02s[0m
+[32mTests Passed: 567, [0m[90mFailed: 0, [0m[90mSkipped: 0, [0m[90mInconclusive: 0, [0m[37m[0m[90mNotRun: 0[0m

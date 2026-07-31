@@ -1,0 +1,3 @@
+# ripgrep config
+--smart-case
+--hidden

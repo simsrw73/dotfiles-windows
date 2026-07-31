@@ -1,0 +1,252 @@
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-471-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-472----
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-473-
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:474:### Task 3: Per-candidate resolution (`ConvertTo-DFNormalizedHomepage`, `Resolve-DFToolIdentityCandidateRepo`)
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-475-
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-476-**Files:**
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:477:- Create: `Private/Resolve-DFToolIdentityCandidateRepo.ps1`
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:478:- Test: `tests/Resolve-DFToolIdentityCandidateRepo.Tests.ps1`
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-479-
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-480-**Interfaces:**
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-481-- Consumes: `Get-DFCatalogDetail -Source -PackageId [-Fresh]` (existing, returns `DotForge.ToolSourceDetail` or `$null`), `Resolve-DFGitHubRepoUrl -Info` (existing, in `Private/Get-DFGitHubRepoInfo.ps1`, reads `$Info.Details.Values[].RepositoryUrl` and `$Info.Homepage`), `$script:DFCatalogProviders` (existing catalog provider table, each entry has a `.Search` scriptblock).
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-482-- Produces:
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-483-  - `ConvertTo-DFNormalizedHomepage -Url <string>` → `[string]`. Strips scheme, a leading `www.`, and trailing slashes; lowercases the result. Empty/null input returns `''`.
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:484:[Omitted long matching line]
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-485-
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-486-- [ ] **Step 1: Write the failing tests**
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-487-
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:488:Create `tests/Resolve-DFToolIdentityCandidateRepo.Tests.ps1`:
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-489-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-490-```powershell
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-491-BeforeAll {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-492-    . "$PSScriptRoot/../Private/DFCatalog.ps1"
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-493-    . "$PSScriptRoot/../Private/Get-DFGitHubRepoInfo.ps1"
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:494:    . "$PSScriptRoot/../Private/Resolve-DFToolIdentityCandidateRepo.ps1"
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-495-}
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-496-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-497-Describe 'ConvertTo-DFNormalizedHomepage' {
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-510-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-511-}
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-512-
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:513:Describe 'Resolve-DFToolIdentityCandidateRepo' {
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-514-    AfterEach { $script:DFCatalogProviders = $null }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-515-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-516-    It 'resolves via detail-level RepositoryUrl when the repo is on GitHub' {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-517-        Mock Get-DFCatalogDetail {
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-518-            New-DFToolSourceDetail -Source scoop -PackageId ripgrep -RepositoryUrl 'https://github.com/BurntSushi/ripgrep'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-519-        }
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:520:        $result = Resolve-DFToolIdentityCandidateRepo -Source scoop -PackageId ripgrep
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-521-        $result.Repo | Should -Be 'burntsushi/ripgrep'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-522-        $result.Homepage | Should -BeNullOrEmpty
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-523-    }
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-532-                }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-533-            }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-534-        }
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:535:        $result = Resolve-DFToolIdentityCandidateRepo -Source winget -PackageId 'Zed.Zed'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-536-        $result.Repo | Should -Be 'zed-industries/zed'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-537-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-538-
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-546-                }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-547-            }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-548-        }
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:549:        $result = Resolve-DFToolIdentityCandidateRepo -Source winget -PackageId 'Zed.Zed'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-550-        $result.Repo | Should -BeNullOrEmpty
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-551-        $result.Homepage | Should -Be 'zed.dev'
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-552-    }
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-554-    It 'never throws when Get-DFCatalogDetail throws' {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-555-        Mock Get-DFCatalogDetail { throw 'network down' }
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-556-        $script:DFCatalogProviders = @{ scoop = @{ Search = { param($Query, $Fresh) } } }
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:557:        { Resolve-DFToolIdentityCandidateRepo -Source scoop -PackageId ripgrep } | Should -Not -Throw
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-558-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-559-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-560-    It 'never throws when the provider Search throws, returning null fields' {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-561-        Mock Get-DFCatalogDetail { $null }
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-562-        $script:DFCatalogProviders = @{ scoop = @{ Search = { param($Query, $Fresh) throw 'boom' } } }
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:563:        $result = Resolve-DFToolIdentityCandidateRepo -Source scoop -PackageId ripgrep
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-564-        $result.Repo | Should -BeNullOrEmpty
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-565-        $result.Homepage | Should -BeNullOrEmpty
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-566-    }
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-568-    It 'returns null fields (no throw) when no provider is registered for the source' {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-569-        Mock Get-DFCatalogDetail { $null }
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-570-        $script:DFCatalogProviders = @{}
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:571:        $result = Resolve-DFToolIdentityCandidateRepo -Source scoop -PackageId ripgrep
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-572-        $result.Repo | Should -BeNullOrEmpty
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-573-        $result.Homepage | Should -BeNullOrEmpty
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-574-    }
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-579-        }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-580-        $searchCalled = $false
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-581-        $script:DFCatalogProviders = @{ scoop = @{ Search = { param($Query, $Fresh) $script:searchCalled = $true } } }
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:582:        $null = Resolve-DFToolIdentityCandidateRepo -Source scoop -PackageId ripgrep
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-583-        $searchCalled | Should -BeFalse
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-584-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-585-}
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-587-
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-588-- [ ] **Step 2: Run tests to verify they fail**
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-589-
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:590:Run: `pwsh -NoProfile -Command "Invoke-Pester tests/Resolve-DFToolIdentityCandidateRepo.Tests.ps1 -Output Detailed"`
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-591-Expected: FAIL — functions not defined.
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-592-
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:593:- [ ] **Step 3: Implement `Private/Resolve-DFToolIdentityCandidateRepo.ps1`**
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-594-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-595-```powershell
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-596-#Requires -Version 7.0
+--
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-617-    ($Url -creplace '^[a-zA-Z]+://', '' -creplace '^www\.', '' -creplace '/+$', '').ToLowerInvariant()
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-618-}
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-619-
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:620:function Resolve-DFToolIdentityCandidateRepo {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-621-    <#
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-622-    .SYNOPSIS
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-623-        Resolves one catalog candidate's real-world identity for the
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-694-
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-695-- [ ] **Step 4: Run tests to verify they pass**
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-696-
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:697:Run: `pwsh -NoProfile -Command "Invoke-Pester tests/Resolve-DFToolIdentityCandidateRepo.Tests.ps1 -Output Detailed"`
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-698-Expected: PASS (all Describe/It blocks).
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-699-
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-700-- [ ] **Step 5: Commit**
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-701-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-702-```bash
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:703:git add Private/Resolve-DFToolIdentityCandidateRepo.ps1 tests/Resolve-DFToolIdentityCandidateRepo.Tests.ps1
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-704-git commit -m "feat(trifle): per-candidate repo/homepage resolution for the tool-identity guide"
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-705-```
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-706-
+--
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-713-- Test: `tests/Resolve-DFToolIdentityLinkage.Tests.ps1`
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-714-
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-715-**Interfaces:**
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:716:- Consumes: `Resolve-DFToolIdentityCandidateRepo -Source -PackageId [-Fresh]` (Task 3) → `{ Repo; Homepage }`.
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-717-[Omitted long context line]
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-718-
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-719-- [ ] **Step 1: Write the failing tests**
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-727-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-728-Describe 'Resolve-DFToolIdentityLinkage' {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-729-    It 'links via repo when two or more candidates resolve to the same repo' {
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:730:        Mock Resolve-DFToolIdentityCandidateRepo {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-731-            param($Source, $PackageId, [switch]$Fresh)
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-732-            [pscustomobject]@{ Repo = 'burntsushi/ripgrep'; Homepage = $null }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-733-        }
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-738-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-739-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-740-    It 'does not claim the repo tier when only one candidate resolves a repo' {
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:741:        Mock Resolve-DFToolIdentityCandidateRepo {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-742-            param($Source, $PackageId, [switch]$Fresh)
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-743-            if ($Source -eq 'scoop') { [pscustomobject]@{ Repo = 'burntsushi/ripgrep'; Homepage = $null } }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-744-            else { [pscustomobject]@{ Repo = $null; Homepage = $null } }
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-749-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-750-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-751-    It 'does not claim the repo tier when candidates disagree' {
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:752:        Mock Resolve-DFToolIdentityCandidateRepo {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-753-            param($Source, $PackageId, [switch]$Fresh)
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-754-            if ($Source -eq 'scoop') { [pscustomobject]@{ Repo = 'owner-a/tool'; Homepage = $null } }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-755-            else { [pscustomobject]@{ Repo = 'owner-b/tool'; Homepage = $null } }
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-760-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-761-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-762-    It 'falls back to the homepage tier when no repo corroborates but homepages agree' {
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:763:        Mock Resolve-DFToolIdentityCandidateRepo {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-764-            param($Source, $PackageId, [switch]$Fresh)
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-765-            [pscustomobject]@{ Repo = $null; Homepage = 'zed.dev' }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-766-        }
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-771-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-772-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-773-    It 'defaults to curated when nothing automated corroborates' {
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:774:        Mock Resolve-DFToolIdentityCandidateRepo {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-775-            param($Source, $PackageId, [switch]$Fresh)
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-776-            [pscustomobject]@{ Repo = $null; Homepage = $null }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-777-        }
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-782-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-783-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-784-    It 'skips a null or empty package value without calling the resolver for it' {
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:785:        Mock Resolve-DFToolIdentityCandidateRepo {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-786-            param($Source, $PackageId, [switch]$Fresh)
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-787-            [pscustomobject]@{ Repo = 'a/b'; Homepage = $null }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-788-        }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-789-        $packages = [pscustomobject]@{ scoop = 'thing'; winget = $null; choco = '' }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-790-        $null = Resolve-DFToolIdentityLinkage -ToolName thing -Packages $packages
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:791:        Should -Invoke Resolve-DFToolIdentityCandidateRepo -Times 1 -Exactly
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-792-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-793-}
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-794-```
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-839-    $homepages = [ordered]@{}
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-840-    foreach ($prop in $Packages.PSObject.Properties) {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-841-        if (-not $prop.Value) { continue }
+docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md:842:        $resolved = Resolve-DFToolIdentityCandidateRepo -Source $prop.Name -PackageId ([string]$prop.Value) -Fresh:$Fresh
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-843-        if ($resolved.Repo) { $repos[$prop.Name] = $resolved.Repo }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-844-        elseif ($resolved.Homepage) { $homepages[$prop.Name] = $resolved.Homepage }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-06-trifle-tool-identity-guide.md-845-    }
+--
+Private\Resolve-DFToolIdentityCandidateRepo.ps1-22-    ($Url -creplace '^[a-zA-Z]+://', '' -creplace '^www\.', '' -creplace '/+$', '').ToLowerInvariant()
+C:\Users\simsr\projects\DotForge\Private\Resolve-DFToolIdentityCandidateRepo.ps1-23-}
+C:\Users\simsr\projects\DotForge\Private\Resolve-DFToolIdentityCandidateRepo.ps1-24-
+Private\Resolve-DFToolIdentityCandidateRepo.ps1:25:function Resolve-DFToolIdentityCandidateRepo {
+C:\Users\simsr\projects\DotForge\Private\Resolve-DFToolIdentityCandidateRepo.ps1-26-    <#
+C:\Users\simsr\projects\DotForge\Private\Resolve-DFToolIdentityCandidateRepo.ps1-27-    .SYNOPSIS
+C:\Users\simsr\projects\DotForge\Private\Resolve-DFToolIdentityCandidateRepo.ps1-28-        Resolves one catalog candidate's real-world identity for the
+--
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-1-BeforeAll {
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-2-    . "$PSScriptRoot/../Private/DFCatalog.ps1"
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-3-    . "$PSScriptRoot/../Private/Get-DFGitHubRepoInfo.ps1"
+tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1:4:    . "$PSScriptRoot/../Private/Resolve-DFToolIdentityCandidateRepo.ps1"
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-5-}
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-6-
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-7-Describe 'ConvertTo-DFNormalizedHomepage' {
+--
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-20-    }
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-21-}
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-22-
+tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1:23:Describe 'Resolve-DFToolIdentityCandidateRepo' {
+tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-24-    AfterEach { $script:DFCatalogProviders = $null }
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-25-
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-26-    It 'resolves via detail-level RepositoryUrl when the repo is on GitHub' {
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-27-        Mock Get-DFCatalogDetail {
+tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-28-            New-DFToolSourceDetail -Source scoop -PackageId ripgrep -RepositoryUrl 'https://github.com/BurntSushi/ripgrep'
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-29-        }
+tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1:30:        $result = Resolve-DFToolIdentityCandidateRepo -Source scoop -PackageId ripgrep
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-31-        $result.Repo | Should -Be 'burntsushi/ripgrep'
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-32-        $result.Homepage | Should -BeNullOrEmpty
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-33-    }
+--
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-42-                }
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-43-            }
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-44-        }
+tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1:45:        $result = Resolve-DFToolIdentityCandidateRepo -Source winget -PackageId 'Zed.Zed'
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-46-        $result.Repo | Should -Be 'zed-industries/zed'
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-47-    }
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-48-
+--
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-56-                }
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-57-            }
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-58-        }
+tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1:59:        $result = Resolve-DFToolIdentityCandidateRepo -Source winget -PackageId 'Zed.Zed'
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-60-        $result.Repo | Should -BeNullOrEmpty
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-61-        $result.Homepage | Should -Be 'zed.dev'
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-62-    }
+--
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-64-    It 'never throws when Get-DFCatalogDetail throws' {
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-65-        Mock Get-DFCatalogDetail { throw 'network down' }
+tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-66-        $script:DFCatalogProviders = @{ scoop = @{ Search = { param($Query, $Fresh) } } }
+tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1:67:        { Resolve-DFToolIdentityCandidateRepo -Source scoop -PackageId ripgrep } | Should -Not -Throw
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-68-    }
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-69-
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-70-    It 'never throws when the provider Search throws, returning null fields' {
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-71-        Mock Get-DFCatalogDetail { $null }
+tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-72-        $script:DFCatalogProviders = @{ scoop = @{ Search = { param($Query, $Fresh) throw 'boom' } } }
+tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1:73:        $result = Resolve-DFToolIdentityCandidateRepo -Source scoop -PackageId ripgrep
+C:\Users\simsr\projects\DotForge\tests\Resolve-DFToolIdentityCandidateRepo.Tests.ps1-74-        $result.Repo | Should -BeNullOrEmpty
+
+[Showing results with pagination = limit: 250]

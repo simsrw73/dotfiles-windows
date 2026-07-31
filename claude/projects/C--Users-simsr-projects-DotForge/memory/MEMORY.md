@@ -1,0 +1,2 @@
+- [Strict-safe code everywhere](strict-safe-code.md) — global, all languages: enable strict checking; never disable it to paper over unsafe access
+- [Typora for doc review](typora-doc-review.md) — user reviews markdown specs/plans in Typora; global hook auto-opens them

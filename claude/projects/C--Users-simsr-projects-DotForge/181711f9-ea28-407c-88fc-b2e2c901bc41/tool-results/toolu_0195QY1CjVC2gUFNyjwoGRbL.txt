@@ -1,0 +1,197 @@
+Private\Get-DFCategoryDb.ps1-129-    if (-not $Path) { $script:DFCategoryDb = $db }
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-130-    $db
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-131-}
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-132-
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-133-function Get-DFCategoryDbEntry {
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-134-    <#
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-135-    .SYNOPSIS
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-136-        Resolves a merged DotForge.ToolInfo to its category-db entry, trying
+Private\Get-DFCategoryDb.ps1-137-        DFTool name, then each source:packageId, then plain name. Returns
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-138-        $null when the tool isn't in the seed db — a normal, expected case.
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-139-    .DESCRIPTION
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-140-        Scoop package ids are bucket-qualified at runtime (e.g. 'main/fd')
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-141-        but the seed data stores bare names ('fd', matching Tools/*.json's
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-142-        own convention) — so a scoop id lookup that misses on the full value
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-143-        retries with just the trailing segment after '/', mirroring the same
+Private\Get-DFCategoryDb.ps1:144:        bucket-stripping Find-DFPackage's resolveDFTool scriptblock uses.
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-145-    .PARAMETER Info
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-146-        A DotForge.ToolInfo (or any object with DFTool/Name/Sources shape).
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-147-    .PARAMETER Database
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-148-        The category db (defaults to Get-DFCategoryDb with no overrides).
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-149-    #>
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-150-    [CmdletBinding()]
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-151-    [OutputType([PSCustomObject])]
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-152-    param(
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-153-        [Parameter(Mandatory)]
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-154-        $Info,
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-155-
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-156-        $Database = (Get-DFCategoryDb)
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-157-    )
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-158-
+C:\Users\simsr\projects\DotForge\Private\Get-DFCategoryDb.ps1-159-    if (-not $Database.Raw) { return $null }
+--
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-233-git commit -m "feat(trifle): category-db schema validator"
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-234-```
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-235-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-236----
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-237-
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-238-### Task 2: Loader, indexes, entry resolution, related-tools computation
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-239-
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-240-**Files:**
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-241-- Create: `Private/Get-DFCategoryDb.ps1`
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-242-- Test: `tests/Get-DFCategoryDb.Tests.ps1`
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-243-
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-244-**Interfaces:**
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-245-- Consumes: `Test-DFCategoryDbSchema` (Task 1).
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-246-- Produces:
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-247-[Omitted long context line]
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md:248:[Omitted long matching line]
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-249-[Omitted long context line]
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-250-
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-251-- [ ] **Step 1: Write the failing tests**
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-252-
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-253-Create `tests\Get-DFCategoryDb.Tests.ps1`:
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-254-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-255-```powershell
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-256-BeforeAll {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-257-    . "$PSScriptRoot/../Private/Test-DFCategoryDbSchema.ps1"
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-258-    . "$PSScriptRoot/../Private/Get-DFCategoryDb.ps1"
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-259-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-260-    function New-FixtureDbFile {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-261-        param([string]$Path)
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-262-        @{
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-263-            schemaVersion = 1
+--
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-606-    if (-not $Path) { $script:DFCategoryDb = $db }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-607-    $db
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-608-}
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-609-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-610-function Get-DFCategoryDbEntry {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-611-    <#
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-612-    .SYNOPSIS
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-613-        Resolves a merged DotForge.ToolInfo to its category-db entry, trying
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-614-        DFTool name, then each source:packageId, then plain name. Returns
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-615-        $null when the tool isn't in the seed db — a normal, expected case.
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-616-    .DESCRIPTION
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-617-        Scoop package ids are bucket-qualified at runtime (e.g. 'main/fd')
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-618-        but the seed data stores bare names ('fd', matching Tools/*.json's
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-619-        own convention) — so a scoop id lookup that misses on the full value
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-620-        retries with just the trailing segment after '/', mirroring the same
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md:621:        bucket-stripping Find-DFPackage's resolveDFTool scriptblock uses.
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-622-    .PARAMETER Info
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-623-        A DotForge.ToolInfo (or any object with DFTool/Name/Sources shape).
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-624-    .PARAMETER Db
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-625-        The category db (defaults to Get-DFCategoryDb with no overrides).
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-626-    #>
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-627-    [CmdletBinding()]
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-628-    [OutputType([PSCustomObject])]
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-629-    param(
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-630-        [Parameter(Mandatory)]
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-631-        $Info,
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-632-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-633-        $Database = (Get-DFCategoryDb)
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-634-    )
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-635-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-636-    if (-not $Database.Raw) { return $null }
+--
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1683-                $hit.Installed = $true
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1684-                $hit.InstalledVersion = $map[$lookup]
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1685-                break
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1686-            }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1687-        }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1688-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1689-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1690-    if ($RecordSeenQuery) { Add-DFCatalogSeenQuery -Query $QueryText }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1691-
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1692-    # Merge per-catalog hits into one row per tool: identity-mapped hits
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1693-    # (Tools/*.json packages blocks) collapse under the DotForge tool name even
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1694-    # when catalogs name the package differently; the rest group by name.
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1695-    $dfToolNames = @{}
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1696-    foreach ($value in $installedInfo.IdentityMap.Values) { $dfToolNames[$value.ToLowerInvariant()] = $value }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1697-
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md:1698:    $resolveDFTool = {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1699-        param($Hit)
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1700-        $id = $Hit.PackageId.ToLowerInvariant()
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1701-        $name = $installedInfo.IdentityMap["$($Hit.Source):$id"]
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1702-        if (-not $name -and $id.Contains('/')) {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1703-            # scoop ids are bucket-qualified; the packages map holds bare names
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1704-            $name = $installedInfo.IdentityMap["$($Hit.Source):$(($id -split '/')[-1])"]
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1705-        }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1706-        if (-not $name) {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1707-            # No explicit mapping for this catalog, but the package shares a DF
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1708-            # tool's name — group it there so one tool never renders twice.
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1709-            $name = $dfToolNames[$Hit.Name.ToLowerInvariant()]
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1710-        }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1711-        $name
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1712-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1713-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1714-    $groups = [ordered]@{}
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1715-    $dfNames = @{}
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1716-    foreach ($hit in $hits) {
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md:1717:        $dfName = & $resolveDFTool $hit
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1718-        $key = $dfName ? "df:$dfName" : $hit.Name.ToLowerInvariant()
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1719-        if (-not $groups.Contains($key)) {
+docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1720-            $groups[$key] = [System.Collections.Generic.List[object]]::new()
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1721-            if ($dfName) { $dfNames[$key] = $dfName }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1722-        }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1723-        $groups[$key].Add($hit)
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1724-    }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1725-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1726-    $merged = @(foreach ($entry in $groups.GetEnumerator()) {
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1727-        $sources = @($entry.Value)
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1728-        $dfTool = $dfNames[$entry.Key]
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1729-        $latest = [ordered]@{}
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1730-        foreach ($s in $sources) { if ($s.LatestVersion) { $latest[$s.Source] = $s.LatestVersion } }
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1731-
+C:\Users\simsr\projects\DotForge\docs\superpowers\plans\2026-07-05-trifle-discovery-v1.md-1732-        $installedSources = @($sources | Where-Object Installed)
+--
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-140-                $hit.Installed = $true
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-141-                $hit.InstalledVersion = $map[$lookup]
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-142-                break
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-143-            }
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-144-        }
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-145-    }
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-146-
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-147-    Add-DFCatalogSeenQuery -Query $queryText
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-148-
+Public\Find-DFPackage.ps1-149-    # Merge per-catalog hits into one row per tool: identity-mapped hits
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-150-    # (Tools/*.json packages blocks) collapse under the DotForge tool name even
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-151-    # when catalogs name the package differently; the rest group by name.
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-152-    $dfToolNames = @{}
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-153-    foreach ($value in $installedInfo.IdentityMap.Values) { $dfToolNames[$value.ToLowerInvariant()] = $value }
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-154-
+Public\Find-DFPackage.ps1:155:    $resolveDFTool = {
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-156-        param($Hit)
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-157-        $id = $Hit.PackageId.ToLowerInvariant()
+Public\Find-DFPackage.ps1-158-        $name = $installedInfo.IdentityMap["$($Hit.Source):$id"]
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-159-        if (-not $name -and $id.Contains('/')) {
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-160-            # scoop ids are bucket-qualified; the packages map holds bare names
+Public\Find-DFPackage.ps1-161-            $name = $installedInfo.IdentityMap["$($Hit.Source):$(($id -split '/')[-1])"]
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-162-        }
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-163-        if (-not $name) {
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-164-            # No explicit mapping for this catalog, but the package shares a DF
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-165-            # tool's name — group it there so one tool never renders twice.
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-166-            $name = $dfToolNames[$Hit.Name.ToLowerInvariant()]
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-167-        }
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-168-        $name
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-169-    }
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-170-
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-171-    $groups = [ordered]@{}
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-172-    $dfNames = @{}
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-173-    foreach ($hit in $hits) {
+Public\Find-DFPackage.ps1:174:        $dfName = & $resolveDFTool $hit
+Public\Find-DFPackage.ps1-175-        $key = $dfName ? "df:$dfName" : $hit.Name.ToLowerInvariant()
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-176-        if (-not $groups.Contains($key)) {
+Public\Find-DFPackage.ps1-177-            $groups[$key] = [System.Collections.Generic.List[object]]::new()
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-178-            if ($dfName) { $dfNames[$key] = $dfName }
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-179-        }
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-180-        $groups[$key].Add($hit)
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-181-    }
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-182-
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-183-    $merged = @(foreach ($entry in $groups.GetEnumerator()) {
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-184-        $sources = @($entry.Value)
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-185-        $dfTool = $dfNames[$entry.Key]
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-186-        $latest = [ordered]@{}
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-187-        foreach ($s in $sources) { if ($s.LatestVersion) { $latest[$s.Source] = $s.LatestVersion } }
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-188-
+C:\Users\simsr\projects\DotForge\Public\Find-DFPackage.ps1-189-        $installedSources = @($sources | Where-Object Installed)

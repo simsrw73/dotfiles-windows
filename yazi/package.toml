@@ -1,0 +1,69 @@
+[[plugin.deps]]
+use = "stevencarpenter/duckdb"
+rev = "52eb31b"
+hash = "fdefe75fc941919b7dd45f235d3891e6"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:types"
+rev = "bbac5e7"
+hash = "c10878e0267229f420233066afa61781"
+
+[[plugin.deps]]
+use = "boydaihungst/mediainfo"
+rev = "e079a00"
+hash = "d3dfd2196e54cef090ff02f7f881f135"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:git"
+rev = "bbac5e7"
+hash = "6fd67ce8c2b36f45be405aa218e89c74"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:toggle-pane"
+rev = "bbac5e7"
+hash = "8a42c842143b1933d7b59c557b376f3b"
+
+[[plugin.deps]]
+use = "AleMenon/exiftool"
+rev = "4c35573"
+hash = "938c57c5de369a25242229138b9222cd"
+
+[[plugin.deps]]
+use = "AnirudhG07/rich-preview"
+rev = "7d616ad"
+hash = "4b15d186d555d318134160f843193ee9"
+
+[[plugin.deps]]
+use = "alberti42/faster-piper"
+rev = "8b794bf"
+hash = "7fc8921769b02a0c9b1d9a2bc523db57"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:smart-paste"
+rev = "bbac5e7"
+hash = "e44dcc831ee62d5f79a1f8130cfdc847"
+
+[[plugin.deps]]
+use = "imsi32/yatline"
+rev = "c5d4b48"
+hash = "91c9b9a3355e213b801fdb0c5fc92dc1"
+
+[[plugin.deps]]
+use = "ndtoan96/ouch"
+rev = "406ce6c"
+hash = "c30dfd49121b0860ce41ebf6765c6e6e"
+
+[[plugin.deps]]
+use = "imsi32/yatline-catppuccin"
+rev = "6c3f166"
+hash = "c1443f8e0bf6c01e57400ca15e972a8"
+
+[[plugin.deps]]
+use = "imsi32/yatline-githead"
+rev = "929e52c"
+hash = "7e1138023f5943712fa9203e9fff6458"
+
+[[flavor.deps]]
+use = "yazi-rs/flavors:catppuccin-mocha"
+rev = "4770a34"
+hash = "5ebc8659108fcb68fe853e523115ed3c"

@@ -1,0 +1,175 @@
+{
+  "version": 2,
+  "plugins": {
+    "frontend-design@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\frontend-design\\ef2db24a8666",
+        "version": "ef2db24a8666",
+        "installedAt": "2026-06-15T21:55:07.643Z",
+        "lastUpdated": "2026-07-24T01:35:25.798Z",
+        "gitCommitSha": "ef2db24a8666f9797c8fdee1789a0e9caf53a1e0"
+      }
+    ],
+    "superpowers@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\superpowers\\6.2.0",
+        "version": "6.2.0",
+        "installedAt": "2026-06-15T21:55:08.542Z",
+        "lastUpdated": "2026-07-24T17:11:26.025Z",
+        "gitCommitSha": "6fd4507659784c351abbd2bc264c7162cfd386dc"
+      }
+    ],
+    "code-review@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\code-review\\ef2db24a8666",
+        "version": "ef2db24a8666",
+        "installedAt": "2026-06-15T21:55:08.662Z",
+        "lastUpdated": "2026-07-24T01:35:25.786Z",
+        "gitCommitSha": "ef2db24a8666f9797c8fdee1789a0e9caf53a1e0"
+      }
+    ],
+    "context7@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\context7\\ef2db24a8666",
+        "version": "ef2db24a8666",
+        "installedAt": "2026-06-15T21:55:08.721Z",
+        "lastUpdated": "2026-07-24T01:35:25.777Z",
+        "gitCommitSha": "ef2db24a8666f9797c8fdee1789a0e9caf53a1e0"
+      }
+    ],
+    "skill-creator@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\skill-creator\\ef2db24a8666",
+        "version": "ef2db24a8666",
+        "installedAt": "2026-06-15T21:55:08.798Z",
+        "lastUpdated": "2026-07-24T01:35:25.758Z",
+        "gitCommitSha": "ef2db24a8666f9797c8fdee1789a0e9caf53a1e0"
+      }
+    ],
+    "code-simplifier@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\code-simplifier\\1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-06-15T21:55:08.863Z",
+        "lastUpdated": "2026-06-15T21:55:08.863Z",
+        "gitCommitSha": "ef2db24a8666f9797c8fdee1789a0e9caf53a1e0"
+      }
+    ],
+    "claude-md-management@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\claude-md-management\\1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-06-15T21:55:08.929Z",
+        "lastUpdated": "2026-06-15T21:55:08.929Z",
+        "gitCommitSha": "ef2db24a8666f9797c8fdee1789a0e9caf53a1e0"
+      }
+    ],
+    "feature-dev@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\feature-dev\\ef2db24a8666",
+        "version": "ef2db24a8666",
+        "installedAt": "2026-06-15T21:55:08.994Z",
+        "lastUpdated": "2026-07-24T01:35:25.811Z",
+        "gitCommitSha": "ef2db24a8666f9797c8fdee1789a0e9caf53a1e0"
+      }
+    ],
+    "security-guidance@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\security-guidance\\2.0.6",
+        "version": "2.0.6",
+        "installedAt": "2026-06-15T21:55:09.068Z",
+        "lastUpdated": "2026-06-15T21:55:09.068Z",
+        "gitCommitSha": "ef2db24a8666f9797c8fdee1789a0e9caf53a1e0"
+      }
+    ],
+    "typescript-lsp@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\typescript-lsp\\1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-06-15T21:55:09.134Z",
+        "lastUpdated": "2026-06-15T21:55:09.134Z",
+        "gitCommitSha": "ef2db24a8666f9797c8fdee1789a0e9caf53a1e0"
+      }
+    ],
+    "commit-commands@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\commit-commands\\ef2db24a8666",
+        "version": "ef2db24a8666",
+        "installedAt": "2026-06-15T21:55:09.205Z",
+        "lastUpdated": "2026-07-24T01:35:25.768Z",
+        "gitCommitSha": "ef2db24a8666f9797c8fdee1789a0e9caf53a1e0"
+      }
+    ],
+    "pr-review-toolkit@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\pr-review-toolkit\\ef2db24a8666",
+        "version": "ef2db24a8666",
+        "installedAt": "2026-06-15T21:55:09.280Z",
+        "lastUpdated": "2026-07-24T01:35:25.820Z",
+        "gitCommitSha": "ef2db24a8666f9797c8fdee1789a0e9caf53a1e0"
+      }
+    ],
+    "pyright-lsp@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\pyright-lsp\\1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-06-15T21:55:09.338Z",
+        "lastUpdated": "2026-06-15T21:55:09.338Z",
+        "gitCommitSha": "ef2db24a8666f9797c8fdee1789a0e9caf53a1e0"
+      }
+    ],
+    "rust-analyzer-lsp@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\rust-analyzer-lsp\\1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-06-15T21:55:09.400Z",
+        "lastUpdated": "2026-06-15T21:55:09.400Z",
+        "gitCommitSha": "ef2db24a8666f9797c8fdee1789a0e9caf53a1e0"
+      }
+    ],
+    "clangd-lsp@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\clangd-lsp\\1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-06-15T21:55:09.462Z",
+        "lastUpdated": "2026-06-15T21:55:09.462Z",
+        "gitCommitSha": "ef2db24a8666f9797c8fdee1789a0e9caf53a1e0"
+      }
+    ],
+    "lua-lsp@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\lua-lsp\\1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-06-15T21:55:09.527Z",
+        "lastUpdated": "2026-06-15T21:55:09.527Z",
+        "gitCommitSha": "ef2db24a8666f9797c8fdee1789a0e9caf53a1e0"
+      }
+    ],
+    "claude-hud@claude-hud": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-hud\\claude-hud\\0.3.0",
+        "version": "0.3.0",
+        "installedAt": "2026-06-21T00:06:49.293Z",
+        "lastUpdated": "2026-06-21T00:06:49.293Z",
+        "gitCommitSha": "b83b44593af24de1db6183788a51d08715501c02"
+      }
+    ]
+  }
+}

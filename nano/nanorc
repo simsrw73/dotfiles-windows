@@ -1,0 +1,22 @@
+## --- Interface Layout ---
+set linenumbers      # Enable line numbers on the left sidebar
+set constantshow     # Continuously display cursor line/column position
+set titlecolor white,blue # Distinct color block for top titlebar
+set statuscolor white,red # Distinct color block for bottom warnings
+
+## --- Text Editing & Behavior ---
+set autoindent       # Match the indentation of the previous line
+set softwrap         # Visual-only line wrapping (no hard carriage returns)
+set atblanks         # Wrap lines cleanly at space characters instead of breaking words
+set tabsize 4        # Set visible tab width to 4 spaces
+set tabstospaces     # Convert tab presses to soft spaces
+
+## --- Modern Key Bindings ---
+bind ^f whereis main  # Remap Ctrl+F to Search (Default is Ctrl+W)
+bind ^h replace main  # Remap Ctrl+H to Find & Replace (Default is Alt+R)
+bind ^z undo main     # Standard layout Ctrl+Z to Undo
+bind ^y redo main     # Standard layout Ctrl+Y to Redo
+
+## --- XDG State Path Routing ---
+# Explicitly force history tracking deep into your local state directories
+set historylog

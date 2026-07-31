@@ -1,0 +1,73 @@
+{
+  "agent_ui_font_size": 18.0,
+  "buffer_font_weight": 400.0,
+  "cli_default_open_behavior": "existing_window",
+  "autosave": "on_focus_change",
+  "edit_predictions": {
+    "provider": "copilot",
+  },
+  "agent_servers": {
+    "codex-acp": {
+      "type": "registry",
+    },
+    "claude-acp": {
+      "default_config_options": {
+        "model": "sonnet"
+      },
+      "type": "registry",
+    },
+  },
+  "buffer_font_family": "AtkynsonMono Nerd Font Mono",
+  "project_panel": {
+    "dock": "right",
+  },
+  "outline_panel": {
+    "dock": "right",
+  },
+  "collaboration_panel": {
+    "dock": "right",
+  },
+  "agent": {
+    "dock": "left",
+    "favorite_models": [],
+    "model_parameters": [],
+  },
+  "git_panel": {
+    "dock": "right",
+  },
+  "icon_theme": "Catppuccin Mocha",
+  "ui_font_size": 18.0,
+  "buffer_font_size": 18.0,
+  "theme": {
+    "mode": "system",
+    "light": "One Light",
+    "dark": "Catppuccin Mocha (Blur)",
+  },
+  "markdown_preview_font_size": 18,
+  "lsp": {
+    "powershell-es": {
+      "initialization_timeout": 600,
+      "initialization_options": {
+        "enableProfileLoading": false
+      }
+    }
+  },
+  "languages": {
+    "PowerShell": {
+      "binary": {
+        "path": "pwsh",
+        "arguments": [
+          "-NoProfile",
+          "-NonInteractive",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\simsr\\.local\\share\\zed\\extensions\\work\\powershell\\powershell-es-v4.7.0\\PowerShellEditorServices\\Start-EditorServices.ps1",
+          "-Stdio",
+          "-LogLevel",
+          "Normal"
+        ]
+      }
+    }
+  }
+}

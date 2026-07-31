@@ -1,0 +1,12 @@
+[flavor]
+dark = "catppuccin-mocha"
+
+[git]
+unknown_sign   = ""
+ignored_sign   = "◌ "
+untracked_sign = " "
+modified_sign  = " "
+added_sign     = " "
+deleted_sign   = " "
+updated_sign   = " "
+clean_sign     = ""
