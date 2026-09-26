@@ -1,0 +1,4 @@
+# yasb: runtime logs and files it generates
+yasb/*.log
+yasb/*.log.*
+yasb/yasb_colors.css
