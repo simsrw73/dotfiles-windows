@@ -38,3 +38,11 @@ FlowLauncher/Plugins/
 FlowLauncher/Settings/**/*.bak
 FlowLauncher/Settings/**/*.tmp
 FlowLauncher/Settings/History.json
+# holds a GitHub token
+FlowLauncher/Settings/Plugins/Github Quick Launcher/
+FlowLauncher/Settings/Plugins/**/*.bak
+# AutoHotKey: agent/tool scratch dirs
+AutoHotKey/.git/
+AutoHotKey/.agents/
+AutoHotKey/.codex/
+AutoHotKey/.superpowers/

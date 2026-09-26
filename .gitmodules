@@ -1,0 +1,3 @@
+[submodule "AutoHotKey/Lib/KeyChord"]
+	path = AutoHotKey/Lib/KeyChord
+	url = https://github.com/tylerjcw/KeyChord.git
