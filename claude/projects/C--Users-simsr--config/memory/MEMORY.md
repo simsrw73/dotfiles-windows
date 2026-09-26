@@ -1,0 +1,1 @@
+- [yasb bar design](yasb-bar-design.md) — user's yasb spec (Mocha, komorebi, pills), rebuilt 2026-09-26; setup gotchas
