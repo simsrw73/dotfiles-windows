@@ -2,3 +2,39 @@
 yasb/*.log
 yasb/*.log.*
 yasb/yasb_colors.css
+
+# claude: keep config only (settings, hooks, skills, plugin manifests, memory)
+claude/*
+!claude/settings.json
+!claude/hooks/
+!claude/skills/
+claude/skills/synced/
+!claude/plugins/
+claude/plugins/*
+!claude/plugins/installed_plugins.json
+!claude/plugins/known_marketplaces.json
+!claude/projects/
+claude/projects/*/*
+!claude/projects/*/memory/
+
+# secrets / machine state
+gnupg/
+github-copilot/
+docker/
+gh/hosts.yml
+chezmoi/chezmoistate.boltdb
+
+# runtime noise
+joplin-desktop/log*.txt
+joplin-desktop/cache/
+joplin-desktop/tmp/
+hyper/.hyper_plugins/
+vercel-plugin/
+cagent/
+configstore/
+FlowLauncher/Cache/
+FlowLauncher/Logs/
+FlowLauncher/Plugins/
+FlowLauncher/Settings/**/*.bak
+FlowLauncher/Settings/**/*.tmp
+FlowLauncher/Settings/History.json
