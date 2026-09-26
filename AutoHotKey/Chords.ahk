@@ -26,6 +26,24 @@ class Chords {
             ChordLaunch("o", "ChatGPT", Apps.ChatGPT),
             ChordLaunch("h", "GitHub Copilot", Apps.Copilot),
             ChordLaunch("g", "Gemini", Apps.Gemini))),
+        ChordSubmenu("u", "Admin", ChordMenu("Launch › Admin",
+            ChordLaunch("u", "UniGetUI", Apps.UniGetUI),
+            ChordAction("w", "Windows Update", OpenWindowsUpdate),
+            ChordLaunch("s", "Settings", Apps.Settings),
+            ChordLaunch("c", "Control Panel", Apps.ControlPanel),
+            ChordLaunch("d", "Device Manager", Apps.DeviceManager),
+            ChordLaunch("v", "Services", Apps.Services),
+            ChordLaunch("e", "Event Viewer", Apps.EventViewer),
+            ChordLaunch("j", "Task Scheduler", Apps.TaskScheduler),
+            ChordLaunch("r", "Registry Editor", Apps.RegistryEditor),
+            ChordLaunch("a", "Autoruns", Apps.Autoruns),
+            ChordLaunch("p", "Process Explorer", Apps.ProcExp),
+            ChordLaunch("m", "Process Monitor", Apps.ProcMon),
+            ChordLaunch("t", "TCPView", Apps.TCPView),
+            ChordLaunch("h", "Windhawk", Apps.Windhawk),
+            ChordLaunch("o", "PowerToys", Apps.PowerToys),
+            ChordLaunch("i", "HWiNFO", Apps.HWiNFO),
+            ChordLaunch("z", "WizTree", Apps.WizTree))),
         ChordLaunch("m", "Spark", Apps.Spark),
         ChordLaunch("t", "TickTick", Apps.TickTick),
         ChordLaunch("d", "Fantastical", Apps.Fantastical),
@@ -78,6 +96,12 @@ class ChordMenu {
 ChordLaunch(key, label, app) => { Key: key, Label: label, App: app, Command: () => WindowLauncher.ActivateOrRun(app) }
 ChordSubmenu(key, label, menu) => { Key: key, Label: label, Menu: menu, Command: () => Chords.Open(menu) }
 ChordAction(key, label, command) => { Key: key, Label: label, Command: command }
+
+; Windows Update is a page inside Settings, so reuse (or open) the Settings window first.
+OpenWindowsUpdate() {
+    WindowLauncher.ActivateOrRun(Apps.Settings)
+    Run("ms-settings:windowsupdate")
+}
 
 ; Catppuccin Mocha panel that matches the yasb bar and popups.
 class ChordOverlay {

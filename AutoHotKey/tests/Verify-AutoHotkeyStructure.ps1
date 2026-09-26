@@ -198,12 +198,13 @@ Assert-Contains $komorebi 'class Komorebi'
 Assert-Contains $komorebi 'static WorkspaceOf(hwnd)'
 Assert-Contains $komorebi 'RunWait(this.CommandLine(args), , "Hide")'
 
-Assert-Contains $windowManager 'BindWorkspaceHotkeys(["dev", "notes", "ai-lab", "research", "comms", "files", "scratch"])'
+Assert-Contains $windowManager 'BindWorkspaceHotkeys(["dev", "notes", "ai-lab", "admin", "research", "comms", "files", "scratch"])'
 Assert-Contains $chords '#Space::Chords.Open(Chords.Root)'
 Assert-Contains $chords 'KeyChord()'
 
 foreach ($name in 'Zed', 'ClaudeCode', 'Shell', 'Obsidian', 'Zen', 'Typora', 'Perplexity', 'Claude', 'ChatGPT', 'Copilot', 'Gemini',
-                   'Spark', 'TickTick', 'Fantastical', 'Explorer', 'Everything', 'Koffee', 'Bitwarden', 'TaskManager') {
+                   'Spark', 'TickTick', 'Fantastical', 'Explorer', 'Everything', 'Koffee', 'Bitwarden', 'TaskManager',
+                   'UniGetUI', 'Settings', 'ControlPanel', 'DeviceManager', 'Services', 'RegistryEditor', 'Autoruns', 'Windhawk') {
     Assert-Contains $apps "${name}:"
     Assert-Contains $chords "Apps.$name)"
 }

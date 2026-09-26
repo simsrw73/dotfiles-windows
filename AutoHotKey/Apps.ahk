@@ -7,6 +7,7 @@ AppsFolder(appId) => 'explorer.exe "shell:AppsFolder\' appId '"'
 
 LocalPrograms := EnvGet("LocalAppData") "\Programs"
 Projects := EnvGet("UserProfile") "\projects"
+Sysinternals := EnvGet("UserProfile") "\.local\share\scoop\apps\sysinternals\current"
 
 Apps := {
     ; dev
@@ -40,8 +41,26 @@ Apps := {
     Fantastical: { Criteria: "ahk_exe Fantastical.exe", Command: AppsFolder("FlexibitsInc.Fantastical_xhwyj10g4qjsr!AppMain") },
 
     ; files
-    Explorer:    { Criteria: "ahk_class CabinetWClass", Command: "explorer.exe" },
+    Explorer:    { Criteria: "ahk_class CabinetWClass", Exclude: "Control Panel", MatchMode: 2, Command: "explorer.exe" },
     Everything:  { Criteria: "ahk_class EVERYTHING ahk_exe Everything.exe", Command: Quote("C:\Program Files\Everything\Everything.exe") },
+
+    ; admin
+    UniGetUI:       { Criteria: "ahk_exe UniGetUI.exe", Command: Quote(LocalPrograms "\UniGetUI\UniGetUI.exe") },
+    Windhawk:       { Criteria: "Windhawk ahk_exe VSCodium.exe", MatchMode: 2, Command: Quote("C:\Program Files\Windhawk\windhawk.exe") },
+    PowerToys:      { Criteria: "ahk_exe PowerToys.Settings.exe", Command: Quote(EnvGet("LocalAppData") "\PowerToys\PowerToys.exe") },
+    Autoruns:       { Criteria: "ahk_exe Autoruns64.exe", Command: Quote(Sysinternals "\Autoruns64.exe") },
+    ProcExp:        { Criteria: "ahk_exe procexp64.exe", Command: Quote(Sysinternals "\procexp64.exe") },
+    ProcMon:        { Criteria: "ahk_exe Procmon64.exe", Command: Quote(Sysinternals "\Procmon64.exe") },
+    TCPView:        { Criteria: "ahk_exe tcpview64.exe", Command: Quote(Sysinternals "\tcpview64.exe") },
+    DeviceManager:  { Criteria: "Device Manager ahk_exe mmc.exe", Command: "devmgmt.msc" },
+    Services:       { Criteria: "Services ahk_exe mmc.exe", Command: "services.msc" },
+    EventViewer:    { Criteria: "Event Viewer ahk_exe mmc.exe", Command: "eventvwr.msc" },
+    TaskScheduler:  { Criteria: "Task Scheduler ahk_exe mmc.exe", Command: "taskschd.msc" },
+    ControlPanel:   { Criteria: "Control Panel ahk_class CabinetWClass", MatchMode: 2, Command: "control.exe" },
+    Settings:       { Criteria: "Settings ahk_class ApplicationFrameWindow", MatchMode: 3, Command: "ms-settings:" },
+    RegistryEditor: { Criteria: "ahk_exe regedit.exe", Command: "regedit.exe" },
+    HWiNFO:         { Criteria: "ahk_exe HWiNFO64.EXE", Command: Quote("C:\Program Files\HWiNFO64\HWiNFO64.EXE") },
+    WizTree:        { Criteria: "ahk_exe WizTree64.exe", Command: Quote("C:\Program Files\WizTree\WizTree64.exe") },
 
     ; popups: ignored by komorebi, so they stay visible on every workspace
     Koffee:      { Criteria: "ahk_exe Koffee.exe", Popup: true, Command: Quote(EnvGet("UserProfile") "\.local\share\scoop\apps\koffee\current\Koffee.exe") },
