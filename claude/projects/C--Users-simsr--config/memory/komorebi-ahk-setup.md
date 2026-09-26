@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 242fa7a9-8960-4acd-9ebb-af7e6a2a0696
-  modified: 2026-09-26T20:37:29.692Z
+  modified: 2026-09-26T21:00:04.307Z
 ---
 
 Built 2026-09-26. The user is new to tiling WMs and relies on Claude's recommendations for what's typical.
@@ -22,4 +22,5 @@ Keys: AHK replaces whkd. Alt = WM (sample-whkdrc scheme, Alt+1..8 named workspac
 - Git Bash mangles `/ErrorStdOut` into a path (AHK shows "Script file not found" dialogs). Run AutoHotkey64.exe from PowerShell.
 - An AHK global named `app` collides with `class App`. Top-level helper names like `Action`/`index`/`number` trigger #Warn clashes with KeyChord locals.
 - Always launch AHK via ~/.config/AutoHotKey/autohotkey.ahk, never the OneDrive junction path. #SingleInstance compares paths, so the two paths ran as separate copies. The startup link was repointed to .config on 2026-09-26.
-- Elevated windows (mmc snap-ins, regedit, HWiNFO…) can't be tiled or hidden by a non-elevated komorebi, and non-elevated AHK hotkeys don't fire while they have focus.
+- Elevated windows (mmc snap-ins, regedit, HWiNFO…) need elevated komorebi and UI-Access AHK, set up 2026-09-26. Komorebi starts from the scheduled task `komorebi` (RunLevel Highest, at logon); the komorebi.lnk autostart was removed. AHK runs as `C:\Program Files\AutoHotkey\v2\AutoHotkey64_UIA.exe`, which the startup link targets. The winget AHK package is user-scope only, so the machine install used `setup.exe /silent /installto "C:\Program Files\AutoHotkey"`. The old per-user install in AppData may still be around.
+- Auto mode blocks creating logon persistence (scheduled tasks). Hand the user a script to run with `! gsudo …`.
