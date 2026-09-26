@@ -12,4 +12,4 @@ metadata:
 - gnupg/, github-copilot/, docker/ and gh/hosts.yml are ignored on purpose.
 - FlowLauncher's "Github Quick Launcher" plugin settings hold a GitHub token and are ignored.
 - AutoHotKey/ and FlowLauncher/ are the real folders now. %APPDATA%\FlowLauncher and OneDrive\Documents\AutoHotkey are junctions pointing into .config. AutoHotKey/Lib/KeyChord is a submodule.
-Related: [[yasb-bar-design]]
+Related: [[yasb-bar-design]], [[komorebi-ahk-setup]]

@@ -139,12 +139,21 @@ $entryPoint = Join-Path $root 'autohotkey.ahk'
 $hotkeys = Join-Path $root 'hotkeys.ahk'
 $app = Join-Path $root 'Lib/App.ahk'
 $windowLauncher = Join-Path $root 'Lib/WindowLauncher.ahk'
+$komorebi = Join-Path $root 'Lib/Komorebi.ahk'
+$apps = Join-Path $root 'Apps.ahk'
+$windowManager = Join-Path $root 'WindowManager.ahk'
+$chords = Join-Path $root 'Chords.ahk'
 
 Assert-Contains $entryPoint '#Requires AutoHotkey v2.0'
 Assert-Contains $entryPoint '#SingleInstance Force'
 Assert-Contains $entryPoint '#Warn All, StdOut'
 Assert-Contains $entryPoint '#Include "Lib/App.ahk"'
 Assert-Contains $entryPoint '#Include "Lib/WindowLauncher.ahk"'
+Assert-Contains $entryPoint '#Include "Lib/Komorebi.ahk"'
+Assert-Contains $entryPoint '#Include "Lib/KeyChord/KeyChord.ahk"'
+Assert-Contains $entryPoint '#Include "Apps.ahk"'
+Assert-Contains $entryPoint '#Include "WindowManager.ahk"'
+Assert-Contains $entryPoint '#Include "Chords.ahk"'
 Assert-Contains $entryPoint '#Include "Hotkeys.ahk"'
 Assert-Contains $entryPoint '#Include "Hotstrings.ahk"'
 Assert-AppLifecycle $entryPoint
@@ -174,16 +183,27 @@ Assert-HandlerMatches $app 'RemoveStartupShortcut(*)' '(?s)try\s+FileDelete\(thi
 Assert-HandlerMatches $app 'ToggleStartup(*)' '(?s)if\s+this\.HasOwnedStartupShortcut\(\)\s*\{[^{}]*if\s+this\.RemoveStartupShortcut\(\)\s*&&\s*!this\.HasOwnedStartupShortcut\(\)\s*\r?\n\s*A_TrayMenu\.Uncheck\("Run at startup"\)'
 Assert-HandlerMatches $app 'ToggleStartup(*)' '(?s)else\s*\{[^{}]*if\s+FileExist\(this\.startupLink\)\s*\{[^{}]*\}[^{}]*if\s+this\.CreateStartupShortcut\(\)\s*&&\s*this\.HasOwnedStartupShortcut\(\)\s*\r?\n\s*A_TrayMenu\.Check\("Run at startup"\)'
 
-Assert-HandlerContains $hotkeys 'OpenWindowsTerminal(*)' 'WindowLauncher.ActivateOrRun("ahk_exe WindowsTerminal.exe", "wt.exe")'
-Assert-HandlerContains $hotkeys 'OpenFileExplorer(*)' 'WindowLauncher.ActivateOrRun("ahk_class CabinetWClass", "explorer.exe")'
+Assert-Contains $hotkeys '^!#r::Reload()'
+Assert-NotContains $hotkeys 'WindowLauncher.ActivateOrRun('
 
 Assert-Contains $windowLauncher 'class WindowLauncher'
-Assert-Contains $windowLauncher 'WinExist(windowCriteria)'
-Assert-Contains $windowLauncher 'if !WinWait(windowCriteria, , timeoutSeconds)'
-Assert-Contains $windowLauncher 'try Run(command)'
-Assert-HandlerContains $windowLauncher 'ActivateOrRun(windowCriteria, command, timeoutSeconds := 5)' 'WinActivate'
-Assert-BlockContains $windowLauncher 'if hwnd := WinExist(windowCriteria)' 'WinActivate'
+Assert-Contains $windowLauncher 'static Find(app)'
+Assert-Contains $windowLauncher 'try Run(app.Command)'
+Assert-HandlerContains $windowLauncher 'ActivateOrRun(app)' 'this.Activate(hwnd'
 Assert-BlockContains $windowLauncher 'catch Error as' 'MsgBox'
 Assert-BlockContains $windowLauncher 'catch Error as' 'return false'
-Assert-BlockContains $windowLauncher 'if !WinWait(windowCriteria, , timeoutSeconds)' 'MsgBox'
-Assert-BlockContains $windowLauncher 'if !WinWait(windowCriteria, , timeoutSeconds)' 'return false'
+Assert-HandlerContainsInOrder $windowLauncher 'Activate(hwnd, popupArea := "")' 'Komorebi.FocusWorkspace(workspace)' 'WinActivate(target)'
+
+Assert-Contains $komorebi 'class Komorebi'
+Assert-Contains $komorebi 'static WorkspaceOf(hwnd)'
+Assert-Contains $komorebi 'RunWait(this.CommandLine(args), , "Hide")'
+
+Assert-Contains $windowManager 'BindWorkspaceHotkeys(["dev", "notes", "ai-lab", "research", "comms", "files", "scratch"])'
+Assert-Contains $chords '#Space::Chords.Open(Chords.Root)'
+Assert-Contains $chords 'KeyChord()'
+
+foreach ($name in 'Zed', 'ClaudeCode', 'Shell', 'Obsidian', 'Zen', 'Typora', 'Perplexity', 'Claude', 'ChatGPT', 'Copilot', 'Gemini',
+                   'Spark', 'TickTick', 'Fantastical', 'Explorer', 'Everything', 'Koffee', 'Bitwarden', 'TaskManager') {
+    Assert-Contains $apps "${name}:"
+    Assert-Contains $chords "Apps.$name)"
+}

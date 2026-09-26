@@ -177,10 +177,10 @@
     padding: 0 2px;
 }
 .komorebi-workspaces .ws-btn {
-    font-family: var(--font-mono);
+    font-family: var(--font-text);
     font-size: 12px;
     min-width: 24px;
-    max-width: 24px;
+    padding: 0 8px;
     min-height: 26px;
     max-height: 26px;
     margin: 0 1px;
@@ -191,7 +191,7 @@
 .komorebi-workspaces .ws-btn .label,
 .komorebi-workspaces .ws-btn.empty .label {
     color: var(--overlay0);
-    font-family: var(--font-mono);
+    font-family: var(--font-text);
     font-size: 12px;
 }
 .komorebi-workspaces .ws-btn.populated .label {

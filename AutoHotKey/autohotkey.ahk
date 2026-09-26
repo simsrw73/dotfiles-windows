@@ -4,6 +4,11 @@
 
 #Include "Lib/App.ahk"
 #Include "Lib/WindowLauncher.ahk"
+#Include "Lib/Komorebi.ahk"
+#Include "Lib/KeyChord/KeyChord.ahk"
+#Include "Apps.ahk"
+#Include "WindowManager.ahk"
+#Include "Chords.ahk"
 #Include "Hotkeys.ahk"
 #Include "Hotstrings.ahk"
 

@@ -1,2 +1,3 @@
 - [yasb bar design](yasb-bar-design.md) — user's yasb spec (Mocha, komorebi, pills), rebuilt 2026-09-26; setup gotchas
 - [dotfiles repo layout](dotfiles-repo-layout.md) — what ~/.config tracks, secret purge 2026-09-26, AHK/Flow junctions
+- [komorebi + AHK setup](komorebi-ahk-setup.md) — workspace map, Alt/Win+Space keys, cloaked-window & state-restore gotchas

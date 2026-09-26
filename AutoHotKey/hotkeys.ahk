@@ -2,36 +2,9 @@
 
 ^!#r::Reload()
 ^!#q::ExitApp()
-^!#t::OpenWindowsTerminal()
-^!#e::OpenFileExplorer()
-^!#f::OpenEverything()
-^!#k::OpenKoffee()
-^!#Esc::OpenTaskManager()
 
-; Open perplexity, claude. Open Zed.
+; App launching lives in Chords.ahk (Win+Space).
 
-
-OpenWindowsTerminal(*) {
-    WindowLauncher.ActivateOrRun("ahk_exe WindowsTerminal.exe", "wt.exe")
-}
-
-OpenFileExplorer(*) {
-    WindowLauncher.ActivateOrRun("ahk_class CabinetWClass", "explorer.exe")
-}
-
-OpenEverything(*) {
-    WindowLauncher.ActivateOrRun("ahk_exe everything.exe", "C:\Program Files\Everything\Everything.exe")
-}
-
-OpenKoffee(*) {
-    WindowLauncher.ActivateOrRun("ahk_exe Koffee.exe", "koffee.exe")
-}
-
-OpenTaskManager(*) {
-    WindowLauncher.ActivateOrRun("ahk_exe procexp64.exe", "C:\Users\simsr\.local\share\scoop\apps\sysinternals\current\procexp64.exe")
-}
-
-;"C:\Program Files\Everything\Everything.exe" -is-relaunch-command
 
 localAppDataDir := EnvGet("LocalAppData")
 chromePath := "C:\Program Files\Google\Chrome\Application\chrome.exe"
