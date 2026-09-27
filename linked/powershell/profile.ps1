@@ -22,7 +22,8 @@ if (Get-Command -Name 'FastFetch' -ErrorAction Ignore) {
 #
 
 
-$profileRoot = Split-Path -Parent $PROFILE
+# Real profile lives in ~/.config/powershell; $PROFILE is only a stub that dot-sources this file.
+$profileRoot = $PSScriptRoot
 $moduleRoot = Join-Path $profileRoot 'ProfileModules'
 
 # ── Output verbosity ─────────────────────────────────────────────────────────
