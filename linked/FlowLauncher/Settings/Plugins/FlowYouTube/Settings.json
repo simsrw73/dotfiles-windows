@@ -3,6 +3,6 @@
   "language": "Default",
   "program_path": null,
   "region": "Default",
-  "download_thumbs": true,
-  "max_search_results": "10"
+  "max_search_results": "10",
+  "download_thumbs": true
 }
