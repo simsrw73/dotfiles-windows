@@ -1,0 +1,2 @@
+# shell hooks must keep LF even with core.autocrlf=true
+.githooks/* text eol=lf
