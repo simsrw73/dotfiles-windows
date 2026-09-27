@@ -36,3 +36,61 @@ $haveMods = @(Get-InstalledPSResource -ErrorAction SilentlyContinue | % Name)
 foreach ($m in (Get-Missing -Wanted @({{ range $i, $a := .packages.pwsh }}{{ if $i }}, {{ end }}'{{ $a }}'{{ end }}) -Installed $haveMods)) {
     Install-PSResource -Name $m -Scope CurrentUser -TrustRepository -Quiet
 }
+
+# --- cargo (rustup from winget; homes match DotForge's XDG layout)
+$env:RUSTUP_HOME = Join-Path $HOME '.local\share\rustup'
+$env:CARGO_HOME = Join-Path $HOME '.local\share\cargo'
+$cargo = Join-Path $env:CARGO_HOME 'bin\cargo.exe'
+if (-not (Test-Path $cargo)) { $cargo = (Get-Command cargo -ErrorAction SilentlyContinue).Source }
+if ($cargo) {
+    $haveCrates = @(ConvertFrom-CargoInstallList (& $cargo install --list))
+{{- range .packages.cargo }}
+    if (Get-Missing -Wanted '{{ .crate }}' -Installed $haveCrates) { & $cargo install --locked {{ with get . "git" }}--git '{{ . }}' {{ end }}'{{ .crate }}' }
+{{- end }}
+}
+else { Write-Warning 'cargo not found; skipping cargo crates (install rustup, then re-run chezmoi apply)' }
+
+# Tools installed above land on PATH only for new processes; add their dirs here.
+$env:PATH = @(
+    (Join-Path $env:LOCALAPPDATA 'Microsoft\WinGet\Links')
+    (Join-Path $env:LOCALAPPDATA 'Microsoft\WindowsApps')
+    (Join-Path $env:SCOOP 'shims')
+    (Join-Path $HOME '.local\bin')
+    $env:PATH
+) -join ';'
+
+# --- node (fnm) + global npm packages
+$env:FNM_DIR = Join-Path $HOME '.local\share\fnm'
+if (Get-Command fnm -ErrorAction SilentlyContinue) {
+    $nodeVersions = @({{ range $i, $v := .packages.node.versions }}{{ if $i }}, {{ end }}'{{ $v }}'{{ end }})
+    foreach ($v in $nodeVersions) { fnm install $v }
+    fnm default $nodeVersions[0]
+    $npmJson = fnm exec --using=default -- npm.cmd ls -g --depth=0 --json | ConvertFrom-Json
+    $haveNpm = @($npmJson.dependencies.PSObject.Properties.Name)
+    foreach ($p in (Get-Missing -Wanted @({{ range $i, $a := .packages.node.npm }}{{ if $i }}, {{ end }}'{{ $a }}'{{ end }}) -Installed $haveNpm)) {
+        fnm exec --using=default -- npm.cmd install -g $p
+    }
+}
+else { Write-Warning 'fnm not found; skipping node and npm packages' }
+
+# --- python (Python install manager)
+if (Get-Command py -ErrorAction SilentlyContinue) {
+{{- range .packages.python }}
+    py -V:{{ . }} -c 'pass' *> $null
+    if ($LASTEXITCODE -ne 0) { py install {{ . }} }
+{{- end }}
+}
+else { Write-Warning 'py not found; skipping python versions' }
+
+# --- pipx and uv tools
+$env:PIPX_HOME = Join-Path $HOME '.local\share\pipx'
+if (Get-Command pipx -ErrorAction SilentlyContinue) {
+    $havePipx = @(ConvertFrom-NameVersionList (pipx list --short))
+    foreach ($t in (Get-Missing -Wanted @({{ range $i, $a := .packages.pipx }}{{ if $i }}, {{ end }}'{{ $a }}'{{ end }}) -Installed $havePipx)) { pipx install $t }
+}
+else { Write-Warning 'pipx not found; skipping pipx apps' }
+if (Get-Command uv -ErrorAction SilentlyContinue) {
+    $haveUv = @(ConvertFrom-NameVersionList (uv tool list))
+    foreach ($t in (Get-Missing -Wanted @({{ range $i, $a := .packages.uvtools }}{{ if $i }}, {{ end }}'{{ $a }}'{{ end }}) -Installed $haveUv)) { uv tool install $t }
+}
+else { Write-Warning 'uv not found; skipping uv tools' }

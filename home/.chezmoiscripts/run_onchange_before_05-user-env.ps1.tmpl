@@ -4,6 +4,10 @@ $vars = [ordered]@{
     SCOOP                = Join-Path $HOME '.local\share\scoop'
     KOMOREBI_CONFIG_HOME = Join-Path $HOME '.config\komorebi'
     GNUPGHOME            = Join-Path $HOME '.config\gnupg'
+    RUSTUP_HOME          = Join-Path $HOME '.local\share\rustup'
+    CARGO_HOME           = Join-Path $HOME '.local\share\cargo'
+    FNM_DIR              = Join-Path $HOME '.local\share\fnm'
+    PIPX_HOME            = Join-Path $HOME '.local\share\pipx'
 }
 foreach ($k in $vars.Keys) {
     if ([Environment]::GetEnvironmentVariable($k, 'User') -ne $vars[$k]) {

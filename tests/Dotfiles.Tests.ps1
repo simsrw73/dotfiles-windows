@@ -110,3 +110,30 @@ Describe 'Move-IntoLinked' {
         Move-IntoLinked -Live $live -Linked $linked -Now $now | Should -Be 'already-linked'
     }
 }
+
+Describe 'ConvertFrom-CargoInstallList' {
+    It 'returns crate names from `cargo install --list` output, including git installs' {
+        $text = @(
+            'choose v1.3.7:'
+            '    choose.exe'
+            'wpmd v0.1.0 (https://github.com/LGUG2Z/wpm#38728307):'
+            '    wpmd.exe'
+        )
+        ConvertFrom-CargoInstallList $text | Should -Be @('choose', 'wpmd')
+    }
+    It 'returns nothing for empty output' {
+        @(ConvertFrom-CargoInstallList @()).Count | Should -Be 0
+    }
+}
+
+Describe 'ConvertFrom-NameVersionList' {
+    It 'reads `pipx list --short` output' {
+        ConvertFrom-NameVersionList @('beets 2.13.1', 'rich-cli 1.8.1') | Should -Be @('beets', 'rich-cli')
+    }
+    It 'reads `uv tool list` output, skipping the executable lines' {
+        ConvertFrom-NameVersionList @('pls v6.0.0.post1', '- pls', '- pls-dev', 'pynvim v0.6.0', '- pynvim-python') | Should -Be @('pls', 'pynvim')
+    }
+    It 'ignores blank lines and messages like "No tools installed"' {
+        @(ConvertFrom-NameVersionList @('', 'No tools installed')).Count | Should -Be 0
+    }
+}

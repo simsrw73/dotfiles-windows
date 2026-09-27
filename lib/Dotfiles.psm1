@@ -93,4 +93,16 @@ function Move-IntoLinked {
     Set-DirectoryLink -Path $Live -Target $Linked -Kind Junction -Now $Now
 }
 
-Export-ModuleMember -Function Get-Missing, Get-BackupPath, Set-DirectoryLink, Move-IntoLinked
+function ConvertFrom-CargoInstallList {
+    # Crate names from `cargo install --list`: unindented "name vX.Y.Z[ (source)]:" lines.
+    param([string[]] $Lines = @())
+    foreach ($l in $Lines) { if ($l -match '^(\S+) v\S+.*:$') { $Matches[1] } }
+}
+
+function ConvertFrom-NameVersionList {
+    # Tool names from `pipx list --short` / `uv tool list`: "name [v]1.2.3" lines.
+    param([string[]] $Lines = @())
+    foreach ($l in $Lines) { if ($l -match '^([^\s-]\S*) v?\d') { $Matches[1] } }
+}
+
+Export-ModuleMember -Function ConvertFrom-CargoInstallList, ConvertFrom-NameVersionList, Get-Missing, Get-BackupPath, Set-DirectoryLink, Move-IntoLinked

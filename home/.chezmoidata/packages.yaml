@@ -283,3 +283,39 @@ packages:
     - PSWindowsUpdate
     - PwshSpectreConsole
     - Terminal-Icons
+
+  # cargo install (needs Rustlang.Rustup from winget). git: installs from a repo.
+  cargo:
+    - crate: choose
+    - crate: rustscan
+    - crate: sd
+    - crate: wpmd
+      git: https://github.com/LGUG2Z/wpm
+    - crate: wpmctl
+      git: https://github.com/LGUG2Z/wpm
+
+  # Node via fnm (Schniz.fnm from winget); first version becomes the default.
+  node:
+    versions:
+      - lts-latest
+    npm:
+      - "@google/gemini-cli"
+      - "@microsoft/inshellisense"
+      - "@openai/codex"
+      - editly
+      - gtop
+      - neovim
+      - tsx
+
+  # Python via the Python install manager (Python.PythonInstallManager from winget).
+  python:
+    - "3.14"
+
+  # pipx from scoop; uv from winget (astral-sh.uv).
+  pipx:
+    - beets
+    - glances
+    - rich-cli
+  uvtools:
+    - pls
+    - pynvim
