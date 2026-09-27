@@ -108,4 +108,27 @@ function ConvertFrom-NameVersionList {
     foreach ($l in $Lines) { if ($l -match '^([^\s-]\S*) v?\d') { $Matches[1] } }
 }
 
-Export-ModuleMember -Function ConvertFrom-CargoInstallList, ConvertFrom-NameVersionList, Get-Missing, Get-BackupPath, Set-DirectoryLink, Move-IntoLinked
+function Get-ScoopNote {
+    # The "Notes" scoop prints after install (reg imports, setup scripts), read from
+    # the installed manifest with scoop's variables expanded. Nothing if no notes.
+    param([Parameter(Mandatory)][string] $App, [string] $ScoopRoot = $env:SCOOP)
+    $current = Join-Path $ScoopRoot "apps\$App\current"
+    $manifest = Join-Path $current 'manifest.json'
+    if (-not (Test-Path -LiteralPath $manifest)) { return }
+    $m = Get-Content -LiteralPath $manifest -Raw | ConvertFrom-Json
+    if (-not $m.notes) { return }
+    $text = @($m.notes) -join "`n"
+    # `current` rather than the versioned dir, so the paths survive updates.
+    $vars = [ordered]@{
+        '$original_dir' = $current
+        '$persist_dir'  = Join-Path $ScoopRoot "persist\$App"
+        '$scoopdir'     = $ScoopRoot
+        '$version'      = [string] $m.version
+        '$dir'          = $current
+        '$app'          = $App
+    }
+    foreach ($k in $vars.Keys) { $text = $text.Replace($k, $vars[$k]) }
+    [pscustomobject]@{ App = $App; Notes = $text }
+}
+
+Export-ModuleMember -Function ConvertFrom-CargoInstallList, ConvertFrom-NameVersionList, Get-Missing, Get-ScoopNote, Get-BackupPath, Set-DirectoryLink, Move-IntoLinked

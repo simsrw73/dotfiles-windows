@@ -3,6 +3,39 @@ BeforeAll {
     $now = [datetime]'2026-09-27'
 }
 
+Describe 'Get-ScoopNote' {
+    BeforeEach {
+        $root = Join-Path $TestDrive ([guid]::NewGuid())
+        function New-Manifest([string] $App, [hashtable] $Manifest) {
+            $d = Join-Path $root "apps\$App\current"
+            New-Item -ItemType Directory $d -Force | Out-Null
+            $Manifest | ConvertTo-Json | Set-Content (Join-Path $d 'manifest.json')
+        }
+    }
+    It 'returns a string note' {
+        New-Manifest 'foo' @{ version = '1.0'; notes = 'hello' }
+        $n = Get-ScoopNote -App 'foo' -ScoopRoot $root
+        $n.App | Should -Be 'foo'
+        $n.Notes | Should -Be 'hello'
+    }
+    It 'joins array notes with newlines' {
+        New-Manifest 'foo' @{ version = '1.0'; notes = @('one', 'two') }
+        (Get-ScoopNote -App 'foo' -ScoopRoot $root).Notes | Should -Be "one`ntwo"
+    }
+    It 'expands scoop note variables' {
+        New-Manifest 'foo' @{ version = '2.3'; notes = 'reg import "$dir\a.reg"; $original_dir; $persist_dir; $app $version; $scoopdir' }
+        (Get-ScoopNote -App 'foo' -ScoopRoot $root).Notes |
+            Should -Be "reg import `"$root\apps\foo\current\a.reg`"; $root\apps\foo\current; $root\persist\foo; foo 2.3; $root"
+    }
+    It 'returns nothing when the manifest has no notes' {
+        New-Manifest 'foo' @{ version = '1.0' }
+        Get-ScoopNote -App 'foo' -ScoopRoot $root | Should -BeNullOrEmpty
+    }
+    It 'returns nothing when the app has no manifest' {
+        Get-ScoopNote -App 'nope' -ScoopRoot $root | Should -BeNullOrEmpty
+    }
+}
+
 Describe 'Get-Missing' {
     It 'returns wanted items not installed, case-insensitively' {
         Get-Missing -Wanted 'Git','fzf','bat' -Installed 'git','BAT' | Should -Be @('fzf')

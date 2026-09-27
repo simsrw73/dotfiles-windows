@@ -12,6 +12,15 @@ $wantScoop = @({{ range $i, $a := .packages.scoop.apps }}{{ if $i }}, {{ end }}'
 $haveScoop = @((scoop export | ConvertFrom-Json).apps | % Name)
 $missing = Get-Missing -Wanted ($wantScoop | % { ($_ -split '/')[-1] }) -Installed $haveScoop
 foreach ($m in $missing) { scoop install ($wantScoop | Where-Object { ($_ -split '/')[-1] -ieq $m } | Select-Object -First 1) }
+# Scoop's post-install notes (reg imports, context-menu scripts) scroll away; keep them.
+$notes = @($missing | ForEach-Object { Get-ScoopNote -App $_ })
+if ($notes) {
+    $notesDir = Join-Path $HOME '.local\state\dotfiles'
+    New-Item -ItemType Directory $notesDir -Force | Out-Null
+    $notesFile = Join-Path $notesDir ('scoop-notes-{0:yyyyMMdd-HHmmss}.md' -f (Get-Date))
+    $notes | ForEach-Object { "## $($_.App)`n`n$($_.Notes)`n" } | Set-Content $notesFile
+    Write-Host "`nScoop notes for $($notes.Count) new app(s): $notesFile" -ForegroundColor Yellow
+}
 
 # --- winget
 if (Get-Command winget -ErrorAction SilentlyContinue) {

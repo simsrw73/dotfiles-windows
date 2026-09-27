@@ -36,3 +36,4 @@ chezmoi apply -v
 Write-Host ''
 Write-Host 'Done. Sign out and back in (env vars, wpmd logon task), then open a new terminal.'
 Write-Host 'Re-login where needed: gh (done), Claude Code, Copilot, Docker, OneDrive.'
+Write-Host 'Scoop install notes (reg imports, context menus): ~\.local\state\dotfiles\scoop-notes-*.md'
