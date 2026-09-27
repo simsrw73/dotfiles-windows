@@ -62,6 +62,17 @@ Apps := {
     HWiNFO:         { Criteria: "ahk_exe HWiNFO64.EXE", Command: Quote("C:\Program Files\HWiNFO64\HWiNFO64.EXE") },
     WizTree:        { Criteria: "ahk_exe WizTree64.exe", Command: Quote("C:\Program Files\WizTree\WizTree64.exe") },
 
+    ; games
+    Steam:        { Criteria: "Steam ahk_exe steamwebhelper.exe", MatchMode: 3, Command: Quote("C:\Program Files (x86)\Steam\steam.exe") },
+    GOG:          { Criteria: "ahk_exe GalaxyClient.exe", Command: AppsFolder("GogCom.GalaxyClient.Main") },
+    AmazonGames:  { Criteria: "ahk_exe Amazon Games UI.exe", Command: AppsFolder("Amazon.AmazonGamesApp") },
+    BattleNet:    { Criteria: "ahk_exe Battle.net.exe", Command: Quote("G:\Games\BattleNet\Battle.net Launcher.exe") },
+    Epic:         { Criteria: "ahk_exe EpicGamesLauncher.exe", Command: Quote("C:\Program Files\Epic Games\Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe") },
+    Ubisoft:      { Criteria: "ahk_exe upc.exe", Command: Quote("C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher\UbisoftConnect.exe") },
+    Xbox:         { Criteria: "ahk_exe XboxPcApp.exe", Command: AppsFolder("Microsoft.GamingApp_8wekyb3d8bbwe!Microsoft.Xbox.App") },
+    Vortex:       { Criteria: "ahk_exe Vortex.exe", Command: AppsFolder("com.nexusmods.vortex") },
+    ModOrganizer: { Criteria: "ahk_exe ModOrganizer.exe", Command: Quote("G:\Games\Modding\MO2\ModOrganizer.exe") },
+
     ; popups: ignored by komorebi, so they stay visible on every workspace
     Koffee:      { Criteria: "ahk_exe Koffee.exe", Popup: true, Command: Quote(EnvGet("UserProfile") "\.local\share\scoop\apps\koffee\current\Koffee.exe") },
     Bitwarden:   { Criteria: "ahk_exe Bitwarden.exe", Popup: true, Command: Quote(LocalPrograms "\Bitwarden\Bitwarden.exe") },
