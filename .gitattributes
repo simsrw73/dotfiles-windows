@@ -1,2 +1,5 @@
-# shell hooks must keep LF even with core.autocrlf=true
+# Store and check out bytes exactly as committed, so chezmoi writes files
+# identical to the live ones (no autocrlf conversion).
+* -text
+# shell hooks must keep LF
 .githooks/* text eol=lf
