@@ -1,0 +1,22 @@
+# links.yaml hash: {{ .links | toJson | sha256sum }}
+$ErrorActionPreference = 'Stop'
+Import-Module '{{ joinPath .chezmoi.workingTree "lib" "Dotfiles.psm1" }}' -Force
+
+function Resolve-LinkPath([string] $p) {
+    $p = $p.Replace('{docs}', '{{ .documents }}').Replace('{src}', '{{ .chezmoi.workingTree }}')
+    if ($p.StartsWith('~/')) { $p = Join-Path $HOME $p.Substring(2) }
+    [Environment]::ExpandEnvironmentVariables($p).Replace('/', '\')
+}
+
+$links = @(
+{{- range .links }}
+    @{ Path = '{{ .path }}'; Target = '{{ .target }}' }
+{{- end }}
+)
+foreach ($l in $links) {
+    $path = Resolve-LinkPath $l.Path
+    $target = Resolve-LinkPath $l.Target
+    if (-not (Test-Path -LiteralPath $target)) { New-Item -ItemType Directory -Force $target | Out-Null }
+    $r = Set-DirectoryLink -Path $path -Target $target -Kind Junction
+    Write-Host "link $path -> $target : $r"
+}
