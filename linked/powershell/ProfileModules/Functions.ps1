@@ -1,7 +1,7 @@
 #Requires -Version 7.0
 
 function global:Test-AdminRole {
-    $identity  = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
     $principal = [Security.Principal.WindowsPrincipal]::new($identity)
     $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
@@ -39,9 +39,9 @@ function global:Update-AllModules {
     # --- Phase 2: Update installed modules ---
     Write-Host "`n⚙  Phase 2 — Updating modules" -ForegroundColor Cyan
 
-    $valid  = $installed | Where-Object { Test-Path $_.InstalledLocation }
+    $valid = $installed | Where-Object { Test-Path $_.InstalledLocation }
     $unique = $valid | Sort-Object Name -Unique
-    $total  = @($unique).Count
+    $total = @($unique).Count
     $i = 0
 
     foreach ($module in $unique) {
@@ -58,8 +58,8 @@ function global:Update-AllModules {
         Update-PSResource -Name $module.Name -Scope $scope -ErrorAction SilentlyContinue
 
         $allVersions = @(Get-InstalledPSResource -Name $module.Name |
-            Where-Object { Test-Path $_.InstalledLocation } |
-            Sort-Object Version -Descending)
+                Where-Object { Test-Path $_.InstalledLocation } |
+                Sort-Object Version -Descending)
 
         if ($allVersions.Count -gt 1) {
             $allVersions[1..($allVersions.Count - 1)] | ForEach-Object {
@@ -85,25 +85,6 @@ function global:Update-AllModules {
     Write-Host "`n✓ Done" -ForegroundColor Green
 }
 
-
-function global:cd...  { Set-Location ..\.. }
-function global:cd.... { Set-Location ..\..\.. }
-
-function global:Show-Environment {
-    Get-ChildItem env:* | Sort-Object name | Format-Table -AutoSize
-}
-
-function global:Show-Path {
-    Write-Output $Env:Path.Split(';')
-}
-
-function global:New-File {
-    [CmdletBinding()]
-    param([Parameter(Mandatory)][string]$Name)
-    if (-not (Test-Path $Name)) {
-        New-Item -ItemType File -Path $Name | Out-Null
-    }
-}
 
 function global:Remove-All {
     [CmdletBinding()]
@@ -132,12 +113,16 @@ function global:Copy-SSHID {
     }
 }
 
-function global:Reload-Profile {
-    . $PROFILE
-    Write-ProfileMsg '✓ Profile reloaded' -Color Green
-}
-
 function global:Measure-Profile {
     $t = Measure-Command { . $PROFILE }
     Write-ProfileMsg "Profile load: $([math]::Round($t.TotalMilliseconds))ms" -Color Cyan
 }
+
+# Recklessly allow Claude to run all over me
+$script:ClaudeExe = (Get-Command claude).Source
+function clauded {
+    & $script:ClaudeExe --dangerously-skip-permissions @Args
+}
+
+
+

@@ -1,0 +1,9 @@
+
+## zed editor
+# if the directories already exist do something smart
+
+# Link AppData (Config) to your XDG Config path
+New-Item -ItemType Junction -Path "$env:APPDATA\Zed" -Value "$env:USERPROFILE\.config\zed"
+
+# Link LocalAppData (Data/Extensions) to your XDG Data path
+New-Item -ItemType Junction -Path "$env:LOCALAPPDATA\Zed" -Value "$env:USERPROFILE\.local\share\zed"

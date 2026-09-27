@@ -1,8 +1,24 @@
 #Requires -Version 7.0
-# cli_tools_config.ps1  -  Per-tool configuration: XDG paths, functions, aliases, completers, fzf pickers
-# Each tool gets one #region/#endregion block. Guards check tool availability before applying config.
+# cli_tools_config.ps1  -  STAGING FILE. NOT LOADED BY ANY PROFILE. DO NOT DOT-SOURCE.
+#
+# This file is the un-folded remainder of the original per-tool config. Everything
+# DotForge already covers has been deleted (2026-07-15); what is left is the backlog.
+#
+#   Design/spec:  DotForge/docs/superpowers/specs/2026-07-15-legacy-profile-fold-in-design.md
+#   Full history: git show 713f6ff:ProfileModules/cli_tools_config.ps1
+#
+# IMPORTANT: because this file is not loaded, everything below is INACTIVE TODAY.
+# These are live regressions, not a tidy-up backlog. Deleting a block here without
+# folding it into DotForge silently drops the feature for good.
+#
+# Folded in already (deleted): eza aliases+ff, bat env+cat, fd ffd, ripgrep env+frg,
+#   procs fkill, winfetch, curl, micro, less, lazygit, zoxide (fcd->fzo), gsudo,
+#   posh-git pickers, Terminal-Icons, oh-my-posh, PSFzf, npm env+nls, winget wins/wrm,
+#   scoop scoop-search hook, uv/chezmoi/glow/docker env vars.
+# Deleted as empty placeholders: fx, jid, duf, dua, gdu, ntop, moor, gemini, win32yank,
+#   scoop-completion, PSAISuite, PSWindowsUpdate, Admin, cargo, DockerCompletion, PowerType.
 
-# ── Tool availability tracking ────────────────────────────────────────────────
+# ── Helpers still needed by the blocks below ─────────────────────────────────
 $script:_toolsFound   = [System.Collections.Generic.List[string]]::new()
 $script:_toolsMissing = [System.Collections.Generic.List[string]]::new()
 
@@ -16,37 +32,10 @@ function script:_HasCmd {
     }
 }
 
-function script:_HasMod {
-    param([string]$Label, [string]$Module = '')
-    if (-not $Module) { $Module = $Label }
-    if ($null -ne (Get-Module -Name $Module)) {
-        $null = $script:_toolsFound.Add($Label); $true
-    } else {
-        $null = $script:_toolsMissing.Add($Label); $false
-    }
-}
-# ─────────────────────────────────────────────────────────────────────────────
-
-function script:_GetCachedCompletion {
-    param(
-        [string]$CacheKey,
-        [string]$ExePath,
-        [scriptblock]$Generate
-    )
-    $cacheDir  = Join-Path $Env:XDG_CACHE_HOME 'ps-completions'
-    $cacheFile = Join-Path $cacheDir "$CacheKey.ps1"
-    $cacheItem = Get-Item $cacheFile -ErrorAction Ignore
-    $exeItem   = Get-Item $ExePath   -ErrorAction Ignore
-
-    if (-not ($cacheItem -and $exeItem -and $cacheItem.LastWriteTime -gt $exeItem.LastWriteTime)) {
-        New-Item -ItemType Directory -Force -Path $cacheDir | Out-Null
-        $content = & $Generate
-        if ($content) { Set-Content -Path $cacheFile -Value $content -Encoding UTF8 }
-        $cacheItem = Get-Item $cacheFile -ErrorAction Ignore
-    }
-
-    if ($cacheItem) { . $cacheFile }
-}
+# _GetCachedCompletion was removed 2026-07-15: every tool that used it (fd, rg, glow,
+# procs, rustup, gh, chezmoi) is now covered by carapace, so nothing needs to generate
+# and cache completion scripts. Recover it from git if a tool ever falls outside
+# carapace's coverage: git show 713f6ff:ProfileModules/cli_tools_config.ps1
 
 function script:Ensure-Dir {
     param([string]$Path)
@@ -54,152 +43,75 @@ function script:Ensure-Dir {
 }
 
 # ==============================================================================
-# Group 1  -  File/directory tools
+# GAP 4  -  Env/config not folded in  (spec §4)
+# Highest-value, lowest-effort: these are pure Tools/*.json edits.
 # ==============================================================================
 
-#region eza  -  modern ls replacement
-if (_HasCmd 'eza') {
-    # --- Functions / Aliases ---
-    function global:_ls   { eza --color=auto --icons --group-directories-first @args }
-    function global:_ll   { eza --all --long --header @args }
-    function global:_la   { eza --all --group @args }
-    function global:_tree { eza --tree @args }
-    Set-Alias -Name ls -Value _ls -Scope Global
-    Set-Alias -Name ll -Value _ll -Scope Global
-    Set-Alias -Name la -Value _la -Scope Global
-    Set-Alias -Name tree -Value _tree -Scope Global
-    # --- Completers ---
-    Register-ArgumentCompleter -Native -CommandName eza -ScriptBlock {
-        param($wordToComplete, $commandAst, $cursorPosition)
-        $flags = @(
-            '--long', '--all', '--tree', '--icons', '--git', '--color',
-            '--group-directories-first', '--sort', '--reverse', '--header',
-            '--group', '--oneline', '--classify', '--level', '--ignore-glob',
-            '--time-style', '--hyperlink', '--no-permissions', '--no-filesize',
-            '--no-user', '--no-time', '--stdin', '--list-dirs', '--dereference'
-        )
-        $flags | Where-Object { $_ -like "$wordToComplete*" } |
-            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
-    }
-    # --- Fzf Pickers ---
-    function global:Select-File {
-        [CmdletBinding()]
-        param([string]$Path = '.')
-        $result = eza --icons -1 --color=always $Path |
-            fzf --ansi --preview 'bat --color=always --line-range=:200 {}' `
-                --preview-window 'right:60%' `
-                --header 'Select file (Enter to open, Ctrl-C to cancel)'
-        if ($result) { $result }
-    }
-    Set-Alias -Name ff -Value Select-File -Scope Global
-}
-#endregion eza
+# fzf and delta env vars: FOLDED IN 2026-07-15 -> Tools/fzf.json, Tools/delta.json.
+# Caveat recorded in the spec: DELTA_FEATURES=catppuccin-mocha is a no-op — no
+# [delta "catppuccin-mocha"] feature is defined in any git config scope, and delta
+# silently ignores unknown features. Ported faithfully; define the feature to use it.
 
-#region bat  -  modern cat replacement
-if (_HasCmd 'bat') {
-    # --- XDG / Config paths ---
-    $Env:BAT_CONFIG_PATH = Join-Path $Env:XDG_CONFIG_HOME 'bat' 'bat.conf'
-    # --- Completers ---
-    Register-ArgumentCompleter -Native -CommandName bat -ScriptBlock {
-        param($wordToComplete, $commandAst, $cursorPosition)
-        $flags = @(
-            '--language', '--theme', '--style', '--paging', '--color',
-            '--line-range', '--highlight-line', '--diff', '--show-all',
-            '--plain', '--number', '--decorations', '--italic-text',
-            '--tabs', '--wrap', '--terminal-width', '--map-syntax',
-            '--list-languages', '--list-themes'
-        )
-        $flags | Where-Object { $_ -like "$wordToComplete*" } |
-            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+#region ripgrep  -  default config seeding  (spec §4: schema limitation)
+# RIPGREP_CONFIG_PATH is already folded into Tools/ripgrep.json (method 'env').
+# Only the default-file seeding remains. Blocked: xdg.method is a single value and
+# the 'config' branch does not set env vars, so 'env' + seed is not expressible.
+if (_HasCmd 'rg') {
+    if (-not (Test-Path $Env:RIPGREP_CONFIG_PATH)) {
+        Set-Content -Path $Env:RIPGREP_CONFIG_PATH -Value "# ripgrep config`n--smart-case`n--hidden" -Encoding UTF8
     }
-    function global:Join-Files {
-        [CmdletBinding()]
-        param([Parameter(ValueFromRemainingArguments)][string[]]$Path)
-        bat -pp @Path
-    }
-} else {
+}
+#endregion ripgrep
+
+#region wget  -  config file creation  (spec §4: same schema limitation)
+# WGETRC is folded into Tools/wget.json; only the empty-file touch remains.
+if (_HasCmd 'wget') {
+    $null = New-Item -ItemType File -Force -Path $Env:WGETRC -ErrorAction SilentlyContinue
+}
+#endregion wget
+
+#region docker  -  unconditional DOCKER_CONFIG  (spec §4: confirm intent)
+# Legacy set this OUTSIDE the availability guard so docker-compose and friends
+# use the XDG path even when the docker CLI is absent. DotForge only sets it when
+# docker is present. Behavior change — decide whether it matters.
+$Env:DOCKER_CONFIG = Join-Path $Env:XDG_CONFIG_HOME 'docker'
+Ensure-Dir $Env:DOCKER_CONFIG
+#endregion docker
+
+#region bat  -  cat fallback when bat is absent  (spec §4)
+# Tools/bat.json aliases cat -> bat, but only when bat is installed. This else-branch
+# fallback has no home in DotForge, which registers nothing for missing tools.
+if (-not (Get-Command bat.exe -ErrorAction Ignore)) {
     function global:Join-Files {
         [CmdletBinding()]
         param([Parameter(ValueFromRemainingArguments)][string[]]$Path)
         Get-Content @Path
     }
+    Set-Alias -Name cat -Value Join-Files -Scope Global -Force
 }
-Set-Alias -Name cat -Value Join-Files -Scope Global -Force
 #endregion bat
 
-#region fd  -  modern find replacement
-if (_HasCmd 'fd') {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # --- Completers ---
-    _GetCachedCompletion 'fd' (Get-Command fd.exe).Path { fd --gen-completions powershell }
-    # --- Fzf Pickers ---
-    function global:Select-FdResult {
-        [CmdletBinding()]
-        param(
-            [string]$Pattern = '',
-            [string]$Path = '.',
-            [ValidateSet('file', 'directory', 'any')]
-            [string]$Type = 'file'
-        )
-        $fdArgs = @('--color=always')
-        if ($Pattern) { $fdArgs += $Pattern }
-        if ($Path -ne '.') { $fdArgs += $Path }
-        if ($Type -ne 'any') { $fdArgs += '--type'; $fdArgs += $Type }
-        $result = fd @fdArgs 2>$null |
-            fzf --ansi `
-                --preview 'bat --color=always --line-range=:100 {} 2>/dev/null || eza --icons --color=always {}' `
-                --preview-window 'right:60%' `
-                --header 'Select file/dir'
-        if ($result) { $result }
-    }
-    Set-Alias -Name ffd -Value Select-FdResult -Scope Global
-}
-#endregion fd
+# ==============================================================================
+# GAP 2  -  Completions  (spec §2)
+#
+# RESOLVED 2026-07-15 for 11 of 16 tools: carapace is now a DotForge tool
+# (Tools/carapace.json + Tools/carapace.ps1) and registers native argument
+# completers for ~519 commands, including eza, bat, fd, rg, npm, gh, glow,
+# procs, rustup, chezmoi and winget. Those completers were deleted from here.
+#
+# No DotForge `completion` schema was built — carapace made it unnecessary for
+# the common case. The five below are the entire remaining gap.
+#
+# Trade-off accepted: carapace ships curated specs that can lag the installed
+# binary, whereas the deleted `_GetCachedCompletion` ones were generated from the
+# binary itself and so always matched its version exactly.
+#
+# For these five, prefer a carapace custom spec (~/.config/carapace/specs/*.yaml)
+# over reviving a DotForge completion engine.
+# ==============================================================================
 
-#region ripgrep  -  fast grep
-if (_HasCmd 'rg') {
-    # --- XDG / Config paths ---
-    $Env:RIPGREP_CONFIG_PATH = Join-Path $Env:XDG_CONFIG_HOME 'ripgrep' 'ripgreprc'
-    # Create a default ripgreprc if it doesn't exist
-    Ensure-Dir (Join-Path $Env:XDG_CONFIG_HOME 'ripgrep')
-    if (-not (Test-Path $Env:RIPGREP_CONFIG_PATH)) {
-        Set-Content -Path $Env:RIPGREP_CONFIG_PATH -Value "# ripgrep config`n--smart-case`n--hidden" -Encoding UTF8
-    }
-    # TODO: Functions / Aliases
-    # --- Completers ---
-    _GetCachedCompletion 'rg' (Get-Command rg.exe).Path { rg --generate complete-powershell }
-    # --- Fzf Pickers ---
-    function global:Select-RipgrepResult {
-        [CmdletBinding()]
-        param(
-            [string]$Pattern = '',
-            [string]$Path = '.'
-        )
-        if (-not $Pattern) { $Pattern = Read-Host 'Search pattern' }
-        $result = rg --line-number --no-heading --color=always $Pattern $Path 2>$null |
-            fzf --ansi `
-                --delimiter ':' `
-                --preview 'bat --color=always --highlight-line {2} {1}' `
-                --preview-window 'right:60%:+{2}+3/3' `
-                --header 'Select result  [Enter to open in editor]'
-        if ($result) {
-            $file, $line = ($result -split ':')[0..1]
-            & $Env:EDITOR $file
-        }
-    }
-    Set-Alias -Name frg -Value Select-RipgrepResult -Scope Global
-}
-#endregion ripgrep
-
-#region broot  -  interactive file browser
+#region completions still missing: not covered by carapace  (spec §2)
 if (_HasCmd 'broot') {
-    # --- XDG / Config paths ---
-    # broot respects $XDG_CONFIG_HOME on all platforms when set
-    $brootConfig = Join-Path $Env:XDG_CONFIG_HOME 'broot'
-    Ensure-Dir $brootConfig
-    # TODO: Functions / Aliases
-    # --- Completers ---
     Register-ArgumentCompleter -Native -CommandName broot -ScriptBlock {
         param($wordToComplete, $commandAst, $cursorPosition)
         $flags = @(
@@ -213,21 +125,71 @@ if (_HasCmd 'broot') {
         $flags | Where-Object { $_ -like "$wordToComplete*" } |
             ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
     }
-    # TODO: Fzf Pickers
 }
-#endregion broot
 
+# sfsu has no Tools/*.json record yet (spec §6)
+if (_HasCmd 'sfsu') {
+    Register-ArgumentCompleter -Native -CommandName sfsu -ScriptBlock {
+        param($wordToComplete, $commandAst, $cursorPosition)
+        $subcommands = @(
+            'search', 'info', 'install', 'update', 'upgrade',
+            'status', 'depends', 'checkver', 'cat', 'virustotal'
+        )
+        $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
+            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+    }
+}
+
+# nvm has no Tools/*.json record yet (spec §6)
+if (_HasCmd 'nvm' -Exe 'nvm') {
+    Register-ArgumentCompleter -Native -CommandName nvm -ScriptBlock {
+        param($wordToComplete, $commandAst, $cursorPosition)
+        $subcommands = @(
+            'install', 'uninstall', 'use', 'list', 'ls', 'list available',
+            'ls-remote', 'current', 'alias', 'unalias', 'reinstall-packages',
+            'version', 'version-remote', 'deactivate', 'root', 'arch', 'node_mirror', 'npm_mirror'
+        )
+        $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
+            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+    }
+}
+
+if (_HasCmd 'uv') {
+    Register-ArgumentCompleter -Native -CommandName uv -ScriptBlock {
+        param($wordToComplete, $commandAst, $cursorPosition)
+        $subcommands = @(
+            'pip', 'venv', 'run', 'sync', 'lock', 'add', 'remove', 'tool',
+            'python', 'init', 'build', 'publish', 'cache', 'self', 'version',
+            'help', 'export', 'tree', 'generate-shell-completion'
+        )
+        $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
+            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+    }
+}
+
+if (_HasCmd 'bw' -Exe 'bw') {
+    Register-ArgumentCompleter -Native -CommandName bw -ScriptBlock {
+        param($wordToComplete, $commandAst, $cursorPosition)
+        $subcommands = @(
+            'login', 'logout', 'lock', 'unlock', 'sync', 'list', 'get',
+            'create', 'edit', 'delete', 'restore', 'move', 'confirm',
+            'import', 'export', 'generate', 'encode', 'config', 'update',
+            'completion', 'status', 'serve', 'receive'
+        )
+        $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
+            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+    }
+}
+#endregion completions still missing
 
 # ==============================================================================
-# Group 2  -  Text/data tools
+# GAP 3  -  Pickers declared "custom" but never implemented  (spec §3)
+# Each tool below has "picker": "custom" in Tools/*.json with no sidecar picker,
+# so Register-DFTool silently does nothing.
 # ==============================================================================
 
-#region jq  -  JSON processor
+#region jq  -  fjq
 if (_HasCmd 'jq') {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # --- Fzf Pickers ---
     function global:Select-JsonPath {
         [CmdletBinding()]
         param([string]$File = '')
@@ -235,7 +197,6 @@ if (_HasCmd 'jq') {
             $File = fzf --header 'Select JSON file' --preview 'bat --color=always {}'
         }
         if (-not $File -or -not (Test-Path $File)) { return }
-        # Interactive jq filter: pipe JSON through fzf, updating preview with each keystroke
         $json = Get-Content $File -Raw
         $filter = Read-Host 'jq filter (default: .)'
         if (-not $filter) { $filter = '.' }
@@ -245,23 +206,8 @@ if (_HasCmd 'jq') {
 }
 #endregion jq
 
-#region fx  -  interactive JSON viewer
-# not yet configured
-#endregion fx
-
-#region jid  -  interactive JSON editor
-# not yet configured
-#endregion jid
-
-#region glow  -  markdown reader
+#region glow  -  fgl
 if (_HasCmd 'glow') {
-    # --- XDG / Config paths ---
-    $Env:GLOW_CONFIG_DIR = Join-Path $Env:XDG_CONFIG_HOME 'glow'
-    Ensure-Dir $Env:GLOW_CONFIG_DIR
-    # TODO: Functions / Aliases
-    # --- Completers ---
-    _GetCachedCompletion 'glow' (Get-Command glow.exe).Path { glow completion powershell }
-    # --- Fzf Pickers ---
     function global:Read-MarkdownFile {
         [CmdletBinding()]
         param([string]$Path = '.')
@@ -276,97 +222,8 @@ if (_HasCmd 'glow') {
 }
 #endregion glow
 
-# ==============================================================================
-# Group 3  -  System tools
-# ==============================================================================
-
-#region procs  -  modern ps replacement
-if (_HasCmd 'procs') {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # --- Completers ---
-    _GetCachedCompletion 'procs' (Get-Command procs.exe).Path { procs --gen-completion-out powershell }
-    # --- Fzf Pickers ---
-    function global:Select-Process {
-        [CmdletBinding()]
-        param()
-        $proc = procs --color=always 2>$null |
-            Select-Object -Skip 1 |
-            fzf --ansi `
-                --header 'Select process to kill (Enter to Stop-Process, Ctrl-C to cancel)' `
-                --preview-window 'hidden'
-        if ($proc) {
-            $procId = ($proc -split '\s+')[1]
-            if ($procId -match '^\d+$') {
-                Stop-Process -Id $procId -Confirm
-            }
-        }
-    }
-    Set-Alias -Name fkill -Value Select-Process -Scope Global
-}
-#endregion procs
-
-#region duf  -  modern df replacement
-# not yet configured
-#endregion duf
-
-#region dua  -  disk usage analyzer
-# not yet configured
-#endregion dua
-
-#region gdu  -  disk usage TUI
-# not yet configured
-#endregion gdu
-
-#region ntop  -  TUI process monitor
-# not yet configured
-#endregion ntop
-
-#region winfetch  -  system info
-if (_HasCmd 'winfetch' -Exe 'winfetch') {
-    # --- XDG / Config paths ---
-    $Env:WINFETCH_CONFIG_PATH = Join-Path $Env:XDG_CONFIG_HOME 'winfetch' 'config.ps1'
-    Ensure-Dir (Join-Path $Env:XDG_CONFIG_HOME 'winfetch')
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
-#endregion winfetch
-
-# ==============================================================================
-# Group 4  -  Network/download tools
-# ==============================================================================
-
-#region curl  -  HTTP client
-if (_HasCmd 'curl') {
-    # --- XDG / Config paths ---
-    $Env:CURL_HOME = Join-Path $Env:XDG_CONFIG_HOME 'curl'
-    Ensure-Dir $Env:CURL_HOME
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
-#endregion curl
-
-#region wget  -  downloader
-if (_HasCmd 'wget') {
-    # --- XDG / Config paths ---
-    $Env:WGETRC = Join-Path $Env:XDG_CONFIG_HOME 'wget' 'wgetrc'
-    Ensure-Dir (Join-Path $Env:XDG_CONFIG_HOME 'wget')
-    $null = New-Item -ItemType File -Force -Path $Env:WGETRC -ErrorAction SilentlyContinue
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
-#endregion wget
-
-#region docker  -  container runtime
-# Set DOCKER_CONFIG unconditionally so docker-compose and other tools use XDG path
-$Env:DOCKER_CONFIG = Join-Path $Env:XDG_CONFIG_HOME 'docker'
-Ensure-Dir $Env:DOCKER_CONFIG
+#region docker  -  fdc / fdi
 if (_HasCmd 'docker' -Exe 'docker') {
-    # TODO: Completers
-    # --- Fzf Pickers ---
     function global:Select-DockerContainer {
         [CmdletBinding()]
         param([switch]$All)
@@ -395,151 +252,8 @@ if (_HasCmd 'docker' -Exe 'docker') {
 }
 #endregion docker
 
-# ==============================================================================
-# Group 5  -  Editors
-# ==============================================================================
-
-#region nano  -  text editor
-if (_HasCmd 'nano') {
-    # --- XDG / Config paths ---
-    $Env:NANORC = Join-Path $Env:XDG_CONFIG_HOME 'nano' 'nanorc'
-    Ensure-Dir (Join-Path $Env:XDG_CONFIG_HOME 'nano')
-    $null = New-Item -ItemType File -Force -Path $Env:NANORC -ErrorAction SilentlyContinue
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
-#endregion nano
-
-#region micro  -  modern terminal editor
-if (_HasCmd 'micro') {
-    # --- XDG / Config paths ---
-    $Env:MICRO_CONF_DIR = Join-Path $Env:XDG_CONFIG_HOME 'micro'
-    Ensure-Dir $Env:MICRO_CONF_DIR
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
-#endregion micro
-
-#region notepadplusplus  -  Notepad++ text editor
-# edit alias: use Notepad++ if installed, fall back to notepad.exe
-if (Test-Path -Path 'C:\Program Files\Notepad++\notepad++.exe' -PathType Leaf) {
-    Set-Alias -Name edit -Value 'C:\Program Files\Notepad++\notepad++.exe' -Scope Global
-} else {
-    Set-Alias -Name edit -Value 'C:\Windows\system32\notepad.exe' -Scope Global
-}
-#endregion notepadplusplus
-
-# ==============================================================================
-# Group 6  -  Fuzzy finder
-# ==============================================================================
-
-#region fzf  -  fuzzy finder
-if (_HasCmd 'fzf') {
-    # --- Config ---
-    $Env:FZF_DEFAULT_COMMAND = 'fd --type f --hidden --follow --exclude .git'
-    $Env:FZF_ALT_C_COMMAND = 'fd -H -L -E .git -t d'
-    $Env:FZF_ALT_C_OPTS = '--preview "eza -a --icons --group-directories-first --color=always {}"'
-    $Env:FZF_DEFAULT_OPTS = @'
---color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8
---color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc
---color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8
---exact
---no-sort
---layout=reverse
---border
---cycle
---height 50%
-'@
-    $Env:FZF_CTRL_T_OPTS = '--preview "bat --color=always --line-range=:500 {}"'
-    $Env:FZF_CTRL_T_COMMAND = 'fd -H -L -E .git -t f'
-    # TODO: Fzf Pickers
-}
-#endregion fzf
-
-# ==============================================================================
-# Group 7  -  Navigation
-# ==============================================================================
-
-#region zoxide  -  smart cd
-if (_HasCmd 'zoxide') {
-    # --- XDG / Config paths ---
-    $Env:_ZO_DATA_DIR = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'zoxide'
-
-    # --- Init ---
-    Invoke-Expression (& {
-            $hook = if ($PSVersionTable.PSVersion.Major -lt 6) { 'prompt' } else { 'pwd' }
-            (zoxide init --hook $hook powershell | Out-String)
-        })
-
-    # --- Aliases ---
-    if (Get-Command z -ErrorAction Ignore) {
-        Set-Alias -Name cd -Value z -Scope Global -Option AllScope
-    }
-    # TODO: Completers
-    # --- Fzf Pickers ---
-    function global:Select-Directory {
-        [CmdletBinding()]
-        param()
-        $dir = zoxide query --list |
-            fzf --preview 'eza --icons --color=always {}' `
-                --preview-window 'right:60%' `
-                --header 'Select directory (Enter to cd)'
-        if ($dir) { Set-Location $dir }
-    }
-    Set-Alias -Name fcd -Value Select-Directory -Scope Global
-}
-#endregion zoxide
-
-# ==============================================================================
-# Group 8  -  Pagers
-# ==============================================================================
-
-#region moor  -  modern pager
-# not yet configured
-#endregion moor
-
-#region less  -  pager
-if (_HasCmd 'less') {
-    # --- XDG / Config paths ---
-    $Env:LESSHISTFILE = Join-Path $Env:XDG_STATE_HOME 'less' 'history'
-    $Env:LESSKEY      = Join-Path $Env:XDG_CONFIG_HOME 'less' 'lesskey'
-    $lessStateDir  = Join-Path $Env:XDG_STATE_HOME 'less'
-    $lessConfigDir = Join-Path $Env:XDG_CONFIG_HOME 'less'
-    Ensure-Dir $lessStateDir
-    Ensure-Dir $lessConfigDir
-    # --- Best-practice options ---
-    $Env:LESS = '--RAW-CONTROL-CHARS --quit-if-one-screen --no-init'
-    # TODO: Functions / Aliases
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
-#endregion less
-
-# ==============================================================================
-# Group 9  -  Package managers
-# ==============================================================================
-
-#region scoop  -  Windows package manager
+#region scoop  -  sins / srm  (Tools/scoop.ps1 exists but has no picker)
 if (_HasCmd 'scoop' -Exe 'scoop') {
-    # --- scoop-search hook ---
-    if (Get-Command scoop-search -ErrorAction Ignore) {
-        . ([ScriptBlock]::Create((& scoop-search --hook | Out-String)))
-    }
-    # --- Functions ---
-    function global:sstat {
-        [CmdletBinding()]
-        param()
-        scoop update; scoop status
-    }
-    function global:supd {
-        [CmdletBinding()]
-        param()
-        scoop update *; scoop cleanup *
-    }
-    # TODO: Completers
-    # --- Fzf Pickers ---
     function global:Select-ScoopPackage {
         [CmdletBinding()]
         param([string]$Query = '')
@@ -571,101 +285,8 @@ if (_HasCmd 'scoop' -Exe 'scoop') {
 }
 #endregion scoop
 
-#region sfsu  -  fast scoop CLI
-if (_HasCmd 'sfsu') {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # --- Completers ---
-    Register-ArgumentCompleter -Native -CommandName sfsu -ScriptBlock {
-        param($wordToComplete, $commandAst, $cursorPosition)
-        $subcommands = @(
-            'search', 'info', 'install', 'update', 'upgrade',
-            'status', 'depends', 'checkver', 'cat', 'virustotal'
-        )
-        $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
-            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
-    }
-    # TODO: Fzf Pickers
-}
-#endregion sfsu
-
-#region winget  -  Windows package manager
-if (_HasCmd 'winget' -Exe 'winget') {
-    # --- Functions ---
-    function global:wstat {
-        [CmdletBinding()]
-        param()
-        winget upgrade
-    }
-    function global:wupd {
-        [CmdletBinding()]
-        param()
-        winget upgrade --all
-    }
-    # --- Completers ---
-    Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {
-        param($wordToComplete, $commandAst, $cursorPosition)
-        [Console]::InputEncoding = [Console]::OutputEncoding = $OutputEncoding = [System.Text.Utf8Encoding]::new()
-        $Local:word = $wordToComplete.Replace('"', '""')
-        $Local:ast  = $commandAst.ToString().Replace('"', '""')
-        winget complete --word="$Local:word" --commandline "$Local:ast" --position $cursorPosition |
-            ForEach-Object {
-                [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
-            }
-    }
-    # --- Fzf Pickers ---
-    function global:Select-WingetPackage {
-        [CmdletBinding()]
-        param([string]$Query = '')
-        if (-not $Query) { $Query = Read-Host 'Search winget packages' }
-        $pkg = winget search $Query 2>$null |
-            Select-Object -Skip 2 |
-            Where-Object { $_ -match '\S' } |
-            fzf --header 'Select package to install (Enter to winget install)'
-        if ($pkg) {
-            $id = ($pkg -split '\s{2,}')[1]
-            Write-Host "⚙  Installing $id…" -ForegroundColor Cyan
-            winget install --id $id
-        }
-    }
-    Set-Alias -Name wins -Value Select-WingetPackage -Scope Global
-
-    function global:Remove-WingetPackage {
-        [CmdletBinding()]
-        param()
-        $pkg = winget list 2>$null |
-            Select-Object -Skip 3 |
-            Where-Object { $_ -match '\S' } |
-            fzf --header 'Select package to uninstall (Enter to winget uninstall)'
-        if ($pkg) {
-            $id = ($pkg -split '\s{2,}')[1]
-            Write-Host "⚙  Uninstalling $id…" -ForegroundColor DarkYellow
-            winget uninstall --id $id
-        }
-    }
-    Set-Alias -Name wrm -Value Remove-WingetPackage -Scope Global
-}
-#endregion winget
-
-# ==============================================================================
-# Group 10  -  Dev tools
-# ==============================================================================
-
-#region cargo  -  Rust package manager
-if (_HasCmd 'cargo') {
-    # --- XDG / Config paths ---
-    # CARGO_HOME and RUSTUP_HOME are set in Env.ps1 (PATH ordering requirement)
-    # CARGO_HOME = $XDG_DATA_HOME/cargo, RUSTUP_HOME = $XDG_DATA_HOME/rustup
-    # TODO: Completers
-    # TODO: Fzf Pickers
-}
-#endregion cargo
-
-#region rustup  -  Rust toolchain manager
+#region rustup  -  frtc
 if (_HasCmd 'rustup') {
-    # --- Completers ---
-    _GetCachedCompletion 'rustup' (Get-Command rustup.exe).Path { rustup completions powershell }
-    # --- Fzf Pickers ---
     function global:Select-RustupToolchain {
         [CmdletBinding()]
         param()
@@ -681,65 +302,8 @@ if (_HasCmd 'rustup') {
 }
 #endregion rustup
 
-#region nvm  -  Node version manager
-if (_HasCmd 'nvm' -Exe 'nvm') {
-    # --- XDG / Config paths ---
-    $Env:NVM_DIR = Join-Path $Env:XDG_DATA_HOME 'nvm'
-    # Note: nvm for Windows (scoop) uses NVM_HOME/NVM_SYMLINK instead; NVM_DIR is for Unix nvm
-    # TODO: Functions / Aliases
-    # --- Completers ---
-    Register-ArgumentCompleter -Native -CommandName nvm -ScriptBlock {
-        param($wordToComplete, $commandAst, $cursorPosition)
-        $subcommands = @(
-            'install', 'uninstall', 'use', 'list', 'ls', 'list available',
-            'ls-remote', 'current', 'alias', 'unalias', 'reinstall-packages',
-            'version', 'version-remote', 'deactivate', 'root', 'arch', 'node_mirror', 'npm_mirror'
-        )
-        $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
-            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
-    }
-    # --- Fzf Pickers ---
-    function global:Select-NodeVersion {
-        [CmdletBinding()]
-        param()
-        $version = nvm list 2>$null |
-            Where-Object { $_ -match '\d+\.\d+' } |
-            fzf --preview-window 'hidden' `
-                --header 'Select Node.js version (Enter to nvm use)'
-        if ($version) {
-            $ver = ($version -replace '[^\d.]', '').Trim()
-            nvm use $ver
-        }
-    }
-    Set-Alias -Name fnv -Value Select-NodeVersion -Scope Global
-}
-#endregion nvm
-
-#region npm  -  Node package manager
+#region npm  -  fns
 if (_HasCmd 'npm' -Exe 'npm') {
-    # --- XDG / Config paths ---
-    $Env:NPM_CONFIG_USERCONFIG = Join-Path $Env:XDG_CONFIG_HOME 'npm' 'npmrc'
-    Ensure-Dir (Join-Path $Env:XDG_CONFIG_HOME 'npm')
-    $Env:NODE_REPL_HISTORY = Join-Path $Env:XDG_DATA_HOME 'node_repl_history'
-    # --- Functions ---
-    function global:nls {
-        [CmdletBinding()]
-        param()
-        npm list -g --depth=0
-    }
-    # --- Completers ---
-    Register-ArgumentCompleter -Native -CommandName npm -ScriptBlock {
-        param($wordToComplete, $commandAst, $cursorPosition)
-        $subcommands = @(
-            'install', 'uninstall', 'update', 'run', 'start', 'stop', 'test',
-            'list', 'link', 'unlink', 'publish', 'pack', 'version', 'view',
-            'search', 'audit', 'fund', 'init', 'exec', 'prefix', 'config',
-            'cache', 'rebuild', 'prune', 'outdated', 'ci', 'dedupe', 'diff'
-        )
-        $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
-            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
-    }
-    # --- Fzf Pickers ---
     function global:Select-NpmScript {
         [CmdletBinding()]
         param()
@@ -757,12 +321,8 @@ if (_HasCmd 'npm' -Exe 'npm') {
 }
 #endregion npm
 
-#region gh  -  GitHub CLI
+#region gh  -  fpr / fgi
 if (_HasCmd 'gh') {
-    # --- Completers ---
-    _GetCachedCompletion 'gh' (Get-Command gh.exe).Path { gh completion -s powershell }
-
-    # --- Fzf Pickers ---
     function global:Select-GHPr {
         [CmdletBinding()]
         param()
@@ -795,48 +355,8 @@ if (_HasCmd 'gh') {
 }
 #endregion gh
 
-#region delta  -  enhanced git diff pager
-if (_HasCmd 'delta') {
-    # --- Config ---
-    $Env:GIT_PAGER    = 'delta'
-    $Env:DELTA_FEATURES = 'catppuccin-mocha'
-}
-#endregion delta
-
-#region lazygit  -  TUI git client
-if (_HasCmd 'lazygit') {
-    # --- XDG / Config paths ---
-    $Env:LG_CONFIG_FILE = Join-Path $Env:XDG_CONFIG_HOME 'lazygit' 'config.yml'
-    Ensure-Dir (Split-Path $Env:LG_CONFIG_FILE)
-    # --- Aliases ---
-    Set-Alias -Name lg -Value lazygit -Scope Global
-}
-#endregion lazygit
-
-# ==============================================================================
-# Group 11  -  Python tools
-# ==============================================================================
-
-#region uv  -  fast Python package manager
+#region uv  -  fvenv
 if (_HasCmd 'uv') {
-    # --- XDG / Config paths ---
-    $Env:UV_CACHE_DIR = Join-Path $Env:XDG_CACHE_HOME 'uv'
-    $Env:UV_DATA_DIR  = Join-Path $Env:XDG_DATA_HOME  'uv'
-    Ensure-Dir $Env:UV_CACHE_DIR
-    Ensure-Dir $Env:UV_DATA_DIR
-    # TODO: Functions / Aliases
-    # --- Completers ---
-    Register-ArgumentCompleter -Native -CommandName uv -ScriptBlock {
-        param($wordToComplete, $commandAst, $cursorPosition)
-        $subcommands = @(
-            'pip', 'venv', 'run', 'sync', 'lock', 'add', 'remove', 'tool',
-            'python', 'init', 'build', 'publish', 'cache', 'self', 'version',
-            'help', 'export', 'tree', 'generate-shell-completion'
-        )
-        $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
-            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
-    }
-    # --- Fzf Pickers ---
     function global:Select-UvVenv {
         [CmdletBinding()]
         param([string]$SearchPath = $home)
@@ -855,20 +375,8 @@ if (_HasCmd 'uv') {
 }
 #endregion uv
 
-# ==============================================================================
-# Group 12  -  Dotfiles/config management
-# ==============================================================================
-
-#region chezmoi  -  dotfile manager
+#region chezmoi  -  czf
 if (_HasCmd 'chezmoi') {
-    # --- XDG / Config paths ---
-    $Env:CHEZMOI_CONFIG_DIR = Join-Path $Env:XDG_CONFIG_HOME 'chezmoi'
-    Ensure-Dir $Env:CHEZMOI_CONFIG_DIR
-    # --- Aliases ---
-    Set-Alias -Name cz -Value chezmoi -Scope Global
-    # --- Completers ---
-    _GetCachedCompletion 'chezmoi' (Get-Command chezmoi.exe).Path { chezmoi completion powershell }
-    # --- Fzf Pickers ---
     function global:Edit-DotFile {
         [CmdletBinding()]
         param()
@@ -882,27 +390,8 @@ if (_HasCmd 'chezmoi') {
 }
 #endregion chezmoi
 
-# ==============================================================================
-# Group 13  -  Security/secrets
-# ==============================================================================
-
-#region bitwarden  -  secrets manager
+#region bitwarden  -  fbw
 if (_HasCmd 'bw' -Exe 'bw') {
-    # TODO: XDG / Config paths
-    # TODO: Functions / Aliases
-    # --- Completers ---
-    Register-ArgumentCompleter -Native -CommandName bw -ScriptBlock {
-        param($wordToComplete, $commandAst, $cursorPosition)
-        $subcommands = @(
-            'login', 'logout', 'lock', 'unlock', 'sync', 'list', 'get',
-            'create', 'edit', 'delete', 'restore', 'move', 'confirm',
-            'import', 'export', 'generate', 'encode', 'config', 'update',
-            'completion', 'status', 'serve', 'receive'
-        )
-        $subcommands | Where-Object { $_ -like "$wordToComplete*" } |
-            ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
-    }
-    # --- Fzf Pickers ---
     function global:Select-BwItem {
         [CmdletBinding()]
         param(
@@ -927,223 +416,90 @@ if (_HasCmd 'bw' -Exe 'bw') {
 }
 #endregion bitwarden
 
-# ==============================================================================
-# Group 14  -  AI tools
-# ==============================================================================
-
-#region gemini  -  Gemini CLI
-# not yet configured
-#endregion gemini
-
-# ==============================================================================
-# Group 15  -  Clipboard
-# ==============================================================================
-
-#region win32yank  -  clipboard utility
-# not yet configured
-#endregion win32yank
-
-# ==============================================================================
-# Group 16  -  Elevation
-# ==============================================================================
-
-#region gsudo  -  elevation tool
-if (_HasMod 'gsudo' -Module 'gsudoModule') {
-    Import-Module gsudoModule -ErrorAction SilentlyContinue
-    # TODO: Completers / Fzf Pickers
+#region nvm  -  fnv  (no Tools/nvm.json record yet — spec §6)
+if (_HasCmd 'nvm' -Exe 'nvm') {
+    function global:Select-NodeVersion {
+        [CmdletBinding()]
+        param()
+        $version = nvm list 2>$null |
+            Where-Object { $_ -match '\d+\.\d+' } |
+            fzf --preview-window 'hidden' `
+                --header 'Select Node.js version (Enter to nvm use)'
+        if ($version) {
+            $ver = ($version -replace '[^\d.]', '').Trim()
+            nvm use $ver
+        }
+    }
+    Set-Alias -Name fnv -Value Select-NodeVersion -Scope Global
 }
-#endregion gsudo
+#endregion nvm
 
 # ==============================================================================
-# Group 17  -  Window management
+# GAP 5  -  Functions/aliases not folded in  (spec §5)
 # ==============================================================================
 
-#region glazewm  -  tiling window manager
+#region scoop  -  sstat / supd
+# Port target: Tools/scoop.ps1. NOTE: supd overlaps the planned Invoke-DFMaintenance
+# (TODO.md) — fold it in there rather than porting verbatim.
+if (_HasCmd 'scoop' -Exe 'scoop') {
+    function global:sstat { [CmdletBinding()] param() scoop update; scoop status }
+    function global:supd  { [CmdletBinding()] param() scoop update *; scoop cleanup * }
+}
+#endregion scoop
+
+#region winget  -  wstat / wupd  (port target: Tools/winget.ps1)
+if (_HasCmd 'winget' -Exe 'winget') {
+    function global:wstat { [CmdletBinding()] param() winget upgrade }
+    function global:wupd  { [CmdletBinding()] param() winget upgrade --all }
+}
+#endregion winget
+
+#region notepadplusplus  -  edit alias
+# Overlaps $Env:EDITOR (set in Env.ps1) — reconcile rather than port blindly.
+if (Test-Path -Path 'C:\Program Files\Notepad++\notepad++.exe' -PathType Leaf) {
+    Set-Alias -Name edit -Value 'C:\Program Files\Notepad++\notepad++.exe' -Scope Global
+} else {
+    Set-Alias -Name edit -Value 'C:\Windows\system32\notepad.exe' -Scope Global
+}
+#endregion notepadplusplus
+
+#region glazewm  -  needs Tools/glazewm.json + sidecar (spec §6)
 if (_HasCmd 'glazewm') {
-    # --- Functions ---
     function global:Start-GlazeWM {
         [CmdletBinding()]
         param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
         glazewm --config (Join-Path $Env:XDG_CONFIG_HOME 'glazewm' 'config.yaml') @Arguments
     }
-    # --- Aliases ---
     Set-Alias -Name glazewm -Value Start-GlazeWM -Scope Global
 }
 #endregion glazewm
 
-# ==============================================================================
-# Group 18  -  Misc utilities
-# ==============================================================================
-
-#region mosquitto  -  MQTT client
+#region mosquitto  -  needs Tools/mosquitto.json (spec §6). Note: not XDG (~/.mosquitto).
 if (_HasCmd 'mosquitto') {
-    # --- Functions ---
     function global:Invoke-MQTT {
         $mqtt_config_file = Join-Path -Path $home -ChildPath '.mosquitto' 'config'
         mosquitto -v -c $mqtt_config_file
     }
-    # --- Aliases ---
     Set-Alias -Name mqtt -Value Invoke-MQTT -Scope Global
 }
 #endregion mosquitto
 
 # ==============================================================================
-# Group 19  -  PowerShell modules
+# GAP 6  -  Tools with no DotForge record  (spec §6)
 # ==============================================================================
 
-#region posh-git  -  git prompt info
-if (_HasMod 'posh-git') {
-    Import-Module posh-git -ErrorAction SilentlyContinue
-    # --- Fzf Pickers ---
-    function global:Select-GitBranch {
-        [CmdletBinding()]
-        param()
-        $branch = git branch --all --color=always |
-            fzf --ansi --preview 'git log --oneline --color=always {1}' `
-                --preview-window 'right:60%' `
-                --header 'Select branch (Enter to checkout)'
-        if ($branch) {
-            $branch = $branch.Trim() -replace '^\* ', '' -replace '^remotes/origin/', ''
-            git checkout $branch
-        }
-    }
-    Set-Alias -Name fco -Value Select-GitBranch -Scope Global
-
-    function global:Select-GitLog {
-        [CmdletBinding()]
-        param()
-        $commit = git log --oneline --color=always |
-            fzf --ansi --preview 'git show --color=always {1}' `
-                --preview-window 'right:60%' `
-                --header 'Select commit (Enter to show, Ctrl-C to cancel)'
-        if ($commit) {
-            $sha = ($commit -split ' ')[0]
-            git show $sha
-        }
-    }
-    Set-Alias -Name flog -Value Select-GitLog -Scope Global
-
-    function global:Select-GitFile {
-        [CmdletBinding()]
-        param()
-        $files = git status --short |
-            fzf --ansi --multi `
-                --preview 'git diff --color=always {2}' `
-                --preview-window 'right:60%' `
-                --header 'Select files to stage (Tab=multi-select, Enter to git add)'
-        if ($files) {
-            $files | ForEach-Object {
-                $file = ($_ -split '\s+', 2)[1]
-                git add $file
-            }
-            git status --short
-        }
-    }
-    Set-Alias -Name fga -Value Select-GitFile -Scope Global
-
-    function global:Select-GitStash {
-        [CmdletBinding()]
-        param()
-        $stash = git stash list |
-            fzf --ansi --preview 'git stash show -p {1}' `
-                --preview-window 'right:60%' `
-                --header 'Select stash (Enter to apply, Del to drop)'
-        if ($stash) {
-            $stashRef = ($stash -split ':')[0]
-            $action = Read-Host "Apply or drop? [a/d]"
-            if ($action -eq 'd') { git stash drop $stashRef }
-            else { git stash apply $stashRef }
-        }
-    }
-    Set-Alias -Name fstash -Value Select-GitStash -Scope Global
+#region nano  -  needs Tools/nano.json
+if (_HasCmd 'nano') {
+    $Env:NANORC = Join-Path $Env:XDG_CONFIG_HOME 'nano' 'nanorc'
+    Ensure-Dir (Join-Path $Env:XDG_CONFIG_HOME 'nano')
+    $null = New-Item -ItemType File -Force -Path $Env:NANORC -ErrorAction SilentlyContinue
 }
-#endregion posh-git
+#endregion nano
 
-#region Terminal-Icons  -  file icons in terminal
-if (_HasMod 'Terminal-Icons') {
-    Import-Module Terminal-Icons -ErrorAction SilentlyContinue
+#region nvm  -  needs Tools/nvm.json
+# VERIFY BEFORE PORTING: NVM_DIR is for Unix nvm. nvm-windows (scoop) uses
+# NVM_HOME/NVM_SYMLINK, so this line is probably wrong on this machine.
+if (_HasCmd 'nvm' -Exe 'nvm') {
+    $Env:NVM_DIR = Join-Path $Env:XDG_DATA_HOME 'nvm'
 }
-#endregion Terminal-Icons
-
-#region oh-my-posh  -  prompt theme
-if (_HasCmd 'oh-my-posh') {
-    $Env:POSH_GIT_ENABLED = $true
-    if (-not $isVSCodeTerm) {
-        # Skip in VS Code integrated terminal — uses plain PS prompt there
-        $ompConfig = Join-Path $home '.config' 'oh-my-posh' 'catpow.omp.yaml'
-        oh-my-posh init pwsh --config $ompConfig | Invoke-Expression
-    }
-    # --- Fzf Pickers ---
-    function global:Select-PoshTheme {
-        [CmdletBinding()]
-        param()
-        $themesPath = $Env:POSH_THEMES_PATH
-        if (-not $themesPath -or -not (Test-Path $themesPath)) { return }
-        $theme = Get-ChildItem $themesPath -Filter '*.omp.json' |
-            Select-Object -ExpandProperty Name |
-            fzf --preview "oh-my-posh print primary --config '$themesPath\{}' --shell pwsh" `
-                --preview-window 'bottom:3' `
-                --header 'Select oh-my-posh theme (Enter to apply for this session)'
-        if ($theme) {
-            oh-my-posh init pwsh --config "$themesPath\$theme" | Invoke-Expression
-            Write-Host "✓ Theme applied: $theme" -ForegroundColor Green
-            Write-Host "  → To persist: update #region oh-my-posh in cli_tools_config.ps1" -ForegroundColor DarkGray
-        }
-    }
-    Set-Alias -Name fpot -Value Select-PoshTheme -Scope Global
-}
-#endregion oh-my-posh
-
-#region PSFzf  -  fzf PS integration
-if (_HasMod 'PSFzf') {
-    # Guard checks loaded (not just installed) — Set-PsFzfOption requires PSFzf to be imported
-    Set-PsFzfOption -EnableFd
-
-    Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' `
-        -PSReadlineChordReverseHistory 'Ctrl+r'
-
-    $commandOverride = [ScriptBlock] { param($Location) Set-Location $Location }
-    Set-PsFzfOption -AltCCommand $commandOverride
-
-    Set-PsFzfOption -EnableAliasFuzzyScoop
-    Set-PsFzfOption -TabExpansion
-    Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
-}
-#endregion PSFzf
-
-#region scoop-completion  -  scoop tab completions
-# not yet configured
-#endregion scoop-completion
-
-#region DockerCompletion  -  Docker tab completions
-if (_HasMod 'DockerCompletion') {
-    Import-Module DockerCompletion -ErrorAction SilentlyContinue
-}
-#endregion DockerCompletion
-
-#region PowerType  -  AI tab completions
-if (_HasMod 'PowerType') {
-    Import-Module PowerType -ErrorAction SilentlyContinue
-    Enable-PowerType
-}
-#endregion PowerType
-
-#region PSAISuite  -  AI PS suite
-# not yet configured
-#endregion PSAISuite
-
-#region PSWindowsUpdate  -  Windows Update
-# not yet configured
-#endregion PSWindowsUpdate
-
-#region Admin  -  admin utilities
-# not yet configured
-#endregion Admin
-
-# ── Tool availability summary (emitted at Debug level) ───────────────────────
-if ($script:_toolsFound.Count -gt 0 -or $script:_toolsMissing.Count -gt 0) {
-    $found   = ($script:_toolsFound   | ForEach-Object { "✓ $_" }) -join '  '
-    $missing = ($script:_toolsMissing | ForEach-Object { "· $_" }) -join '  '
-    if ($found)   { Write-ProfileMsg "  $found"   -Level Debug -Color Green }
-    if ($missing) { Write-ProfileMsg "  $missing" -Level Debug -Color DarkYellow }
-}
+#endregion nvm

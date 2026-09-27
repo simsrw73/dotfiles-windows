@@ -1,71 +1,107 @@
 #Requires -Version 7.0
 
-# ── PATH helper ────────────────────────────────────────────────────────────────
-function script:Add-ToPath {
-    param([string]$Dir, [switch]$Prepend)
-    if (-not $Dir) { return }
-    if (-not [IO.Path]::IsPathRooted($Dir)) {
-        Write-Warning "Add-ToPath: '$Dir' is not an absolute path — skipped."
-        return
-    }
-    $normalized = [IO.Path]::GetFullPath($Dir)
-    $existing = ($Env:Path -split [IO.Path]::PathSeparator) |
-        Where-Object { $_ -and [IO.Path]::IsPathRooted($_) } |
-        ForEach-Object { try { [IO.Path]::GetFullPath($_) } catch { $_ } }
-    if ($normalized -notin $existing) {
-        if ($Prepend) { $Env:Path = $normalized + [IO.Path]::PathSeparator + $Env:Path }
-        else          { $Env:Path += [IO.Path]::PathSeparator + $normalized }
-    }
-}
-# ─────────────────────────────────────────────────────────────────────────────
-
 # Editor
-$env:EDITOR     = 'code --wait'   # wait for VS Code tab to close (needed by git, etc.)
-$env:VISUAL     = 'code --wait'   # POSIX tools that prefer VISUAL over EDITOR
-$env:GIT_EDITOR = 'micro'         # terminal editor for git commit/rebase messages
+$env:EDITOR = 'zed --wait'
+$env:VISUAL = 'zed --wait'
+$env:GIT_EDITOR = 'micro'
+
+# Make sure to always run gsudo
+#   FIXME: We should juggle the paths ourselves.
+# gsudo config PathPrecedence true
+
+
+
+# Themes
+$env:GLAMOUR_STYLE = Join-Path -Path $Env:XDG_CONFIG_HOME 'glamour' 'themes' 'catppuccin-mocha.json'
+
+# if (Get-Command vivid.exe -ErrorAction Ignore) {
+#     $env:LS_COLORS = (vivid generate catppuccin-mocha)
+# }
 
 # Terminal detection — set $isVSCodeTerm; fill TERM_PROGRAM for terminals that don't set it
 $isVSCodeTerm = $Env:TERM_PROGRAM -eq 'vscode'
 if (-not $Env:TERM_PROGRAM) {
-    if      ($Env:ALACRITTY_LOG)        { $Env:TERM_PROGRAM = 'Alacritty' }
-    elseif  ($Env:LC_EXTRATERM_COOKIE)  { $Env:TERM_PROGRAM = 'ExtraTerm' }
-    elseif  ($env:WT_SESSION)           { $Env:TERM_PROGRAM = 'wt' }
+    if ($Env:ALACRITTY_LOG) { $Env:TERM_PROGRAM = 'Alacritty' }
+    elseif ($Env:LC_EXTRATERM_COOKIE) { $Env:TERM_PROGRAM = 'ExtraTerm' }
+    elseif ($env:WT_SESSION) { $Env:TERM_PROGRAM = 'wt' }
 }
 
-# XDG Base Directory
-$Env:XDG_CONFIG_HOME = Join-Path $home '.config'
-$Env:XDG_DATA_HOME   = Join-Path $home '.local' 'share'
-$Env:XDG_STATE_HOME  = Join-Path $home '.local' 'state'
-$Env:XDG_CACHE_HOME  = Join-Path $home '.cache'
-New-Item -ItemType Directory -Force -Path $Env:XDG_STATE_HOME -ErrorAction SilentlyContinue | Out-Null
+# Personal paths that are not managed by a DotForge tool record.
+Add-DFToPath (Join-Path -Path $home -ChildPath 'scripts')
 
-# PATH: personal scripts
-Add-ToPath (Join-Path $home 'scripts')
+# GPG
+$env:GNUPGHOME = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'gnupg'
 
-# Rust / Cargo — kept in Env.ps1 because PATH must be set before cli_tools_config.ps1
-$Env:RUSTUP_HOME = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'rustup'
-$Env:CARGO_HOME = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'cargo'
-Add-ToPath (Join-Path $Env:CARGO_HOME 'bin')
+# yazi
+$env:YAZI_CONFIG_HOME = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'yazi'
+function y {
+	$tmp = (New-TemporaryFile).FullName
+	yazi.exe @args --cwd-file="$tmp"
+	$cwd = Get-Content -Path $tmp -Encoding UTF8
+	if ($cwd -and $cwd -ne $PWD.Path -and (Test-Path -LiteralPath $cwd -PathType Container)) {
+		Set-Location -LiteralPath (Resolve-Path -LiteralPath $cwd).Path
+	}
+	Remove-Item -Path $tmp
+}
+
+#   - yazi requires the file command, and the best version we have is the one that comes with Git for Windows.
+function Get-GitUsrBinPath {
+    $cmd = Get-Command git.exe -ErrorAction SilentlyContinue
+    if (-not $cmd) {
+        return $null
+    }
+
+    $gitExe  = $cmd.Source
+    $gitRoot = Split-Path (Split-Path $gitExe -Parent) -Parent
+    $usrBin  = Join-Path $gitRoot 'usr\bin'
+
+    if (Test-Path $usrBin) {
+        return $usrBin
+    }
+
+    return $null
+}
+
+$env:YAZI_FILE_ONE = "C:\Program Files\Git\usr\bin\file.exe"
+if (-not (Get-Command 'file' -ErrorAction SilentlyContinue)) {
+    $gitUsrBin = Get-GitUsrBinPath
+    if ($gitUsrBin) {
+        $gitFile = Join-Path $gitUsrBin 'file.exe'
+        if (Test-Path $gitFile) {
+            $env:YAZI_FILE_ONE = $gitFile
+        } else {
+            warn "file.exe not found in Git usr/bin directory. yazi may not work correctly."
+        }
+        # $destFileShim = Join-Path $Env:XDG_BIN_HOME 'file.cmd'
+        # if (-not (Test-Path $destFileShim)) {
+        #     New-DFShim $gitFile
+        # }
+    } else {
+        warn "file.exe not found in PATH or in Git usr/bin directory. yazi may not work correctly."
+    }
+}
+
+# PNPM
+#    C:\Users\simsr\.local\share\pnpm
+$Env:PNPM_HOME = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'pnpm'
+Add-DFToPath (Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'pnpm')
 
 # Python
-if (Get-Command python -ErrorAction Ignore) {
-    $pythonScripts = python -c "import sysconfig; print(sysconfig.get_path('scripts'))" 2>$null
-    if ($LASTEXITCODE -ne 0) { $pythonScripts = $null }
-    if ($pythonScripts) { Add-ToPath $pythonScripts -Prepend }
-}
-$Env:PYTHONPYCACHEPREFIX = Join-Path -Path $Env:XDG_CACHE_HOME -ChildPath 'python'
-$Env:PYTHONUSERBASE = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'python'
+$Env:PYTHONUTF8 = 1
 
-# TODO: More XDG paths (https://wiki.archlinux.org/title/XDG_Base_Directory)
-# DOCKER_CONFIG=$XDG_CONFIG_HOME/docker
-# NPM_CONFIG_USERCONFIG=$XDG_CONFIG_HOME/npm/npmrc
-# NVM_DIR=$XDG_DATA_HOME/nvm
-# NODE_REPL_HISTORY=$XDG_DATA_HOME/node_repl_history
-# GOPATH=$XDG_DATA_HOME/go
+# Pipx
+$Env:PIPX_HOME = Join-`Path -Path $Env:XDG_DATA_HOME -ChildPath 'pipx'
+
+# Bun
+$Env:BUN_INSTALL = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'bun'
+Add-DFToPath $Env:BUN_INSTALL
+
+# Claude
+$Env:CLAUDE_CODE_USE_POWERSHELL_TOOL = 1
+$Env:CLAUDE_CONFIG_DIR = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'claude'
 
 # Other tool paths
-Add-ToPath (Join-Path $env:LOCALAPPDATA 'Programs' 'Pulsar')
-$Env:GNUPGHOME = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'gnupg'
+Add-DFToPath (Join-Path $env:LOCALAPPDATA 'Programs' 'Pulsar')
 
 # Pager
 if (Get-Command moor.exe -ErrorAction Ignore) {
@@ -81,12 +117,4 @@ if (Get-Command moor.exe -ErrorAction Ignore) {
 
 # Window manager configs
 $Env:KOMOREBI_CONFIG_HOME = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'komorebi'
-
-# PowerShell command defaults
-$PSDefaultParameterValues = @{
-    'Install-Module:Scope'      = 'CurrentUser'
-    'Install-Module:Repository' = 'PSGallery'
-    'Format-Table:AutoSize'     = $true
-}
-
-$Env:CLAUDE_CODE_USE_POWERSHELL_TOOL = '1'
+$Env:KOMOREBI_AHK_EXE = "C:\Users\simsr\AppData\Local\Programs\AutoHotkey\v2\AutoHotkey64.exe"

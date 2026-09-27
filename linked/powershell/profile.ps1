@@ -1,14 +1,29 @@
 #Requires -Version 7.0
 
 Set-StrictMode -Version 'Latest'
-$ErrorActionPreference = 'Continue'
 
 $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding
 
-$profileRoot = Split-Path -Parent $PROFILE
-$moduleRoot  = Join-Path $profileRoot 'ProfileModules'
 
-$VerbosePreference = 'SilentlyContinue' # Normal: 'SilentlyContinue', Debugging: 'Continue'
+if (Get-Command -Name 'FastFetch' -ErrorAction Ignore) {
+    Clear-Host
+    FastFetch
+    $v = $PSVersionTable.PSVersion
+    'PowerShell {0}.{1}.{2} ({3})' -f $v.Major, $v.Minor, $v.Patch, $PSVersionTable.PSEdition
+}
+
+
+# Preferred Setup
+#
+# Modules:
+#
+# Utilities:
+#   Oh-My-Posh, Carapace
+#
+
+
+$profileRoot = Split-Path -Parent $PROFILE
+$moduleRoot = Join-Path $profileRoot 'ProfileModules'
 
 # ── Output verbosity ─────────────────────────────────────────────────────────
 # Set $Global:ProfileLogLevel to control startup output:
@@ -17,6 +32,16 @@ $VerbosePreference = 'SilentlyContinue' # Normal: 'SilentlyContinue', Debugging:
 #   [LogLevel]::Debug — full detail: modules, file loads, tool inventory
 enum LogLevel { Error = 0; Warn = 1; Info = 2; Debug = 3 }
 $Global:ProfileLogLevel = [LogLevel]::Info
+
+$isDebuggingProfile = $false
+if ($isDebuggingProfile) {
+    $ErrorActionPreference = 'Stop'
+    $VerbosePreference = 'Continue'
+
+    $Global:ProfileLogLevel = [LogLevel]::Debug
+    Write-Host 'Debug mode: verbose output enabled' -ForegroundColor Yellow
+}
+
 
 function global:Write-ProfileMsg {
     param(
@@ -27,14 +52,14 @@ function global:Write-ProfileMsg {
     $_effectiveLevel = if ($null -eq $Global:ProfileLogLevel) { [LogLevel]::Info } else { $Global:ProfileLogLevel }
     if ([int]$Level -gt [int]$_effectiveLevel) { return }
     switch ($Level) {
-        ([LogLevel]::Error) { Write-Error   $Message; return }
-        ([LogLevel]::Warn)  { Write-Warning $Message; return }
+        ([LogLevel]::Error) { Write-Error $Message; return }
+        ([LogLevel]::Warn) { Write-Warning $Message; return }
     }
     $c = if ($Color) { $Color } else {
         switch ($Level) {
-            ([LogLevel]::Info)  { 'Cyan' }
+            ([LogLevel]::Info) { 'Cyan' }
             ([LogLevel]::Debug) { 'DarkGray' }
-            default             { 'White' }
+            default { 'White' }
         }
     }
     Write-Host $Message -ForegroundColor $c
@@ -43,38 +68,34 @@ function global:Write-ProfileMsg {
 # ── DotForge config (set BEFORE Import-Module DotForge) ──────────────────────
 $DFConfig = @{
     PackageManagerOrder = @('scoop', 'winget')
-    SkipTools           = @('lsd')  # lsd conflicts with eza — keep only one ls replacement
+    SkipTools           = @('lsd')  # lsd conflicts with eza FIXME: this should be automatically resolved. Adopt a default tool and let the user specify their preference.
+    CompletionMode      = 'Native'
+    PSReadLineEditMode  = 'Emacs'
+    PSReadLineTheme     = 'catppuccin-mocha'
 }
+
+# Set OMP theme before DotForge::Register-DFTool initializes posh-git and oh-my-posh
+$Env:POSH_THEME = Join-Path $HOME '.config' 'oh-my-posh' 'catpow.omp.yaml'
 
 # ── VS Code integrated terminal: fast / lite init ────────────────────────────
 # Skips: oh-my-posh, VS Dev Shell, transcript, diagnostics, weekly updates.
-# Keeps: env vars, all aliases/functions, PSReadLine, fzf, tool completers.
+# Keeps: env vars, all aliases/functions, and tool completers.
 if ($Env:TERM_PROGRAM -eq 'vscode') {
-    Import-Module PSReadLine -ErrorAction SilentlyContinue
+    Import-Module DotForge -ErrorAction SilentlyContinue
+    Initialize-DFEnvironment
     . (Join-Path $moduleRoot 'Env.ps1')
     . (Join-Path $moduleRoot 'Aliases.ps1')
     . (Join-Path $moduleRoot 'Functions.ps1')
     . (Join-Path $moduleRoot 'Completers.ps1')
-    . (Join-Path $moduleRoot 'PSReadline.ps1')  # removes Ctrl+T/R before PSFzf reclaims them
-    Import-Module DotForge -ErrorAction SilentlyContinue
     Register-DFTool -All
-    if (Get-Module DockerCompletion -ListAvailable -ErrorAction Ignore) {
-        Import-Module DockerCompletion -ErrorAction SilentlyContinue
-    }
-    if (Get-Module PowerType -ListAvailable -ErrorAction Ignore) {
-        Import-Module PowerType -ErrorAction SilentlyContinue
-        Enable-PowerType
-    }
-    . (Join-Path $moduleRoot 'Show-HelpColor.ps1')
     return
 }
 
 # ── Full init (standard terminals) ───────────────────────────────────────────
 
-# PSReadLine must load before PSFzf (PSReadline.ps1 removes Ctrl+T/R before PSFzf reclaims them)
-$_modsOk   = [System.Collections.Generic.List[string]]::new()
+$_modsOk = [System.Collections.Generic.List[string]]::new()
 $_modsFail = [System.Collections.Generic.List[string]]::new()
-foreach ($mod in @('PSReadLine', 'powershell-yaml', 'Microsoft.PowerShell.SecretManagement')) {
+foreach ($mod in @('powershell-yaml', 'Microsoft.PowerShell.SecretManagement')) {
     try {
         Import-Module -Name $mod -ErrorAction Stop
         $null = $_modsOk.Add($mod)
@@ -84,10 +105,10 @@ foreach ($mod in @('PSReadLine', 'powershell-yaml', 'Microsoft.PowerShell.Secret
     }
 }
 if ($_modsOk.Count -gt 0) {
-    Write-ProfileMsg ("  Modules: " + (($_modsOk | ForEach-Object { "✓ $_" }) -join '  ')) -Level Debug -Color Green
+    Write-ProfileMsg ('  Modules: ' + (($_modsOk | ForEach-Object { "✓ $_" }) -join '  ')) -Level Debug -Color Green
 }
 if ($_modsFail.Count -gt 0) {
-    Write-ProfileMsg ("  Failed:  " + (($_modsFail | ForEach-Object { "· $_" }) -join '  ')) -Level Debug -Color DarkYellow
+    Write-ProfileMsg ('  Failed:  ' + (($_modsFail | ForEach-Object { "· $_" }) -join '  ')) -Level Debug -Color DarkYellow
 }
 
 $_sshAgent = Get-Service ssh-agent -ErrorAction Ignore
@@ -95,63 +116,44 @@ if (-not $_sshAgent -or $_sshAgent.Status -ne 'Running') {
     Write-ProfileMsg '  · ssh-agent not running — run: Start-Service ssh-agent (requires admin)' -Level Debug
 }
 
+Import-Module DotForge -ErrorAction Continue
+Initialize-DFEnvironment
 . (Join-Path $moduleRoot 'Env.ps1')
 Write-ProfileMsg "  Terminal: $($Env:TERM_PROGRAM ?? 'unknown')" -Level Debug
 . (Join-Path $moduleRoot 'Aliases.ps1')
 . (Join-Path $moduleRoot 'Functions.ps1')
 . (Join-Path $moduleRoot 'Completers.ps1')
-. (Join-Path $moduleRoot 'PSReadline.ps1')  # ← removes Ctrl+T/R before PSFzf reclaims them
 
-Import-Module DotForge -ErrorAction SilentlyContinue
-Register-DFTool -All  # ← PSFzf companion reclaims Ctrl+T/R, posh-git and zoxide are initialized here
+Register-DFTool -All
 
-if (Get-Module DockerCompletion -ListAvailable -ErrorAction Ignore) {
-    Import-Module DockerCompletion -ErrorAction SilentlyContinue
-}
-if (Get-Module PowerType -ListAvailable -ErrorAction Ignore) {
-    Import-Module PowerType -ErrorAction SilentlyContinue
-    Enable-PowerType
-}
 
-. (Join-Path $moduleRoot 'Show-HelpColor.ps1')
-
-# Prompt: oh-my-posh (standard terminals only)
-if (Get-Command oh-my-posh -ErrorAction Ignore) {
-    $Env:POSH_GIT_ENABLED = $true
-    $ompConfig = Join-Path $HOME '.config' 'oh-my-posh' 'catpow.omp.yaml'
-    if (Test-Path $ompConfig) {
-        oh-my-posh init pwsh --config $ompConfig | Invoke-Expression
-    }
-}
-
-# Weekly module update (every Friday)
+# Weekly module update (every Friday, once per day)
 if ((Get-Date).DayOfWeek -eq 'Friday') {
-    Write-ProfileMsg '⚙  Running weekly module update…'
-    Update-AllModules
-}
-
-# Enable experimental features
-$experimentalFeature = Get-ExperimentalFeature -Name PSFeedbackProvider -ErrorAction Ignore
-if ($experimentalFeature -and -not $experimentalFeature.Enabled) {
-    Enable-ExperimentalFeature PSFeedbackProvider 3>$null
-    Write-ProfileMsg '  ⚙  PSFeedbackProvider enabled (restart to take effect)' -Level Debug
-}
-
-# VS Dev Shell
-$vsWhere = "${Env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-if (Test-Path $vsWhere) {
-    $vsInstallationPath = & $vsWhere -products * -latest -property installationPath
-    if ($vsInstallationPath) {
-        & "${vsInstallationPath}\Common7\Tools\Launch-VsDevShell.ps1" -Arch amd64 -SkipAutomaticLocation | Out-Null
-        Write-ProfileMsg '⚙  VS Dev Shell ready'
+    $_sentinel = Join-Path ($Env:XDG_STATE_HOME ?? "$HOME/.local/state") 'ps_friday_maintenance'
+    $_today = Get-Date -Format 'yyyy-MM-dd'
+    $_lastRun = if (Test-Path $_sentinel) { (Get-Content $_sentinel -Raw).Trim() } else { '' }
+    if ($_lastRun -ne $_today) {
+        Write-ProfileMsg '⚙  Running weekly module update…'
+        Update-AllModules
+        Set-Content $_sentinel $_today -NoNewline
     }
 }
+
+# # VS Dev Shell
+# $vsWhere = "${Env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+# if (Test-Path $vsWhere) {
+#     $vsInstallationPath = & $vsWhere -products * -latest -property installationPath
+#     if ($vsInstallationPath) {
+#         & "${vsInstallationPath}\Common7\Tools\Launch-VsDevShell.ps1" -Arch amd64 -SkipAutomaticLocation | Out-Null
+#         Write-ProfileMsg '⚙  VS Dev Shell ready'
+#     }
+# }
 
 # Transcript
 if ($Host.Name -eq 'ConsoleHost') {
-    $myDocuments    = [Environment]::GetFolderPath('MyDocuments')
+    $myDocuments = [Environment]::GetFolderPath('MyDocuments')
     $TranscriptRoot = Join-Path $myDocuments 'PowerShell.Transcripts'
-    $RetentionDays  = 7
+    $RetentionDays = 7
 
     if (-not (Test-Path $TranscriptRoot)) {
         New-Item -Path $TranscriptRoot -ItemType Directory -Force | Out-Null
