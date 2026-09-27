@@ -54,7 +54,7 @@
 }
 
 .yasb-bar {
-    background-color: rgba(var(--crust-rgb), 0.78);
+    background-color: rgba(var(--crust-rgb), 1);
     border-radius: var(--radius-outer);
     padding: 0 4px;
 }
