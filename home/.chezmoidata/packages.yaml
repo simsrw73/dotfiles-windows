@@ -302,7 +302,6 @@ packages:
       - "@google/gemini-cli"
       - "@microsoft/inshellisense"
       - "@openai/codex"
-      - editly
       - gtop
       - neovim
       - tsx
