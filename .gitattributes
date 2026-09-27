@@ -1,5 +1,14 @@
-# Store and check out bytes exactly as committed, so chezmoi writes files
-# identical to the live ones (no autocrlf conversion).
-* -text
-# shell hooks must keep LF
+# Check out text files exactly like the live files, whatever core.autocrlf says:
+# CRLF by default, LF where the live file is LF (and anything bash reads).
+* text=auto eol=crlf
+
+# shell hooks and bash startup files must be LF
 .githooks/* text eol=lf
+home/dot_bashrc text eol=lf
+home/dot_bash_profile text eol=lf
+
+# live copies are LF
+home/dot_config/carapace/specs/*.yaml text eol=lf
+home/dot_config/delta/catppuccin.gitconfig text eol=lf
+home/dot_config/git/config text eol=lf
+home/private_dot_ssh/id_a24.pub text eol=lf
