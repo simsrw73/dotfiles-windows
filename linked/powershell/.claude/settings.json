@@ -1,0 +1,21 @@
+{
+  "statusLine": {
+    "type": "command",
+    "command": "pwsh -NonInteractive -File C:/Users/simsr/OneDrive/Documents/PowerShell/.claude/scripts/statusline.ps1"
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NonInteractive -File .claude/hooks/lint-ps1.ps1",
+            "timeout": 30,
+            "statusMessage": "PSScriptAnalyzer..."
+          }
+        ]
+      }
+    ]
+  }
+}

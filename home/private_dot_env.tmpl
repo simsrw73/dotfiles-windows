@@ -1,0 +1,3 @@
+{{- range $name, $field := bitwardenFields "item" "env" -}}
+{{ $name }}={{ $field.value }}
+{{ end -}}

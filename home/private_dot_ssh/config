@@ -1,0 +1,65 @@
+Host cas
+Hostname cassiel.home.arpa
+user yosef
+port 22
+
+Host raz
+Hostname 192.168.200.14
+user yosef
+port 22
+
+Host zad
+Hostname zadkiel.home.arpa
+user yosef
+port 22
+
+Host pve
+Hostname 192.168.200.10
+user yosef
+port 22
+
+Host omv
+Hostname 192.168.200.250
+user yosef
+port 22
+
+Host portmaster
+Hostname 192.168.200.200
+user yosef
+port 42022
+
+Host rt1
+Hostname 192.168.99.1
+user Yosef
+port 42022
+IdentityFile C:\Users\simsr\.ssh\routeros_rsa
+
+Host sw1
+Hostname 192.168.99.2
+user Yosef
+port 42022
+IdentityFile C:\Users\simsr\.ssh\routeros_rsa
+
+Host sw2
+Hostname 192.168.99.3
+user Yosef
+port 42022
+IdentityFile C:\Users\simsr\.ssh\routeros_rsa
+
+Host ap1
+Hostname 192.168.99.11
+user Yosef
+port 42022
+IdentityFile C:\Users\simsr\.ssh\routeros_rsa
+
+Host ap2
+Hostname 192.168.99.12
+user Yosef
+port 42022
+IdentityFile C:\Users\simsr\.ssh\routeros_rsa
+
+Host ap3
+Hostname 192.168.99.13
+user Yosef
+port 42022
+IdentityFile C:\Users\simsr\.ssh\routeros_rsa

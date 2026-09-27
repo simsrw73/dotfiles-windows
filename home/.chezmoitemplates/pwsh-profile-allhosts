@@ -1,0 +1,2 @@
+# Managed by chezmoi. Real profile: ~/.config/powershell/profile.ps1
+. (Join-Path $HOME '.config/powershell/profile.ps1')

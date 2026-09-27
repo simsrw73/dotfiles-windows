@@ -1,0 +1,26 @@
+{{- $docs := output "pwsh" "-NoProfile" "-Command" "[Environment]::GetFolderPath('MyDocuments')" | trim | replace "\\" "/" -}}
+{{- $home := .chezmoi.homeDir | replace "\\" "/" -}}
+{{- $docsRel := $docs | trimPrefix (printf "%s/" $home) -}}
+[data]
+    name = "Randy W. Sims"
+    email = "simsrw73@gmail.com"
+    signingkey = "8FDC1EB03BECE139"
+    documents = {{ $docsRel | quote }}
+
+[bitwarden]
+    unlock = "auto"
+
+[interpreters.ps1]
+    command = "pwsh"
+    args = ["-NoLogo", "-NoProfile"]
+
+[diff]
+    # chezmoi 2.72 deadlocks if the pager exits before reading the whole diff;
+    # pipe to a pager by hand instead: chezmoi diff | moor
+    pager = ""
+
+[cd]
+    command = "pwsh"
+
+[git]
+    autoAdd = true

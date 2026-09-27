@@ -1,0 +1,9 @@
+README.md
+{{ if ne .documents "OneDrive/Documents" }}
+OneDrive/Documents/**
+{{ end }}
+{{ if ne .documents "Documents" }}
+Documents/**
+{{ end }}
+.ssh/known_hosts
+.ssh/known_hosts.old
