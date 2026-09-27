@@ -61,6 +61,7 @@ Apps := {
     RegistryEditor: { Criteria: "ahk_exe regedit.exe", Command: "regedit.exe" },
     HWiNFO:         { Criteria: "ahk_exe HWiNFO64.EXE", Command: Quote("C:\Program Files\HWiNFO64\HWiNFO64.EXE") },
     WizTree:        { Criteria: "ahk_exe WizTree64.exe", Command: Quote("C:\Program Files\WizTree\WizTree64.exe") },
+    WinBox:         { Criteria: "ahk_exe WinBox.exe", Command: Quote(EnvGet("LocalAppData") "\Microsoft\WinGet\Links\WinBox.exe") },
 
     ; games
     Steam:        { Criteria: "Steam ahk_exe steamwebhelper.exe", MatchMode: 3, Command: Quote("C:\Program Files (x86)\Steam\steam.exe") },
