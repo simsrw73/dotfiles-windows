@@ -1,11 +1,12 @@
-# yasb watchdog for wpm
+# wpm watchdogs
 
-A [wpm](https://github.com/LGUG2Z/wpm) unit that restarts
-[yasb](https://github.com/amnweb/yasb) when it stops running or locks up.
-It doesn't get in the way when you reload yasb yourself.
+[wpm](https://github.com/LGUG2Z/wpm) watchdog units for long-running Windows
+desktop programs that can replace their own process during a reload.
 
 | File                 | Purpose                                                   |
 | -------------------- | --------------------------------------------------------- |
+| autohotkey-watchdog.toml | wpm unit for the reload-safe AutoHotkey watchdog. |
+| autohotkey-watchdog.ps1 | Starts the primary AutoHotkey v2 script if it is absent. |
 | `yasb-watchdog.toml` | wpm unit. Starts with `wpmd` and restarts the watchdog if it dies. |
 | `yasb-watchdog.ps1`  | The watchdog. Starts yasb if it's missing and kills and restarts it if it hangs. |
 
@@ -102,3 +103,39 @@ doesn't start `wpmd` at login. `install-wpmd-task.ps1` registers a
 scheduled task named `wpmd` that runs it at logon, hidden and not elevated
 (`-Start` also launches it now). yasb's own autostart can stay on or off: if yasb is already running
 when the watchdog starts, the watchdog takes it over.
+
+## AutoHotkey watchdog
+
+The AutoHotkey watchdog launches
+C:\Users\simsr\.config\autohotkey\autohotkey.ahk with the installed v2
+interpreter. It checks every two seconds and, after the first launch, waits
+five seconds before relaunching an absent script.
+
+It identifies the script from the AutoHotkey command line rather than its
+PID. Editing or reloading the script may replace the interpreter PID; that is
+normal, and the watchdog accepts the replacement process without launching a
+second instance.
+
+Install the .toml and .ps1 files in the directory printed by wpmctl units,
+then activate the unit:
+
+~~~powershell
+wpmctl reload
+wpmctl start autohotkey-watchdog
+wpmctl status autohotkey-watchdog
+wpmctl log autohotkey-watchdog
+~~~
+
+To keep AutoHotkey deliberately stopped, pause its watchdog:
+
+~~~powershell
+# pause
+New-Item -ItemType File -Force "$env:LOCALAPPDATA\wpm\autohotkey-watchdog.pause"
+
+# resume
+Remove-Item "$env:LOCALAPPDATA\wpm\autohotkey-watchdog.pause"
+~~~
+
+After wpmctl status autohotkey-watchdog shows the unit running, remove the
+old autohotkey.ahk.lnk Startup-folder entry. Otherwise both Startup and wpm
+can try to launch the script at logon.
