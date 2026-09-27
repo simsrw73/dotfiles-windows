@@ -46,7 +46,7 @@ function Start-ManagedAutoHotkey([switch] $DryRun) {
 
 function Invoke-AutoHotkeyWatchdogCheck {
     param(
-        [datetime] $MissingSince,
+        [Nullable[datetime]] $MissingSince,
         [switch] $Initial,
         [switch] $DryRun
     )

@@ -32,6 +32,12 @@ Describe 'AutoHotkey watchdog' {
         (Invoke-AutoHotkeyWatchdogCheck -Initial -DryRun).Action | Should -Be 'start'
     }
 
+    It 'accepts the explicitly null initial missing state used by the loop' {
+        $missingSince = $null
+
+        (Invoke-AutoHotkeyWatchdogCheck -MissingSince $missingSince -Initial -DryRun).Action | Should -Be 'start'
+    }
+
     It 'waits during a later missing grace period' {
         (Invoke-AutoHotkeyWatchdogCheck -MissingSince (Get-Date) -DryRun).Action | Should -Be 'wait'
     }
