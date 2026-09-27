@@ -10,9 +10,9 @@ metadata:
 
 Built 2026-09-26. The user is new to tiling WMs and relies on Claude's recommendations for what's typical.
 
-Layout (komorebi/komorebi.json, monitors pinned by serial): 4K Dell `H6TNT84` = dev (Zed, WT "Claude Code" + "Shell"), notes (Obsidian), ai-lab (Perplexity, Claude desktop, ChatGPT, GitHub Copilot `github.exe`, Gemini Chrome PWA), admin (sysinternals, mmc snap-ins, regedit, UniGetUI, Windhawk, Settings/Control Panel, HWiNFO, WizTree…; added same day). LG `209NTCZBE803` = research (zen/brave/chrome/edge/Typora stacked via `window_container_behaviour: Append`), comms (Spark, TickTick, Fantastical), files (Explorer, Everything), scratch. Koffee, Bitwarden and TMOG `Task Manager.exe` are komorebi `ignore_rules` + AHK always-on-top popups.
+Layout (komorebi/komorebi.json, monitors pinned by serial): 4K Dell `H6TNT84` = dev (Zed, WT "Claude Code" + "Shell"), notes (Obsidian), ai-lab (Perplexity, Claude desktop, ChatGPT, GitHub Copilot `github.exe`, Gemini Chrome PWA), admin (sysinternals, mmc snap-ins, regedit, UniGetUI, Windhawk, Settings/Control Panel, HWiNFO, WizTree…, MikroTik WinBox; added same day). LG `209NTCZBE803` = research (zen/brave/chrome/edge/Typora stacked via `window_container_behaviour: Append`), comms (Spark, TickTick, Fantastical), files (Explorer, Everything), games (all game launchers + mod managers — Steam, GOG, Epic, EA, Ubisoft, Vortex, MO2… — in one stack via `Append`), scratch. Koffee, Bitwarden and TMOG `Task Manager.exe` are komorebi `ignore_rules` + AHK always-on-top popups.
 
-Keys: AHK replaces whkd. Alt = WM (sample-whkdrc scheme, Alt+1..8 named workspaces in screen order: dev notes ai-lab admin | research comms files scratch; stack is Alt+Ctrl+hjkl because Alt+Left is browser Back). Win+Space = themed which-key chord menu (AutoHotKey/Chords.ahk, app registry in Apps.ahk).
+Keys: AHK replaces whkd. Alt = WM (sample-whkdrc scheme, Alt+1..9 named workspaces in screen order: dev notes ai-lab admin | research comms files games scratch; stack is Alt+Ctrl+hjkl because Alt+Left is browser Back). Win+Space = themed which-key chord menu (AutoHotKey/Chords.ahk, app registry in Apps.ahk).
 
 **Why:** the user's spec; future changes should keep this map and the Catppuccin look ([[yasb-bar-design]]).
 **How to apply / gotchas:**

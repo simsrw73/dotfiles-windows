@@ -232,6 +232,11 @@
               "id": "wslsettings.exe",
               "matching_strategy": "Equals"
             },
+            {
+              "kind": "Exe",
+              "id": "WinBox.exe",
+              "matching_strategy": "Equals"
+            },
             [
               {
                 "kind": "Class",
@@ -355,6 +360,37 @@
               "id": "Everything.exe",
               "matching_strategy": "Equals"
             }
+          ]
+        },
+        {
+          "name": "games",
+          "layout": "VerticalStack",
+          "window_container_behaviour": "Append",
+          "initial_workspace_rules": [
+            { "kind": "Exe", "id": "steam.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "steamwebhelper.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "GalaxyClient.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "Amazon Games UI.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "Battle.net.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "BethesdaNetLauncher.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "EpicGamesLauncher.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "EADesktop.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "UbisoftConnect.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "upc.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "XboxPcApp.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "Riot Client.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "RiotClientUx.exe", "matching_strategy": "Equals" },
+            { "kind": "Path", "id": "Rockstar Games\\Launcher", "matching_strategy": "Contains" },
+            { "kind": "Exe", "id": "Playnite.DesktopApp.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "heroic.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "itch.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "Vortex.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "NexusMods.App.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "ModOrganizer.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "Wabbajack.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "r2modman.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "Thunderstore Mod Manager.exe", "matching_strategy": "Equals" },
+            { "kind": "Exe", "id": "CurseForge.exe", "matching_strategy": "Equals" }
           ]
         },
         {

@@ -2,9 +2,9 @@
 
 ; komorebi keys, following komorebi's sample whkdrc. Alt is the window-manager modifier.
 ; Workspaces are numbered across both monitors in komorebi.json order:
-;   4K: 1 dev · 2 notes · 3 ai-lab · 4 admin      LG: 5 research · 6 comms · 7 files · 8 scratch
+;   4K: 1 dev · 2 notes · 3 ai-lab · 4 admin      LG: 5 research · 6 comms · 7 files · 8 games · 9 scratch
 
-BindWorkspaceHotkeys(["dev", "notes", "ai-lab", "admin", "research", "comms", "files", "scratch"])
+BindWorkspaceHotkeys(["dev", "notes", "ai-lab", "admin", "research", "comms", "files", "games", "scratch"])
 
 BindWorkspaceHotkeys(workspaces) {
     for i, workspace in workspaces {

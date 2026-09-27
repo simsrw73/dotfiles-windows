@@ -198,7 +198,7 @@ Assert-Contains $komorebi 'class Komorebi'
 Assert-Contains $komorebi 'static WorkspaceOf(hwnd)'
 Assert-Contains $komorebi 'RunWait(this.CommandLine(args), , "Hide")'
 
-Assert-Contains $windowManager 'BindWorkspaceHotkeys(["dev", "notes", "ai-lab", "admin", "research", "comms", "files", "scratch"])'
+Assert-Contains $windowManager 'BindWorkspaceHotkeys(["dev", "notes", "ai-lab", "admin", "research", "comms", "files", "games", "scratch"])'
 Assert-Contains $chords '#Space::Chords.Open(Chords.Root)'
 Assert-Contains $chords 'KeyChord()'
 
