@@ -88,7 +88,7 @@ Describe 'Move-IntoLinked' {
         Move-IntoLinked -Live $live -Linked $linked -Now $now | Should -Be 'backed-up'
         Get-Content "$linked\sub\ignored.log" | Should -Be 'runtime'
         Test-Path "$linked\empty" -PathType Container | Should -BeTrue
-        (Get-Item $live).LinkType | Should -Be 'SymbolicLink'
+        (Get-Item $live).LinkType | Should -Be 'Junction'
         Test-Path "$live.pre-chezmoi-20260927\tracked.txt" | Should -BeTrue
     }
     It 'recreates nested directory links instead of copying through them' {

@@ -1,0 +1,17 @@
+{{- $docs := output "pwsh" "-NoProfile" "-Command" "[Environment]::GetFolderPath('MyDocuments')" | trim | replace "\\" "/" -}}
+{{- $home := .chezmoi.homeDir | replace "\\" "/" -}}
+{{- $docsRel := $docs | trimPrefix (printf "%s/" $home) -}}
+[data]
+    name = "Randy W. Sims"
+    email = "simsrw73@gmail.com"
+    signingkey = "8FDC1EB03BECE139"
+    documents = {{ $docsRel | quote }}
+
+[bitwarden]
+    unlock = "auto"
+
+[cd]
+    command = "pwsh"
+
+[git]
+    autoAdd = true

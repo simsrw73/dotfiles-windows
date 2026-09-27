@@ -1,0 +1,7 @@
+README.md
+{{ if ne .documents "OneDrive/Documents" }}
+OneDrive/Documents/**
+{{ end }}
+{{ if ne .documents "Documents" }}
+Documents/**
+{{ end }}

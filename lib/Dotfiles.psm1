@@ -90,7 +90,7 @@ function Move-IntoLinked {
             Copy-Item -LiteralPath $i.FullName -Destination $dest
         }
     }
-    Set-DirectoryLink -Path $Live -Target $Linked -Kind SymbolicLink -Now $Now
+    Set-DirectoryLink -Path $Live -Target $Linked -Kind Junction -Now $Now
 }
 
 Export-ModuleMember -Function Get-Missing, Get-BackupPath, Set-DirectoryLink, Move-IntoLinked
