@@ -87,7 +87,7 @@ bars:
       bottom: 0
       right: 8
     widgets:
-      left: ["launchpad", "wm_slim", "active_window"]
+      left: ["launchpad", "wm", "active_window"]
       center: ["time"]
       right: []
 
