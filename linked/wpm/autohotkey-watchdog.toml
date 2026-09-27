@@ -11,7 +11,7 @@ Description = "Keeps the primary AutoHotkey script running across reloads"
 Kind = "Simple"
 Autostart = true
 Restart = "Always"
-RestartSec = 2
+RestartSec = 5
 
 [Service.ExecStart]
 Executable = "powershell.exe"

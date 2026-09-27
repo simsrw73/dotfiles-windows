@@ -8,9 +8,9 @@
     accepted without creating a duplicate instance.
 #>
 param(
-    [string] $AutoHotkeyExe = 'C:\Program Files\AutoHotkey\v2\AutoHotkey64.exe',
+    [string] $AutoHotkeyExe = 'C:\Program Files\AutoHotkey\v2\AutoHotkey64_UIA.exe',
     [string] $ScriptPath = 'C:\Users\simsr\.config\autohotkey\autohotkey.ahk',
-    [int] $IntervalSec = 2,
+    [int] $IntervalSec = 5,
     [int] $MissingGraceSec = 5,
     [string] $PauseFile = (Join-Path $env:LOCALAPPDATA 'wpm\autohotkey-watchdog.pause'),
     [switch] $NoRun
@@ -24,7 +24,7 @@ function Write-WatchdogLog([string] $Message) {
 }
 
 function Get-ManagedAutoHotkeyProcess {
-    @(Get-CimInstance -ClassName Win32_Process -Filter "Name = 'AutoHotkey64.exe'" |
+    @(Get-CimInstance -ClassName Win32_Process -Filter "Name = 'AutoHotkey64_UIA.exe'" |
         Where-Object {
             $_.CommandLine -and
             $_.CommandLine.IndexOf($script:CanonicalScriptPath, [StringComparison]::OrdinalIgnoreCase) -ge 0
