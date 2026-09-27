@@ -161,8 +161,8 @@ widgets:
       app_icon_size: 48
       window:
         fullscreen: false
-        width: 1024
-        height: 720
+        width: 1120
+        height: 800
         overlay_block: true
       window_style:
         enable_blur: true

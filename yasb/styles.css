@@ -1410,3 +1410,183 @@
 .power-menu-compact .label.hover {
     color: var(--text);
 }
+
+/* ───────────────────────────── Launchpad (app grid popup) ─────────────────────────────
+ *
+ * yasb zeroes every margin/spacing in the launchpad and sizes grid columns from the first
+ * cell's width, so cells need fixed min/max sizes or the gaps and column count drift.
+ * Cell footprint = 128 content + 2×8 padding + 2×2 border + 2×12 margin = 172px wide,
+ * so the 1120px window (config.yaml) fits 6 columns with the leftover centered.
+ */
+
+.launchpad .launchpad-container {
+    background-color: rgba(var(--mantle-rgb), 0.92);
+    border-radius: var(--radius-outer);
+}
+
+.launchpad .search-container {
+    background-color: rgba(var(--crust-rgb), 0.35);
+    border: none;
+    border-bottom: 1px solid rgba(var(--surface0-rgb), 0.9);
+    min-height: 88px;
+    max-height: 88px;
+    padding: 0 24px;
+    margin: 0 0 16px 0;
+}
+.launchpad .search-input {
+    max-width: 420px;
+    min-height: 24px;
+    max-height: 24px;
+    padding: 8px 16px;
+    font-family: var(--font-text);
+    font-size: 14px;
+    color: var(--text);
+    background-color: rgba(var(--crust-rgb), 0.6);
+    border: 1px solid var(--surface1);
+    border-radius: var(--radius-outer);
+}
+.launchpad .search-input:focus {
+    border: 1px solid var(--lavender);
+    background-color: rgba(var(--crust-rgb), 0.8);
+}
+
+.launchpad .launchpad-scroll-area {
+    background-color: transparent;
+    border: none;
+}
+
+.launchpad .app-icon,
+.launchpad .group-icon {
+    background-color: transparent;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 16px 8px 8px 8px;
+    margin: 12px;
+    min-width: 128px;
+    max-width: 128px;
+    min-height: 108px;
+    max-height: 108px;
+}
+.launchpad .app-icon:hover,
+.launchpad .group-icon:hover {
+    background-color: rgba(var(--text-rgb), 0.07);
+    border: 2px solid rgba(var(--surface1-rgb), 0.9);
+}
+.launchpad .app-icon:focus,
+.launchpad .group-icon:focus {
+    background-color: rgba(var(--lavender-rgb), 0.08);
+    border: 2px solid var(--lavender);
+}
+.launchpad .app-icon .icon {
+    padding: 0;
+    margin: 0;
+}
+.launchpad .app-icon .title,
+.launchpad .group-icon .title {
+    font-family: var(--font-text);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--subtext1);
+    margin-top: 12px;
+    padding: 0 2px;
+}
+.launchpad .app-icon.url .title {
+    color: var(--blue);
+}
+.launchpad .group-icon .group-icon-container {
+    background-color: rgba(var(--surface0-rgb), 0.6);
+    border: 1px solid var(--surface1);
+    border-radius: 10px;
+}
+.launchpad .group-back-button {
+    background-color: transparent;
+    border: none;
+    color: var(--subtext1);
+    font-size: 16px;
+    padding: 0 24px;
+}
+.launchpad .group-back-button:hover {
+    color: var(--text);
+}
+
+.launchpad .drop-overlay {
+    background-color: rgba(var(--crust-rgb), 0.85);
+    border: 3px dashed var(--lavender);
+    border-radius: var(--radius-outer);
+}
+.launchpad .drop-overlay .text {
+    color: var(--text);
+    font-size: 40px;
+    font-weight: 600;
+}
+
+/* Add / edit app dialog */
+.launchpad .app-dialog {
+    background-color: var(--mantle);
+}
+.launchpad .app-dialog .message {
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 12px 0 0 0;
+}
+.launchpad .app-dialog .title-field,
+.launchpad .app-dialog .path-field,
+.launchpad .app-dialog .icon-field,
+.launchpad .app-dialog .group-field {
+    background-color: var(--crust);
+    border: 1px solid var(--surface0);
+    border-radius: var(--radius-item);
+    padding: 0 8px;
+    margin: 8px 0 4px 0;
+    min-height: 30px;
+    font-size: 12px;
+    color: var(--text);
+}
+.launchpad .app-dialog .title-field:focus,
+.launchpad .app-dialog .path-field:focus,
+.launchpad .app-dialog .icon-field:focus,
+.launchpad .app-dialog .group-field:focus {
+    border: 1px solid var(--lavender);
+}
+.launchpad .app-dialog .buttons-container {
+    background-color: rgba(var(--crust-rgb), 0.5);
+    border-top: 1px solid var(--surface0);
+    margin-top: 16px;
+    min-height: 64px;
+    max-height: 64px;
+    padding: 0 20px;
+}
+.launchpad .app-dialog .button {
+    background-color: var(--surface0);
+    border: none;
+    border-radius: var(--radius-item);
+    min-width: 80px;
+    min-height: 28px;
+    padding: 0 10px;
+    margin: 8px 0 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+}
+.launchpad .app-dialog .button:hover,
+.launchpad .app-dialog .button:focus {
+    background-color: var(--surface1);
+}
+.launchpad .app-dialog .button.add,
+.launchpad .app-dialog .button.save {
+    background-color: var(--lavender);
+    color: var(--crust);
+}
+.launchpad .app-dialog .button.delete {
+    background-color: var(--red);
+    color: var(--crust);
+}
+.launchpad .app-dialog .warning-message {
+    background-color: rgba(var(--red-rgb), 0.12);
+    border: 1px solid rgba(var(--red-rgb), 0.4);
+    border-radius: var(--radius-item);
+    color: var(--red);
+    padding: 8px 12px;
+    margin: 4px 0;
+}
