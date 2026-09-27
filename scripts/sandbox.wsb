@@ -1,0 +1,12 @@
+<Configuration>
+  <MappedFolders>
+    <MappedFolder>
+      <HostFolder>C:\Users\simsr\.local\share\chezmoi</HostFolder>
+      <SandboxFolder>C:\dotfiles</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+  </MappedFolders>
+  <LogonCommand>
+    <Command>powershell -NoExit -ExecutionPolicy Bypass -Command "Write-Host 'Run: C:\dotfiles\bootstrap.ps1'"</Command>
+  </LogonCommand>
+</Configuration>
