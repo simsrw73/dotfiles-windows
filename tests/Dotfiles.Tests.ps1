@@ -99,11 +99,16 @@ Describe 'Move-IntoLinked' {
         (Get-Item "$linked\nested").LinkType | Should -Be 'Junction'
         (Get-Item "$linked\nested").Target | Should -Be $ext
     }
-    It 'refuses on conflict and changes nothing' {
+    It 'keeps the live bytes when a file differs, and warns naming it' {
         Set-Content "$linked\tracked.txt" 'different'
-        { Move-IntoLinked -Live $live -Linked $linked -Now $now } | Should -Throw '*tracked.txt*'
-        Test-Path "$linked\sub\ignored.log" | Should -BeFalse
-        (Get-Item $live).LinkType | Should -BeNullOrEmpty
+        $r = Move-IntoLinked -Live $live -Linked $linked -Now $now -WarningVariable w -WarningAction SilentlyContinue
+        $r | Should -Be 'backed-up'
+        Get-Content "$linked\tracked.txt" | Should -Be 'same'
+        "$w" | Should -BeLike '*tracked.txt*'
+    }
+    It 'does not warn when files are identical' {
+        Move-IntoLinked -Live $live -Linked $linked -Now $now -WarningVariable w -WarningAction SilentlyContinue | Out-Null
+        @($w).Count | Should -Be 0
     }
     It 'reports already-linked' {
         Move-IntoLinked -Live $live -Linked $linked -Now $now | Out-Null

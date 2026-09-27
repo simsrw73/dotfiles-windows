@@ -65,20 +65,21 @@ function Move-IntoLinked {
 
     # Get-ChildItem does not descend into directory links, so nested links are
     # reported as single items and recreated rather than copied through.
+    # The live folder is what apps use, so its bytes win. A file that differs from
+    # the checkout (often only in line endings) is overwritten and named in a
+    # warning; the committed version stays in git and the live dir is backed up.
     $items = Get-ChildItem -LiteralPath $Live -Recurse -Force
-    $conflicts = foreach ($i in $items) {
-        if ($i.PSIsContainer -or $i.LinkType) { continue }
-        $dest = Join-Path $Linked ([IO.Path]::GetRelativePath($Live, $i.FullName))
-        if ((Test-Path -LiteralPath $dest) -and
-            (Get-FileHash -LiteralPath $dest).Hash -ne (Get-FileHash -LiteralPath $i.FullName).Hash) {
-            [IO.Path]::GetRelativePath($Live, $i.FullName)
-        }
-    }
-    if ($conflicts) { throw "Live and linked differ; commit or reconcile first: $($conflicts -join ', ')" }
-
     foreach ($i in $items) {
-        $dest = Join-Path $Linked ([IO.Path]::GetRelativePath($Live, $i.FullName))
-        if (Test-Path -LiteralPath $dest) { continue }
+        $rel = [IO.Path]::GetRelativePath($Live, $i.FullName)
+        $dest = Join-Path $Linked $rel
+        if (Test-Path -LiteralPath $dest) {
+            if ($i.PSIsContainer -or $i.LinkType) { continue }
+            if ((Get-FileHash -LiteralPath $dest).Hash -ne (Get-FileHash -LiteralPath $i.FullName).Hash) {
+                Copy-Item -LiteralPath $i.FullName -Destination $dest -Force
+                Write-Warning "kept live version of $rel"
+            }
+            continue
+        }
         if ($i.LinkType) {
             New-Item -ItemType $i.LinkType -Path $dest -Target @($i.Target)[0] | Out-Null
         }
