@@ -4,14 +4,15 @@
 [user]
 	name = Randy W. Sims
 	email = simsrw73@gmail.com
-	signingkey = 41736183F04CA31D
+	signingkey = 8FDC1EB03BECE139
 [credential "helperselector"]
 	selected = manager-core
 [init]
 	defaultBranch = main
 [gpg]
-	program = "C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe"
+	program = C:\\Users\\simsr\\.local\\share\\scoop\\apps\\gpg4win\\current\\GnuPG\\bin\\gpg.exe
 [commit]
+	gpgsign = true
 	# gpgsign = true
 
 [credential "https://github.com"]

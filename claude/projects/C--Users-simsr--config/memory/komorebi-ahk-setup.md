@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 242fa7a9-8960-4acd-9ebb-af7e6a2a0696
-  modified: 2026-09-26T21:00:04.307Z
+  modified: 2026-09-27T13:45:17.264Z
 ---
 
 Built 2026-09-26. The user is new to tiling WMs and relies on Claude's recommendations for what's typical.
@@ -23,4 +23,6 @@ Keys: AHK replaces whkd. Alt = WM (sample-whkdrc scheme, Alt+1..9 named workspac
 - An AHK global named `app` collides with `class App`. Top-level helper names like `Action`/`index`/`number` trigger #Warn clashes with KeyChord locals.
 - Always launch AHK via ~/.config/AutoHotKey/autohotkey.ahk, never the OneDrive junction path. #SingleInstance compares paths, so the two paths ran as separate copies. The startup link was repointed to .config on 2026-09-26.
 - Elevated windows (mmc snap-ins, regedit, HWiNFO…) need elevated komorebi and UI-Access AHK, set up 2026-09-26. Komorebi starts from the scheduled task `komorebi` (RunLevel Highest, at logon); the komorebi.lnk autostart was removed. AHK runs as `C:\Program Files\AutoHotkey\v2\AutoHotkey64_UIA.exe`, which the startup link targets. The winget AHK package is user-scope only, so the machine install used `setup.exe /silent /installto "C:\Program Files\AutoHotkey"`. The old per-user install in AppData may still be around.
+- Windows Hello prompt = class `Credential Dialog Xaml Host` (CredentialUIBroker.exe, already komorebi-ignored). It opened behind the always-on-top Bitwarden, which keeps pulling focus back. A one-shot shell-hook raise wasn't enough. `SecurityPrompts` in WindowManager.ahk polls every 250ms and holds the prompt topmost and focused (2026-09-27). The title is empty at creation, so it matches on class only.
+- `Popup: true` apps are topmost only while they're active. `WindowLauncher.DropInactivePopups` (250ms timer) removes topmost and puts the popup just behind whatever window took focus. The user wanted this so a file opened from Koffee lands in front (2026-09-27).
 - Auto mode blocks creating logon persistence (scheduled tasks). Hand the user a script to run with `! gsudo …`.
