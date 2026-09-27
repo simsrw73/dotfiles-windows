@@ -1,0 +1,19 @@
+# gpg-signing-key item revision: {{ (bitwarden "item" "gpg-signing-key").revisionDate }}
+$ErrorActionPreference = 'Stop'
+# chezmoi's process predates the user env var set by 05-user-env, so set it here.
+$env:GNUPGHOME = Join-Path $HOME '.config\gnupg'
+$gpg = git config --global --get gpg.program; if (-not $gpg) { $gpg = 'gpg' }
+& $gpg --list-secret-keys 8FDC1EB03BECE139 *> $null
+if ($LASTEXITCODE -eq 0) { Write-Host 'gpg key already present'; return }
+$tmp = New-Item -ItemType Directory (Join-Path $env:TEMP "gpgimp-$(New-Guid)")
+try {
+    Set-Content -NoNewline "$tmp\k.asc" @'
+{{ bitwardenAttachment "signing-key.asc" (bitwarden "item" "gpg-signing-key").id }}
+'@
+    Set-Content "$tmp\t.txt" @'
+{{ bitwardenAttachment "ownertrust.txt" (bitwarden "item" "gpg-signing-key").id }}
+'@
+    & $gpg --batch --import "$tmp\k.asc"
+    & $gpg --import-ownertrust "$tmp\t.txt"
+}
+finally { Remove-Item -Recurse -Force $tmp }

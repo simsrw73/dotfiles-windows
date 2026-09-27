@@ -1,0 +1,8 @@
+# flow-github item revision: {{ (bitwarden "item" "flow-github").revisionDate }}
+$ErrorActionPreference = 'Stop'
+$dir = Join-Path $HOME '.config\FlowLauncher\Settings\Plugins\Github Quick Launcher'
+New-Item -ItemType Directory -Force $dir | Out-Null
+$content = @'
+{{ bitwardenAttachment "Settings.json" (bitwarden "item" "flow-github").id }}
+'@
+Set-Content -LiteralPath (Join-Path $dir 'Settings.json') -Value $content.TrimEnd("`r", "`n") -NoNewline

@@ -1,0 +1,7 @@
+# keys: {{ (bitwarden "item" "ssh-keys").revisionDate }}
+# Windows OpenSSH refuses private keys readable by other users.
+$ErrorActionPreference = 'Stop'
+foreach ($k in 'id_ed25519', 'id_a24', 'private_key', 'routeros_rsa') {
+    $p = Join-Path $HOME ".ssh\$k"
+    if (Test-Path $p) { icacls $p /inheritance:r /grant:r "${env:USERNAME}:(R,W)" | Out-Null }
+}
