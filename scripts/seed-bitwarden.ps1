@@ -18,10 +18,19 @@ function Get-Item-ByName([string] $name) {
     bw list items --search $name | ConvertFrom-Json | Where-Object name -eq $name | Select-Object -First 1
 }
 function New-SecureNote([string] $name, [string] $folderId, $fields = @()) {
-    $item = bw get template item | ConvertFrom-Json
-    $item.type = 2; $item.name = $name; $item.folderId = $folderId
-    $item.secureNote = @{ type = 0 }; $item.notes = 'Managed for chezmoi (dotfiles-windows).'
-    $item.fields = @($fields)
+    # Built by hand: `bw get template item` has no folderId in newer CLI versions.
+    $item = [ordered]@{
+        organizationId = $null
+        collectionIds  = $null
+        folderId       = $folderId
+        type           = 2
+        name           = $name
+        notes          = 'Managed for chezmoi (dotfiles-windows).'
+        favorite       = $false
+        fields         = @($fields)
+        secureNote     = @{ type = 0 }
+        reprompt       = 0
+    }
     ($item | ConvertTo-Json -Depth 5 -Compress) | bw encode | bw create item | ConvertFrom-Json
 }
 function Set-Attachment($item, [string] $file) {
