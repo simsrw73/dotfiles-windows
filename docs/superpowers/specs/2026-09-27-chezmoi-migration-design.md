@@ -33,7 +33,7 @@ of `bootstrap.ps1` reaches a working config without manual file copying.
   name/email/signingkey data but no source dir exists.
 - Developer Mode is on (symlinks work unelevated).
 - Chocolatey has no packages besides itself.
-- Secrets: `~/.env`, 5 SSH private keys, GPG signing key `8FDC1EB03BECE139` (the one git uses) in
+- Secrets: `~/.env`, 4 SSH private keys, GPG signing key `8FDC1EB03BECE139` (the one git uses) in
   `gnupg/`, a GitHub token in FlowLauncher's "Github Quick Launcher"
   settings, `gh/hosts.yml`.
 
