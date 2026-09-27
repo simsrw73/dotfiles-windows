@@ -14,3 +14,4 @@ home/private_dot_ssh/id_a24.pub text eol=lf
 home/dot_config/carapace/specs/*.yaml -text
 home/dot_config/delta/catppuccin.gitconfig -text
 home/dot_config/git/config -text
+home/private_dot_env.tmpl text eol=lf

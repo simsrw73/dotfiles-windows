@@ -1,4 +1,3 @@
-{{- $f := bitwardenFields "item" "env" -}}
-{{- range $name, $field := $f }}
+{{- range $name, $field := bitwardenFields "item" "env" -}}
 {{ $name }}={{ $field.value }}
-{{- end }}
+{{ end -}}
