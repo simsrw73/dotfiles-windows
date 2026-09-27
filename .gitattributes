@@ -8,7 +8,9 @@ home/dot_bashrc text eol=lf
 home/dot_bash_profile text eol=lf
 
 # live copies are LF
-home/dot_config/carapace/specs/*.yaml text eol=lf
-home/dot_config/delta/catppuccin.gitconfig text eol=lf
-home/dot_config/git/config text eol=lf
 home/private_dot_ssh/id_a24.pub text eol=lf
+
+# live copies have mixed line endings: store bytes exactly
+home/dot_config/carapace/specs/*.yaml -text
+home/dot_config/delta/catppuccin.gitconfig -text
+home/dot_config/git/config -text
