@@ -39,7 +39,7 @@ function Set-DirectoryLink {
         $result = 'relinked'
     }
     elseif ($item) {
-        Move-Item -LiteralPath $Path -Destination (Get-BackupPath -Path $Path -Now $Now)
+        Move-Item -LiteralPath $Path -Destination (Get-BackupPath -Path $Path -Now $Now) -ErrorAction Stop
         $result = 'backed-up'
     }
     else {
@@ -47,7 +47,7 @@ function Set-DirectoryLink {
         if (-not (Test-Path -LiteralPath $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
         $result = 'created'
     }
-    New-Item -ItemType $Kind -Path $Path -Target $Target | Out-Null
+    New-Item -ItemType $Kind -Path $Path -Target $Target -ErrorAction Stop | Out-Null
     $result
 }
 
@@ -71,6 +71,8 @@ function Move-IntoLinked {
     $items = Get-ChildItem -LiteralPath $Live -Recurse -Force
     foreach ($i in $items) {
         $rel = [IO.Path]::GetRelativePath($Live, $i.FullName)
+        # Git metadata comes from the clone (and its submodules), never the live dir.
+        if ($rel -split '\\' -contains '.git') { continue }
         $dest = Join-Path $Linked $rel
         if (Test-Path -LiteralPath $dest) {
             if ($i.PSIsContainer -or $i.LinkType) { continue }

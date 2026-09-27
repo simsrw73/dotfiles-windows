@@ -72,6 +72,15 @@ Describe 'Set-DirectoryLink' {
         { Set-DirectoryLink -Path $path -Target "$TestDrive\nope" -Now $now } | Should -Throw '*does not exist*'
         Test-Path $path | Should -BeFalse
     }
+    It 'throws when the live directory cannot be moved' {
+        New-Item -ItemType Directory $path -Force | Out-Null
+        $lock = [IO.File]::Open("$path\busy.txt", 'Create', 'ReadWrite', 'None')
+        try {
+            { Set-DirectoryLink -Path $path -Target $target -Now $now } | Should -Throw
+            (Get-Item $path).LinkType | Should -BeNullOrEmpty
+        }
+        finally { $lock.Dispose() }
+    }
 }
 
 Describe 'Move-IntoLinked' {
@@ -109,6 +118,15 @@ Describe 'Move-IntoLinked' {
     It 'does not warn when files are identical' {
         Move-IntoLinked -Live $live -Linked $linked -Now $now -WarningVariable w -WarningAction SilentlyContinue | Out-Null
         @($w).Count | Should -Be 0
+    }
+    It 'skips git metadata, including nested submodule .git dirs' {
+        New-Item -ItemType Directory "$live\.git", "$live\sub\mod\.git\hooks" | Out-Null
+        Set-Content "$live\sub\mod\.git\config" 'x'
+        Set-Content "$live\sub\mod\file.txt" 'keep'
+        Move-IntoLinked -Live $live -Linked $linked -Now $now | Out-Null
+        Test-Path "$linked\.git" | Should -BeFalse
+        Test-Path "$linked\sub\mod\.git" | Should -BeFalse
+        Get-Content "$linked\sub\mod\file.txt" | Should -Be 'keep'
     }
     It 'reports already-linked' {
         Move-IntoLinked -Live $live -Linked $linked -Now $now | Out-Null
