@@ -1,0 +1,14 @@
+# Persistent user env vars apps need before first launch (and outside the pwsh profile).
+$ErrorActionPreference = 'Stop'
+$vars = [ordered]@{
+    SCOOP                = Join-Path $HOME '.local\share\scoop'
+    KOMOREBI_CONFIG_HOME = Join-Path $HOME '.config\komorebi'
+    GNUPGHOME            = Join-Path $HOME '.config\gnupg'
+}
+foreach ($k in $vars.Keys) {
+    if ([Environment]::GetEnvironmentVariable($k, 'User') -ne $vars[$k]) {
+        [Environment]::SetEnvironmentVariable($k, $vars[$k], 'User')
+        Write-Host "set $k=$($vars[$k])"
+    }
+    Set-Item "env:$k" $vars[$k]
+}

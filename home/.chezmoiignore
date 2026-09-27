@@ -5,3 +5,5 @@ OneDrive/Documents/**
 {{ if ne .documents "Documents" }}
 Documents/**
 {{ end }}
+.ssh/known_hosts
+.ssh/known_hosts.old
