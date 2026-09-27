@@ -1,0 +1,38 @@
+# packages hash: {{ .packages | toJson | sha256sum }}
+$ErrorActionPreference = 'Stop'
+Import-Module '{{ joinPath .chezmoi.workingTree "lib" "Dotfiles.psm1" }}' -Force
+
+# --- scoop
+if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) { throw 'scoop missing: run bootstrap.ps1 first' }
+$haveBuckets = @(scoop bucket list | % Name)
+{{- range .packages.scoop.buckets }}
+if ('{{ .name }}' -notin $haveBuckets) { scoop bucket add '{{ .name }}' {{ with get . "url" }}'{{ . }}'{{ end }} }
+{{- end }}
+$wantScoop = @({{ range $i, $a := .packages.scoop.apps }}{{ if $i }}, {{ end }}'{{ $a }}'{{ end }})
+$haveScoop = @((scoop export | ConvertFrom-Json).apps | % Name)
+$missing = Get-Missing -Wanted ($wantScoop | % { ($_ -split '/')[-1] }) -Installed $haveScoop
+foreach ($m in $missing) { scoop install ($wantScoop | Where-Object { ($_ -split '/')[-1] -ieq $m } | Select-Object -First 1) }
+
+# --- winget
+if (Get-Command winget -ErrorAction SilentlyContinue) {
+    # winget list truncates long IDs; export gives exact installed IDs.
+    $exp = Join-Path $env:TEMP "winget-installed-$PID.json"
+    winget export -o $exp --source winget --accept-source-agreements --disable-interactivity | Out-Null
+    $haveWinget = @((Get-Content $exp -Raw | ConvertFrom-Json).Sources.Packages.PackageIdentifier)
+    Remove-Item $exp -ErrorAction SilentlyContinue
+    foreach ($id in (Get-Missing -Wanted @({{ range $i, $a := .packages.winget.user }}{{ if $i }}, {{ end }}'{{ $a }}'{{ end }}) -Installed $haveWinget)) {
+        winget install --id $id -e --source winget --accept-package-agreements --accept-source-agreements --disable-interactivity
+    }
+    $elev = Get-Missing -Wanted @({{ range $i, $a := .packages.winget.elevated }}{{ if $i }}, {{ end }}'{{ $a }}'{{ end }}) -Installed $haveWinget
+    if ($elev) {
+        $cmds = ($elev | % { "winget install --id $_ -e --source winget --scope machine --accept-package-agreements --accept-source-agreements --disable-interactivity" }) -join '; '
+        gsudo pwsh -NoProfile -Command $cmds
+    }
+}
+else { Write-Warning 'winget not found; skipping winget packages (install App Installer and re-run chezmoi apply)' }
+
+# --- PowerShell modules
+$haveMods = @(Get-InstalledPSResource -ErrorAction SilentlyContinue | % Name)
+foreach ($m in (Get-Missing -Wanted @({{ range $i, $a := .packages.pwsh }}{{ if $i }}, {{ end }}'{{ $a }}'{{ end }}) -Installed $haveMods)) {
+    Install-PSResource -Name $m -Scope CurrentUser -TrustRepository -Quiet
+}
