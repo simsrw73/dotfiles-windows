@@ -1,6 +1,7 @@
 # Check out text files exactly like the live files, whatever core.autocrlf says:
 # CRLF by default, LF where the live file is LF (and anything bash reads).
 * text=auto eol=crlf
+.gitattributes text eol=lf
 
 # shell hooks and bash startup files must be LF
 .githooks/* text eol=lf
