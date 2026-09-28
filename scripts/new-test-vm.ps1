@@ -5,11 +5,11 @@ is unreliable on Insider builds). Run elevated:
     gsudo pwsh -File scripts\new-test-vm.ps1 -IsoPath D:\Win11.iso
 
 Then install Windows once (local account), eject the ISO and checkpoint it:
-    gsudo pwsh -NoProfile -Command 'Get-VMDvdDrive -VMName dotfiles-test | Set-VMDvdDrive -Path $null; Checkpoint-VM -Name dotfiles-test -SnapshotName clean'
+    gsudo { Get-VMDvdDrive -VMName dotfiles-test | Set-VMDvdDrive -Path $null; Checkpoint-VM -Name dotfiles-test -SnapshotName clean }
 Before each test run:
-    gsudo pwsh -NoProfile -Command 'Restore-VMCheckpoint -VMName dotfiles-test -Name clean -Confirm:$false'
-Hyper-V cmdlets need elevation; run whole pipelines in one elevated pwsh, since
-objects piped out of sudo/gsudo come back as text.
+    gsudo { Restore-VMCheckpoint -VMName dotfiles-test -Name clean -Confirm:$false }
+Hyper-V cmdlets need elevation. Pass gsudo a scriptblock so the whole pipeline runs
+elevated: a quoted -Command string goes through cmd.exe, which takes the '|'.
 #>
 param(
     [Parameter(Mandatory)][string] $IsoPath,
@@ -61,6 +61,6 @@ else {
     Write-Host "Start it (elevated): Start-VM $Name; vmconnect localhost $Name (press a key to boot the ISO)."
 }
 Write-Host 'After Windows setup (local account): eject the ISO and checkpoint it:'
-Write-Host "    gsudo pwsh -NoProfile -Command 'Get-VMDvdDrive -VMName $Name | Set-VMDvdDrive -Path `$null; Checkpoint-VM -Name $Name -SnapshotName clean'"
+Write-Host "    gsudo { Get-VMDvdDrive -VMName $Name | Set-VMDvdDrive -Path `$null; Checkpoint-VM -Name $Name -SnapshotName clean }"
 Write-Host 'Before each test run:'
-Write-Host "    gsudo pwsh -NoProfile -Command 'Restore-VMCheckpoint -VMName $Name -Name clean -Confirm:`$false'"
+Write-Host "    gsudo { Restore-VMCheckpoint -VMName $Name -Name clean -Confirm:`$false }"
