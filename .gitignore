@@ -41,6 +41,7 @@ linked/FlowLauncher/Plugins/
 linked/FlowLauncher/Settings/**/*.bak
 linked/FlowLauncher/Settings/**/*.tmp
 linked/FlowLauncher/Settings/History.json
+linked/FlowLauncher/Settings/UserSelectedRecord.json
 linked/FlowLauncher/Settings/Plugins/**/*.bak
 
 # AutoHotKey: agent/tool scratch dirs

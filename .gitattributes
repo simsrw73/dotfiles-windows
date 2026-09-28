@@ -1,48 +1,17 @@
-# Check out text files exactly like the live files, whatever core.autocrlf says:
-# CRLF by default, LF where the live file is LF (and anything bash reads).
-* text=auto eol=crlf
-.gitattributes text eol=lf
-
-# shell hooks and bash startup files must be LF
-.githooks/* text eol=lf
-home/dot_bashrc text eol=lf
-home/dot_bash_profile text eol=lf
-
-# live copies are LF
-home/private_dot_ssh/id_a24.pub text eol=lf
-
-# live copies of these linked/ files are LF (listed per file: the trees are mixed)
-lib/Dotfiles.psm1 text eol=lf
-docs/superpowers/specs/2026-09-27-autohotkey-wpm-watchdog-design.md text eol=lf
-docs/superpowers/specs/2026-09-27-wpm-stop-reproduction-design.md text eol=lf
-linked/AutoHotKey/Lib/App.ahk text eol=lf
-linked/AutoHotKey/Lib/Komorebi.ahk text eol=lf
-linked/AutoHotKey/Lib/WindowLauncher.ahk text eol=lf
-linked/AutoHotKey/WindowManager.ahk text eol=lf
-linked/AutoHotKey/docs/superpowers/plans/2026-07-21-autohotkey-app-structure.md text eol=lf
-linked/AutoHotKey/docs/superpowers/specs/2026-07-21-autohotkey-app-design.md text eol=lf
-linked/AutoHotKey/tests/Verify-AutoHotkeyStructure.ps1 text eol=lf
-linked/FlowLauncher/Themes/*.xaml text eol=lf
-linked/claude/plugins/installed_plugins.json text eol=lf
-linked/claude/plugins/known_marketplaces.json text eol=lf
-linked/claude/projects/C--Users-simsr--config/memory/MEMORY.md text eol=lf
-linked/claude/projects/C--Users-simsr--config/memory/dotfiles-repo-layout.md text eol=lf
-linked/claude/projects/C--Users-simsr--config/memory/komorebi-ahk-setup.md text eol=lf
-linked/claude/projects/C--Users-simsr--config/memory/wpm-yasb-watchdog.md text eol=lf
-linked/claude/settings.json text eol=lf
-linked/komorebi/applications.json text eol=lf
-linked/wpm/README.md text eol=lf
-linked/wpm/autohotkey-watchdog.ps1 text eol=lf
-linked/wpm/autohotkey-watchdog.toml text eol=lf
-linked/wpm/install-wpmd-task.ps1 text eol=lf
-linked/wpm/tests/AutoHotkeyWatchdog.Tests.ps1 text eol=lf
-linked/wpm/yasb-watchdog.ps1 text eol=lf
-linked/wpm/yasb-watchdog.toml text eol=lf
-linked/yasb/styles.css text eol=lf
+# Everything is stored and checked out with LF, whatever core.autocrlf says
+# (Git for Windows sets it to true system-wide, which expects CRLF on disk
+# and flags LF files written by editors and apps as modified).
+* text=auto eol=lf
 
 # live copies have mixed line endings: store bytes exactly
 home/dot_config/carapace/specs/*.yaml -text
 home/dot_config/delta/catppuccin.gitconfig -text
 home/dot_config/git/config -text
 linked/claude/projects/C--Users-simsr--config/memory/yasb-bar-design.md -text
-home/private_dot_env.tmpl text eol=lf
+
+# Flow Launcher rewrites runtime state into its settings; lib/flow-state.sed
+# pins those values in the repo copy (the live file keeps the real ones).
+# The filter is registered by bootstrap.ps1:
+#   git config filter.flowstate.clean "sed -E -f lib/flow-state.sed"
+linked/FlowLauncher/Settings/Settings.json filter=flowstate
+linked/FlowLauncher/Settings/Plugins/Flow.Launcher.Plugin.Program/Settings.json filter=flowstate

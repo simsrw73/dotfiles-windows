@@ -1,8 +1,8 @@
 {
   "blocked_domains": "",
   "profile_search_mode": "Active Profile",
-  "custom_profile_path": "",
   "keep_history_cache": false,
+  "custom_profile_path": "",
   "history_limit": "1000",
   "max_ui_results": "500",
   "default_browser": "All Browsers"

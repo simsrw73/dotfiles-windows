@@ -31,6 +31,7 @@ if ((bw status | ConvertFrom-Json).status -eq 'unauthenticated') { bw login }
 $src = Join-Path $HOME '.local\share\chezmoi'
 chezmoi init https://github.com/simsrw73/dotfiles-windows.git --source $src
 git -C $src config core.hooksPath .githooks
+git -C $src config filter.flowstate.clean "sed -E -f lib/flow-state.sed"
 chezmoi apply -v
 
 Write-Host ''
