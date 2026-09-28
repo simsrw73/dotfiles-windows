@@ -154,7 +154,7 @@ Assert-Contains $entryPoint '#Warn All, StdOut'
 Assert-Contains $entryPoint '#Include "Lib/App.ahk"'
 Assert-Contains $entryPoint '#Include "Lib/WindowLauncher.ahk"'
 Assert-Contains $entryPoint '#Include "Lib/Komorebi.ahk"'
-Assert-Contains $entryPoint '#Include "Lib/KeyChord/KeyChord.ahk"'
+Assert-NotContains $entryPoint 'KeyChord'
 Assert-Contains $entryPoint '#Include "Lib/Legend/Legend.ahk"'
 Assert-Contains $entryPoint 'Legend.Start({Pages: [A_ScriptDir "\legend\pages"], Themes: [A_ScriptDir "\legend\themes"], Theme: "mocha-yasb"})'
 Assert-Contains $entryPoint '#Include "Apps.ahk"'
@@ -217,8 +217,12 @@ Assert-NotContains $windowManager 'CheatSheet'
 Assert-NotContains $windowManager '!/::'
 Assert-NotContains $windowManager '::Komorebi.'
 Assert-Contains $windowManager 'SecurityPrompts.Watch()'
-Assert-Contains $chords '#Space::Chords.Open(Chords.Root)'
-Assert-Contains $chords 'KeyChord()'
+Assert-Contains $chords 'Legend.Chord("#Space", "Launch", ['
+Assert-Contains $chords '{Status: () => WindowLauncher.Find(app)}'
+Assert-NotContains $chords 'KeyChord'
+Assert-NotContains $chords 'ChordOverlay'
+Assert-NotContains $chords '#Space::'
+if (Test-Path (Join-Path $root 'Lib/KeyChord')) { throw 'Lib/KeyChord should be removed (Legend chord mode replaces it).' }
 
 foreach ($name in 'Zed', 'ClaudeCode', 'Shell', 'Obsidian', 'Zen', 'Typora', 'Perplexity', 'Claude', 'ChatGPT', 'Copilot', 'Gemini',
                    'Spark', 'TickTick', 'Fantastical', 'Explorer', 'Everything', 'Koffee', 'Bitwarden', 'TaskManager',

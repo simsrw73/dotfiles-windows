@@ -1,6 +1,3 @@
-[submodule "AutoHotKey/Lib/KeyChord"]
-	path = linked/AutoHotKey/Lib/KeyChord
-	url = https://github.com/tylerjcw/KeyChord.git
 [submodule "linked/AutoHotKey/Lib/Legend"]
 	path = linked/AutoHotKey/Lib/Legend
 	url = https://github.com/simsrw73/Legend.ahk.git

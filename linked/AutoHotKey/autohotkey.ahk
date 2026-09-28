@@ -5,7 +5,6 @@
 #Include "Lib/App.ahk"
 #Include "Lib/WindowLauncher.ahk"
 #Include "Lib/Komorebi.ahk"
-#Include "Lib/KeyChord/KeyChord.ahk"
 #Include "Lib/Legend/Legend.ahk"
 #Include "Apps.ahk"
 #Include "WindowManager.ahk"
