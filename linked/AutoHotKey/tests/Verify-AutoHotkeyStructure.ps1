@@ -143,6 +143,10 @@ $komorebi = Join-Path $root 'Lib/Komorebi.ahk'
 $apps = Join-Path $root 'Apps.ahk'
 $windowManager = Join-Path $root 'WindowManager.ahk'
 $chords = Join-Path $root 'Chords.ahk'
+$legend = Join-Path $root 'Lib/Legend/Legend.ahk'
+if (-not (Test-Path $legend)) {
+    throw "Legend submodule missing at Lib/Legend. Run: git submodule update --init --recursive"
+}
 
 Assert-Contains $entryPoint '#Requires AutoHotkey v2.0'
 Assert-Contains $entryPoint '#SingleInstance Force'
@@ -151,6 +155,8 @@ Assert-Contains $entryPoint '#Include "Lib/App.ahk"'
 Assert-Contains $entryPoint '#Include "Lib/WindowLauncher.ahk"'
 Assert-Contains $entryPoint '#Include "Lib/Komorebi.ahk"'
 Assert-Contains $entryPoint '#Include "Lib/KeyChord/KeyChord.ahk"'
+Assert-Contains $entryPoint '#Include "Lib/Legend/Legend.ahk"'
+Assert-Contains $entryPoint 'Legend.Start({Pages: [A_ScriptDir "\legend\pages"], Themes: [A_ScriptDir "\legend\themes"], Theme: "mocha-yasb"})'
 Assert-Contains $entryPoint '#Include "Apps.ahk"'
 Assert-Contains $entryPoint '#Include "WindowManager.ahk"'
 Assert-Contains $entryPoint '#Include "Chords.ahk"'
@@ -199,6 +205,7 @@ Assert-Contains $komorebi 'static WorkspaceOf(hwnd)'
 Assert-Contains $komorebi 'RunWait(this.CommandLine(args), , "Hide")'
 
 Assert-Contains $windowManager 'BindWorkspaceHotkeys(["dev", "notes", "ai-lab", "admin", "research", "comms", "files", "games", "scratch"])'
+Assert-Contains $windowManager '!/::CheatSheet.Toggle()'
 Assert-Contains $chords '#Space::Chords.Open(Chords.Root)'
 Assert-Contains $chords 'KeyChord()'
 
@@ -207,4 +214,15 @@ foreach ($name in 'Zed', 'ClaudeCode', 'Shell', 'Obsidian', 'Zen', 'Typora', 'Pe
                    'UniGetUI', 'Settings', 'ControlPanel', 'DeviceManager', 'Services', 'RegistryEditor', 'Autoruns', 'Windhawk') {
     Assert-Contains $apps "${name}:"
     Assert-Contains $chords "Apps.$name)"
+}
+
+# Load-time check of the whole script, including Legend, under the entry point's #Warn All.
+$ahk = @(
+    (Get-Command AutoHotkey64.exe -ErrorAction SilentlyContinue).Source
+    "$env:ProgramFiles\AutoHotkey\v2\AutoHotkey64.exe"
+) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
+if (-not $ahk) { throw 'AutoHotkey v2 not found' }
+$validation = & $ahk /ErrorStdOut /Validate $entryPoint 2>&1 | Out-String
+if ($LASTEXITCODE -or $validation.Trim()) {
+    throw "autohotkey.ahk failed validation:`n$validation"
 }
