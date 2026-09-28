@@ -189,7 +189,11 @@ Assert-HandlerMatches $app 'RemoveStartupShortcut(*)' '(?s)try\s+FileDelete\(thi
 Assert-HandlerMatches $app 'ToggleStartup(*)' '(?s)if\s+this\.HasOwnedStartupShortcut\(\)\s*\{[^{}]*if\s+this\.RemoveStartupShortcut\(\)\s*&&\s*!this\.HasOwnedStartupShortcut\(\)\s*\r?\n\s*A_TrayMenu\.Uncheck\("Run at startup"\)'
 Assert-HandlerMatches $app 'ToggleStartup(*)' '(?s)else\s*\{[^{}]*if\s+FileExist\(this\.startupLink\)\s*\{[^{}]*\}[^{}]*if\s+this\.CreateStartupShortcut\(\)\s*&&\s*this\.HasOwnedStartupShortcut\(\)\s*\r?\n\s*A_TrayMenu\.Check\("Run at startup"\)'
 
-Assert-Contains $hotkeys '^!#r::Reload()'
+Assert-Contains $hotkeys '["^!#r", "reload AutoHotkey", (*) => Reload()]'
+Assert-Contains $hotkeys '["^!#q", "exit AutoHotkey", (*) => ExitApp()]'
+Assert-Contains $hotkeys 'Legend.Page("Zen", "ahk_exe zen.exe")'
+Assert-Contains $hotkeys '["#+o", "open current tab in Chrome", (*) => OpenCurrentZenTabInChrome()]'
+Assert-NotContains $hotkeys '#HotIf'
 Assert-NotContains $hotkeys 'WindowLauncher.ActivateOrRun('
 
 Assert-Contains $windowLauncher 'class WindowLauncher'
