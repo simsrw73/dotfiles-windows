@@ -1,4 +1,0 @@
-$ErrorActionPreference = 'Stop'
-# wpmd comes from packages.cargo; its cargo bin dir may not be on PATH in this process yet.
-$wpmd = Join-Path $HOME '.local\share\cargo\bin\wpmd.exe'
-& '{{ joinPath .chezmoi.workingTree "linked" "wpm" "install-wpmd-task.ps1" }}' -WpmdExe $wpmd

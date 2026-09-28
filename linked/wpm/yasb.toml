@@ -1,0 +1,40 @@
+# wpm unit: keep yasb running and responsive.
+#
+# wpm supervises watchdog.ps1; the watchdog supervises yasb by process name
+# and restarts it if its bar windows stop responding. See README.md for why
+# yasb isn't run by wpm directly.
+
+[Unit]
+Name = "yasb"
+Description = "Restarts yasb if it exits or its bar windows stop responding"
+Requires = [
+    "komorebi"
+]
+
+[Service]
+Kind = "Simple"
+Autostart = true
+Restart = "Always"
+RestartSec = 5
+
+[Service.ExecStart]
+Executable = "powershell.exe"
+Arguments = [
+    "-NoLogo",
+    "-NoProfile",
+    "-NonInteractive",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "$USERPROFILE/.config/wpm/watchdog.ps1",
+    "-Name", "yasb",
+    "-ProcessName", "yasb",
+    "-Exe", "C:/Program Files/YASB/yasb.exe",
+    "-IntervalSec", "10",
+    "-MissingGraceSec", "20",
+    "-HangChecks", "3",
+    "-StartupGraceSec", "45",
+]
+
+[Service.Healthcheck.Process]
+DelaySec = 1

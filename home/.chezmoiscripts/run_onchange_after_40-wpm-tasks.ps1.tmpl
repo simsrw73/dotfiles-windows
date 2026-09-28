@@ -1,0 +1,15 @@
+# install-tasks.ps1 hash: {{ include (joinPath .chezmoi.workingTree "linked" "wpm" "install-tasks.ps1") | sha256sum }}
+# Registers the wpmd (logon) and elevated komorebi scheduled tasks; re-runs when install-tasks.ps1 changes.
+$ErrorActionPreference = 'Stop'
+# wpmd comes from packages.cargo; its cargo bin dir may not be on PATH in this process yet.
+$wpmd = Join-Path $HOME '.local\share\cargo\bin\wpmd.exe'
+$script = '{{ joinPath .chezmoi.workingTree "linked" "wpm" "install-tasks.ps1" }}'
+# Registering the elevated komorebi task needs admin.
+$principal = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
+if ($principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    & $script -WpmdExe $wpmd
+}
+else {
+    gsudo pwsh -NoProfile -File $script -WpmdExe $wpmd
+    if ($LASTEXITCODE) { throw "install-tasks.ps1 failed (exit $LASTEXITCODE)" }
+}

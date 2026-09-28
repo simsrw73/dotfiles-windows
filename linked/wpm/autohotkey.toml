@@ -1,0 +1,39 @@
+# wpm unit: keep the primary AutoHotkey script running across reloads.
+#
+# wpm supervises watchdog.ps1; the watchdog finds the script by its hidden
+# AutoHotkey window ("<script path> - AutoHotkey v2.x"), not by PID or
+# command line: the UIA build's command line is unreadable to a
+# non-elevated watchdog. Keep the script path in backslash form so it
+# matches the window title.
+
+[Unit]
+Name = "autohotkey"
+Description = "Keeps the primary AutoHotkey script running across reloads"
+
+[Service]
+Kind = "Simple"
+Autostart = true
+Restart = "Always"
+RestartSec = 5
+
+[Service.ExecStart]
+Executable = "powershell.exe"
+Arguments = [
+    "-NoLogo",
+    "-NoProfile",
+    "-NonInteractive",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "$USERPROFILE/.config/wpm/watchdog.ps1",
+    "-Name", "autohotkey",
+    "-ProcessName", "AutoHotkey64_UIA",
+    "-Exe", "C:/Program Files/AutoHotkey/v2/AutoHotkey64_UIA.exe",
+    "-ArgumentList", "$USERPROFILE\\.config\\autohotkey\\autohotkey.ahk",
+    "-WorkingDirectory", "$USERPROFILE\\.config\\autohotkey",
+    "-WindowClass", "AutoHotkey",
+    "-WindowTitlePrefix", "$USERPROFILE\\.config\\autohotkey\\autohotkey.ahk - AutoHotkey",
+]
+
+[Service.Healthcheck.Process]
+DelaySec = 1
