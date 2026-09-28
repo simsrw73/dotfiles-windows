@@ -7,7 +7,7 @@
 #Space::Chords.Open(Chords.Root)
 
 class Chords {
-    static Timeout := 4
+    static Timeout := 0     ; seconds before the menu closes on its own; 0 waits until a key is pressed
 
     static Root := ChordMenu("Launch",
         ChordLaunch("z", "Zed", Apps.Zed),
@@ -83,7 +83,7 @@ class Chords {
     ; Waits for one non-modifier key and swallows it. Modifiers pass through untouched, so
     ; releasing Win after Win+Space behaves normally.
     static ReadKey() {
-        ih := InputHook("L0 T" this.Timeout)
+        ih := InputHook("L0" (this.Timeout > 0 ? " T" this.Timeout : ""))
         ih.KeyOpt("{All}", "+ES")
         ih.KeyOpt("{LWin}{RWin}{LShift}{RShift}{LCtrl}{RCtrl}{LAlt}{RAlt}", "-ES")
         ih.Start()
@@ -150,7 +150,14 @@ class ChordOverlay {
         g.SetFont("s9 w500 c" c.overlay0, "Inter")
         g.AddText("xm y" (top + rows * rowHeight + 10), "esc  close")
 
-        this.RoundCorners(g.Hwnd, c.surface0)
+        ChordOverlay.ShowCentered(g)
+    }
+
+    Destroy() => this.Gui.Destroy()
+
+    ; Rounds the panel, then shows it without taking focus, centered on the monitor in use.
+    static ShowCentered(g) {
+        ChordOverlay.RoundCorners(g.Hwnd, ChordOverlay.Colors.surface0)
         g.Show("NA Hide AutoSize")
         WinGetPos(, , &w, &h, g)
         area := WindowLauncher.ActiveMonitorWorkArea()
@@ -158,9 +165,7 @@ class ChordOverlay {
         WinSetTransparent(245, g)
     }
 
-    Destroy() => this.Gui.Destroy()
-
-    RoundCorners(hwnd, borderRgb) {
+    static RoundCorners(hwnd, borderRgb) {
         static DWMWA_WINDOW_CORNER_PREFERENCE := 33, DWMWCP_ROUND := 2, DWMWA_BORDER_COLOR := 34
         DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", hwnd, "UInt", DWMWA_WINDOW_CORNER_PREFERENCE, "Int*", DWMWCP_ROUND, "UInt", 4)
         rgb := Integer("0x" borderRgb)
