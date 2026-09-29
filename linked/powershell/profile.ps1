@@ -18,7 +18,7 @@ if (Get-Command -Name 'FastFetch' -ErrorAction Ignore) {
 # Modules:
 #
 # Utilities:
-#   Oh-My-Posh, Carapace
+#   Starship, Carapace
 #
 
 
@@ -69,17 +69,14 @@ function global:Write-ProfileMsg {
 # ── DotForge config (set BEFORE Import-Module DotForge) ──────────────────────
 $DFConfig = @{
     PackageManagerOrder = @('scoop', 'winget')
-    SkipTools           = @('lsd')  # lsd conflicts with eza FIXME: this should be automatically resolved. Adopt a default tool and let the user specify their preference.
+    SkipTools           = @('lsd', 'oh-my-posh')  # oh-my-posh: replaced by starship (drop it here to switch back). lsd conflicts with eza FIXME: this should be automatically resolved. Adopt a default tool and let the user specify their preference.
     CompletionMode      = 'Native'
     PSReadLineEditMode  = 'Emacs'
     PSReadLineTheme     = 'catppuccin-mocha'
 }
 
-# Set OMP theme before DotForge::Register-DFTool initializes posh-git and oh-my-posh
-$Env:POSH_THEME = Join-Path $HOME '.config' 'oh-my-posh' 'catpow.omp.yaml'
-
 # ── VS Code integrated terminal: fast / lite init ────────────────────────────
-# Skips: oh-my-posh, VS Dev Shell, transcript, diagnostics, weekly updates.
+# Skips: VS Dev Shell, transcript, diagnostics, weekly updates.
 # Keeps: env vars, all aliases/functions, and tool completers.
 if ($Env:TERM_PROGRAM -eq 'vscode') {
     Import-Module DotForge -ErrorAction SilentlyContinue

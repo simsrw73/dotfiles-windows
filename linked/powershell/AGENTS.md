@@ -20,7 +20,7 @@ Documents/PowerShell/
 
 - **VS Code fast-path** (top of file): detected via `$Env:TERM_PROGRAM -eq 'vscode'`. Imports
   PSReadLine, dot-sources ProfileModules, runs `Register-DFTool -All`, returns early — skips
-  oh-my-posh, VS Dev Shell, transcript, and weekly module updates.
+  VS Dev Shell, transcript, and weekly module updates.
 - **Full init** (remainder of file): standard terminals get the complete startup sequence.
 
 ## DotForge
@@ -31,7 +31,7 @@ DotForge module at `~/projects/DotForge`. The profile calls:
 ```powershell
 $DFConfig = @{
     PackageManagerOrder = @('scoop', 'winget')
-    SkipTools           = @('lsd')
+    SkipTools           = @('lsd', 'oh-my-posh')  # oh-my-posh replaced by starship
 }
 Import-Module DotForge
 Register-DFTool -All
@@ -46,7 +46,7 @@ Per-tool companion scripts at `Tools/<name>.ps1` handle complex initialization:
 | `posh-git.ps1`  | Import-Module posh-git + fzf pickers              |
 | `Terminal-Icons.ps1` | Import-Module Terminal-Icons                 |
 | `zoxide.ps1`    | zoxide init invocation + cd alias (AllScope)      |
-| `oh-my-posh.ps1`| fpot theme picker                                 |
+| `starship.ps1`  | starship prompt init (cached init script)         |
 | `ripgrep.ps1`   | frg interactive code search                       |
 | `procs.ps1`     | fkill fuzzy process kill                          |
 | `winget.ps1`    | wins/wrm install/uninstall pickers                |
@@ -65,7 +65,7 @@ bindings before PSFzf's companion reclaims them.
 
 | Tool           | Purpose                  | Config location                                                                    |
 | -------------- | ------------------------ | ---------------------------------------------------------------------------------- |
-| oh-my-posh     | Prompt theme             | `~/.config/oh-my-posh/catpow.omp.yaml`; initialized in profile.ps1 (standard terminals only) |
+| starship       | Prompt                   | `~/.config/starship.toml` (p9cat preset, github.com/simsrw73/starship-p9cat); DotForge `starship.ps1` companion. oh-my-posh stays installed but is skipped via `SkipTools` |
 | PSReadLine     | Input experience         | `PSReadline.ps1`                                                                   |
 | PSFzf          | Fuzzy finder integration | DotForge `Tools/PSFzf.ps1` companion                                               |
 | eza            | Modern ls replacement    | DotForge `Tools/eza.json`; ls/ll/la/tree aliases                                   |
@@ -106,7 +106,6 @@ Pattern: `Select-Verb-Noun` PowerShell name + short alias.
 | `fgl`    | `Read-MarkdownFile`      | `glow.json` declarative     | Pick + render markdown        |
 | `fbw`    | `Select-BwItem`          | `bitwarden.json` declarative| Fuzzy vault lookup            |
 | `czf`    | `Edit-DotFile`           | `chezmoi.json` declarative  | Pick managed file to edit     |
-| `fpot`   | `Select-PoshTheme`       | `oh-my-posh.ps1`            | Preview + apply theme         |
 | `fnv`    | `Select-NodeVersion`     | `nvm.json` declarative      | Fuzzy switch Node version     |
 | `fns`    | `Select-NpmScript`       | `npm.json` declarative      | Run npm script from picker    |
 | `frtc`   | `Select-RustupToolchain` | `rustup.json` declarative   | Fuzzy toolchain switch        |
@@ -118,13 +117,13 @@ Everything uses **Catppuccin Mocha** consistently:
 
 - PSReadLine syntax colors: set in `PSReadline.ps1`
 - FZF: `$FZF_DEFAULT_OPTS` color string in DotForge `Tools/fzf.json`
-- oh-my-posh: `catpow.omp.yaml` (custom theme)
+- starship: `~/.config/starship.toml` (p9cat preset, a port of the old oh-my-posh `catpow.omp.yaml`)
 - bat: `~/.config/bat/bat.conf`
 
 ## Environment Layout (XDG)
 
 ```
-~/.config/     → $Env:XDG_CONFIG_HOME   (bat, ripgrep, glow, wget, curl, nano, chezmoi, gnupg, oh-my-posh, glazewm, komorebi)
+~/.config/     → $Env:XDG_CONFIG_HOME   (bat, ripgrep, glow, wget, curl, nano, chezmoi, gnupg, starship, oh-my-posh, glazewm, komorebi)
 ~/.local/share → $Env:XDG_DATA_HOME    (rustup, cargo, python, zoxide, nvm, node, uv)
 ~/.local/state → $Env:XDG_STATE_HOME   (ps_history, less history)
 ~/.cache/      → $Env:XDG_CACHE_HOME   (python pycache, uv cache, ps-completions)
@@ -155,7 +154,7 @@ that must be available before DotForge loads.
 4. `Import-Module DotForge; Register-DFTool -All`
 5. Imports DockerCompletion, PowerType (if installed)
 6. Dot-sources Show-HelpColor
-7. Initializes oh-my-posh prompt
+7. Prompt: starship, initialized during step 4 by DotForge's `starship.ps1` companion
 8. On Fridays: runs `Update-AllModules`
 9. Enables PSFeedbackProvider experimental feature if available
 10. Initializes VS Dev Shell via vswhere
