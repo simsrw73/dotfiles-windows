@@ -75,6 +75,10 @@ $DFConfig = @{
     PSReadLineTheme     = 'catppuccin-mocha'
 }
 
+# Starship transient prompt (p9cat): collapses each submitted prompt to "time dir ❯".
+# Must load after Register-DFTool (needs starship's init + zoxide's prompt wrapper).
+$p9catTransient = Join-Path $HOME '.config' 'starship' 'p9cat.transient.ps1'
+
 # ── VS Code integrated terminal: fast / lite init ────────────────────────────
 # Skips: VS Dev Shell, transcript, diagnostics, weekly updates.
 # Keeps: env vars, all aliases/functions, and tool completers.
@@ -86,6 +90,7 @@ if ($Env:TERM_PROGRAM -eq 'vscode') {
     . (Join-Path $moduleRoot 'Functions.ps1')
     . (Join-Path $moduleRoot 'Completers.ps1')
     Register-DFTool -All
+    if (Test-Path $p9catTransient) { . $p9catTransient }
     return
 }
 
@@ -123,6 +128,7 @@ Write-ProfileMsg "  Terminal: $($Env:TERM_PROGRAM ?? 'unknown')" -Level Debug
 . (Join-Path $moduleRoot 'Completers.ps1')
 
 Register-DFTool -All
+if (Test-Path $p9catTransient) { . $p9catTransient }
 
 
 # Weekly module update (every Friday, once per day)
