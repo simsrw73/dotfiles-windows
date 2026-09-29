@@ -66,7 +66,7 @@ $scoopPackages = @(
     'dua', 'duf', 'eza', 'fd', 'fzf', 'gdu', 'gh', 'glow', 'grep', 'gsudo',
     'iperf3', 'jid', 'jq', 'lazygit', 'less', 'lsd', 'micro', 'moor', 'nano',
     'nircmd', 'ntop', 'nvm', 'procs', 'psfzf', 'ripgrep', 'scoop-search', 'sed',
-    'sfsu', 'sysinternals', 'vcpkg', 'wget', 'which', 'win32yank', 'winfetch', 'zoxide'
+    'sfsu', 'starship', 'sysinternals', 'vcpkg', 'wget', 'which', 'win32yank', 'winfetch', 'zoxide'
 )
 
 $scoopInstalled = scoop list 2>$null
@@ -114,7 +114,7 @@ if (Get-Command nvm -ErrorAction Ignore) {
 Write-Step 'PowerShell modules'
 
 $psModules = @(
-    'PSReadLine', 'PSFzf', 'posh-git', 'Terminal-Icons',  # oh-my-posh is a scoop package, not a PSResource
+    'PSReadLine', 'PSFzf', 'posh-git', 'Terminal-Icons',  # starship (prompt) is a scoop package, not a PSResource
     'PSAISuite', 'PowerType', 'DockerCompletion', 'PSWindowsUpdate',
     'Admin', 'powershell-yaml', 'Microsoft.PowerShell.SecretManagement',
     'Microsoft.PowerShell.SecretStore', 'scoop-completion'

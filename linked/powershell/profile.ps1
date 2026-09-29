@@ -69,7 +69,7 @@ function global:Write-ProfileMsg {
 # ── DotForge config (set BEFORE Import-Module DotForge) ──────────────────────
 $DFConfig = @{
     PackageManagerOrder = @('scoop', 'winget')
-    SkipTools           = @('lsd', 'oh-my-posh')  # oh-my-posh: replaced by starship (drop it here to switch back). lsd conflicts with eza FIXME: this should be automatically resolved. Adopt a default tool and let the user specify their preference.
+    SkipTools           = @('lsd', 'oh-my-posh')  # oh-my-posh: replaced by starship. To switch back, drop it here and reinstall it (winget JanDeDobbeleer.OhMyPosh; configs are in git history). lsd conflicts with eza FIXME: this should be automatically resolved. Adopt a default tool and let the user specify their preference.
     CompletionMode      = 'Native'
     PSReadLineEditMode  = 'Emacs'
     PSReadLineTheme     = 'catppuccin-mocha'

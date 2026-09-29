@@ -91,6 +91,7 @@ packages:
       - sed
       - sfsu
       - skim
+      - starship
       - sysinternals
       - television
       - tidy
@@ -153,7 +154,6 @@ packages:
       - HTTPie.HTTPie
       - Inkscape.Inkscape
       - Insecure.Nmap
-      - JanDeDobbeleer.OhMyPosh
       - JGraph.Draw
       - JiriPolasek.ColorsforCommandPalette
       - JiriPolasek.RecentFilesforCommandPalette

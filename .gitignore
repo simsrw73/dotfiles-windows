@@ -13,6 +13,7 @@ linked/yasb/yasb_colors.css
 # claude: keep config only (settings, hooks, skills, plugin manifests, memory)
 linked/claude/*
 !linked/claude/settings.json
+!linked/claude/CLAUDE.md
 !linked/claude/hooks/
 !linked/claude/skills/
 linked/claude/skills/synced/
