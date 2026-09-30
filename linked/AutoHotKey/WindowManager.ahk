@@ -67,13 +67,13 @@ komorebiKeys.Category("Monitors & manager", [
     ["!p", "pause komorebi", (*) => Komorebi.Run("toggle-pause")]
 ])
 
-; Window switchers (Legend pickers): Alt+A all windows, Alt+S this monitor, Alt+D this
-; desktop. komorebi-managed windows show their workspace; picking one on a hidden
-; workspace switches to it first (WindowLauncher.Activate).
+; Window switchers (Legend pickers): Alt+A all windows, Alt+S this monitor (h/l in
+; either cycles all windows / this desktop / this monitor). komorebi-managed windows
+; show their workspace; picking one on a hidden workspace switches to it first.
 BindWindowSwitchers()
 
 BindWindowSwitchers() {
-    for trigger, scope in Map("!a", "all", "!s", "monitor", "!d", "desktop")
+    for trigger, scope in Map("!a", "all", "!s", "monitor")
         Legend.WindowSwitcher(trigger, {Scope: scope, Detail: KomorebiDetail, Activate: SwitchToWindow})
 }
 
