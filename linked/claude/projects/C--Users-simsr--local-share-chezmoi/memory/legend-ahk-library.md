@@ -5,15 +5,17 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 77108afa-ba70-4381-a7d0-6f35ba5479bc
-  modified: 2026-09-28T19:20:50.549Z
+  modified: 2026-09-30T20:23:23.033Z
 ---
 
 Legend is the user's own open-source AutoHotkey v2 library: a contextual shortcut overlay (Alt+/) built from bindings registered via `Legend.Page(...).Category(...)` / `Legend.Bind` plus Markdown page files of doc-only keys.
 
-- Repo: https://github.com/simsrw73/Legend.ahk, local clone `C:\Users\simsr\projects\Legend`. Spec `docs/specs/2026-09-28-legend-design.md`, backlog `TODO.md`. Tests: `pwsh -File tests/Run-Tests.ps1`.
-- Consumed by the dotfiles as a git submodule at `linked/AutoHotKey/Lib/Legend` (integrated 2026-09-28; komorebi, Zen and script keys registered through it; host pages/themes in `linked/AutoHotKey/legend/`).
-- Shipped 2026-09-28: display toggles (Tab notation, `=` density) and chord mode; the dotfiles' Win+Space menu (`Chords.ahk`) runs on `Legend.Chord` and the KeyChord submodule was removed.
-- Backlog cleared 2026-09-28 (Legend 2a0f0bd): #Warn-safe locals (tests/fixtures/warn-host guards it), late-match and bad-Key warnings, `Legend.Binder`, Unicode name merge, `maxWidthPercent` + measured height reserve, Visible set after Draw. TODO.md is empty; new ideas go there.
+- Repo: https://github.com/simsrw73/Legend.ahk, local clone `C:\Users\simsr\projects\Legend`. Specs in `docs/specs/`, plans in `docs/plans/`, backlog `TODO.md`. Tests: `pwsh -File tests/Run-Tests.ps1`.
+- Consumed by the dotfiles as a git submodule at `linked/AutoHotKey/Lib/Legend` (host pages/themes in `linked/AutoHotKey/legend/`).
+- Modes: reference overlay (Alt+/), chords (Win+Space menu in `Chords.ahk`), and since 2026-09-30 pickers + window switcher (`Legend.Picker`, `Legend.WindowSwitcher`, `LegendWindows`). Dotfiles bind Alt+A/S/D switchers in `WindowManager.ahk`; `Lib/WindowFocus.ahk` (Alt+HJKL fallback without komorebi) uses `LegendWindows`.
+- Shared key scheme shipped 2026-09-30 (spec `docs/specs/2026-09-30-key-scheme-design.md`): Ctrl+N/P / ↓↑ move a cursor (Alt+/ index and category menus, pickers), Ctrl+F/B page, Ctrl+T picker scope, Enter opens/picks. Flat Alt+/ pages deliberately have no cursor (user confirmed after trying it). Dotfiles bind switchers on Alt+A / Alt+S only (Alt+D dropped).
+- Backlog (TODO.md): browsable examples, remaining flicker work (Alt+/ menus rebuild per cursor move), key-scheme test gaps, and window commands from the switcher (later).
+- WarnHost fixture (`tests/fixtures/warn-host`) declares short host globals (a–z, id, fn, app, pad…): new Legend locals must avoid them.
 - The public mirror simsrw73/w11dwm-config also carries Legend as a submodule (`autohotkey/Lib/Legend`); bump it alongside dotfiles. Push Legend before pushing either bump.
 
 **Why:** the user wants one learning aid for all shortcuts and intends Legend to be shared publicly.
