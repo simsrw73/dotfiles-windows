@@ -22,7 +22,7 @@ The source lives at `~/.local/share/chezmoi`. `chezmoi cd` opens a shell there.
 
 ## Fresh machine
 
-1. Get `bootstrap.ps1` (GitHub web UI, since the repo is private) and run:
+1. Download [`bootstrap.ps1`](https://raw.githubusercontent.com/simsrw73/dotfiles-windows/main/bootstrap.ps1) and run:
    `powershell -ExecutionPolicy Bypass -File .\bootstrap.ps1`
 2. Sign in to GitHub and Bitwarden when asked; enter the Bitwarden master
    password once when chezmoi applies.
