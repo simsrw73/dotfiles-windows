@@ -63,10 +63,10 @@ Write-Step 'Scoop packages'
 
 $scoopPackages = @(
     'bat', 'broot', 'chezmoi', 'clink', 'cmake', 'curl', 'delta', 'diffutils',
-    'dua', 'duf', 'eza', 'fd', 'fzf', 'gdu', 'gh', 'glow', 'grep', 'gsudo',
+    'dua', 'duf', 'eza', 'fastfetch', 'fd', 'fzf', 'gdu', 'gh', 'glow', 'grep', 'gsudo',
     'iperf3', 'jid', 'jq', 'lazygit', 'less', 'lsd', 'micro', 'moor', 'nano',
     'nircmd', 'ntop', 'nvm', 'procs', 'psfzf', 'ripgrep', 'scoop-search', 'sed',
-    'sfsu', 'starship', 'sysinternals', 'vcpkg', 'wget', 'which', 'win32yank', 'winfetch', 'zoxide'
+    'sfsu', 'starship', 'sysinternals', 'vcpkg', 'wget', 'which', 'win32yank', 'zoxide'
 )
 
 $scoopInstalled = scoop list 2>$null
