@@ -118,5 +118,3 @@ if (Get-Command moor.exe -ErrorAction Ignore) {
 # Window manager configs
 $Env:KOMOREBI_CONFIG_HOME = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'komorebi'
 $Env:KOMOREBI_AHK_EXE = "C:\Users\simsr\AppData\Local\Programs\AutoHotkey\v2\AutoHotkey64.exe"
-
-$Env:STARSHIP_CONFIG = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath "starship", "starship.toml"
