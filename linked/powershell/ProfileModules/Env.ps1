@@ -101,7 +101,7 @@ $Env:CLAUDE_CODE_USE_POWERSHELL_TOOL = 1
 $Env:CLAUDE_CONFIG_DIR = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'claude'
 
 # Other tool paths
-Add-DFToPath (Join-Path $env:LOCALAPPDATA 'Programs' 'Pulsar')
+Add-DFToPath (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'Programs', 'Pulsar')
 
 # Pager
 if (Get-Command moor.exe -ErrorAction Ignore) {
@@ -118,3 +118,5 @@ if (Get-Command moor.exe -ErrorAction Ignore) {
 # Window manager configs
 $Env:KOMOREBI_CONFIG_HOME = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'komorebi'
 $Env:KOMOREBI_AHK_EXE = "C:\Users\simsr\AppData\Local\Programs\AutoHotkey\v2\AutoHotkey64.exe"
+
+$Env:STARSHIP_CONFIG = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath "starship", "starship.toml"
