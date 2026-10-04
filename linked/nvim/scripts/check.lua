@@ -214,6 +214,23 @@ test('servers are shut down on exit (PowerShell Editor Services outlived Neovim)
   eq(alive, {}, 'server processes still running')
 end)
 
+test('a PowerShell server still starting is stopped on exit too', function()
+  open(fixture('files/script.ps1'))
+  local found = vim.wait(10000, function()
+    for _, pid in ipairs(vim.api.nvim_get_proc_children(vim.fn.getpid())) do
+      local proc = vim.api.nvim_get_proc(pid)
+      if proc and proc.name:lower() == 'pwsh.exe' then return true end
+    end
+    return false
+  end, 20)
+  ok(found, 'PowerShell Editor Services did not start')
+  local children = vim.api.nvim_get_proc_children(vim.fn.getpid())
+  vim.api.nvim_exec_autocmds('VimLeavePre', {})   -- before the client registers
+  vim.wait(3000, function() return false end)
+  local alive = vim.tbl_filter(function(pid) return vim.api.nvim_get_proc(pid) ~= nil end, children)
+  eq(alive, {}, 'server processes still running')
+end)
+
 test('no server attaches to a big file', function()
   local root = project({})
   local path = root .. '/big.json'
@@ -224,6 +241,68 @@ test('no server attaches to a big file', function()
   local buf = open(path)
   vim.wait(5000, function() return false end)
   eq(#vim.lsp.get_clients({ bufnr = buf }), 0, 'clients on a big file')
+end)
+
+-- Formatting ==================================================================
+
+local fmt = function() return require('config.format') end
+
+test('C++ formats on save only with a .clang-format', function()
+  local with = project({ ['.clang-format'] = 'BasedOnStyle: LLVM', ['src/deep/a.cpp'] = 'int  main( ){return 0;}' })
+  local without = project({ ['a.cpp'] = 'int  main( ){return 0;}' })
+  eq(fmt().should_format_on_save(open(with .. '/src/deep/a.cpp')), true, 'with config (nested folder)')
+  eq(fmt().should_format_on_save(open(without .. '/a.cpp')), false, 'without config')
+end)
+
+test('saving without a project config leaves the file unchanged', function()
+  local root = project({ ['a.cpp'] = 'int  main( ){return 0;}' })
+  open(root .. '/a.cpp')
+  vim.cmd('write')
+  eq(read(root .. '/a.cpp'), 'int  main( ){return 0;}', 'file text')
+end)
+
+test('saving with a project config formats the file', function()
+  local root = project({ ['.clang-format'] = 'BasedOnStyle: LLVM', ['a.cpp'] = 'int  main( ){return 0;}' })
+  open(root .. '/a.cpp')
+  vim.cmd('write')
+  ok(read(root .. '/a.cpp') ~= 'int  main( ){return 0;}', 'file was not formatted')
+end)
+
+test('saving TypeScript in a prettier project formats it with prettier', function()
+  local root = project({ ['.prettierrc'] = '{ "semi": true }', ['a.ts'] = 'let   a=1' })
+  open(root .. '/a.ts')
+  vim.cmd('write')
+  eq(read(root .. '/a.ts'), 'let a = 1;', 'file text')
+end)
+
+test('Python needs ruff.toml or [tool.ruff]', function()
+  eq(fmt().should_format_on_save(open(project({ ['pyproject.toml'] = '[tool.ruff]\nline-length = 100', ['a.py'] = 'x=1' }) .. '/a.py')), true, 'tool.ruff')
+  eq(fmt().should_format_on_save(open(project({ ['pyproject.toml'] = '[project]\nname = "x"', ['a.py'] = 'x=1' }) .. '/a.py')), false, 'pyproject without ruff')
+  eq(fmt().should_format_on_save(open(project({ ['ruff.toml'] = '', ['a.py'] = 'x=1' }) .. '/a.py')), true, 'ruff.toml')
+end)
+
+test('JS/TS picks biome or prettier from the project', function()
+  eq(fmt().project_formatter(open(project({ ['biome.json'] = '{}', ['a.ts'] = 'let a=1' }) .. '/a.ts')), 'biome', 'biome')
+  eq(fmt().project_formatter(open(project({ ['.prettierrc'] = '{}', ['a.ts'] = 'let a=1' }) .. '/a.ts')), 'prettier', 'prettier')
+  eq(fmt().project_formatter(open(project({ ['a.ts'] = 'let a=1' }) .. '/a.ts')), nil, 'none')
+end)
+
+test('Rust always formats on save; config formats never do', function()
+  eq(fmt().should_format_on_save(open(fixture('rust/src/main.rs'))), true, 'rust')
+  local root = project({ ['.prettierrc'] = '{}', ['a.json'] = '{"a":1}', ['a.yaml'] = 'a: 1' })
+  eq(fmt().should_format_on_save(open(root .. '/a.json')), false, 'json')
+  eq(fmt().should_format_on_save(open(root .. '/a.yaml')), false, 'yaml')
+  eq(fmt().should_format_on_save(open(fixture('files/script.ps1'))), false, 'ps1')
+end)
+
+test('<Leader>lx turns format on save off for the session', function()
+  local root = project({ ['.clang-format'] = 'BasedOnStyle: LLVM', ['a.cpp'] = 'int  main( ){}' })
+  local buf = open(root .. '/a.cpp')
+  fmt().toggle()
+  eq(fmt().should_format_on_save(buf), false, 'after toggle')
+  fmt().toggle()
+  eq(fmt().should_format_on_save(buf), true, 'after second toggle')
+  ok(vim.fn.maparg(' lx', 'n') ~= '' and vim.fn.maparg(' lF', 'n') ~= '', 'lx / lF keys')
 end)
 
 -- @@ tests end @@

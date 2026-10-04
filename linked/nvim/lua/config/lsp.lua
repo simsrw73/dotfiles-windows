@@ -46,9 +46,11 @@ vim.lsp.enable(M.enabled)
 local message = M.missing_message(missing)
 if message then vim.schedule(function() vim.notify(message, vim.log.levels.WARN) end) end
 
--- On Windows a server can outlive Neovim (PowerShell Editor Services ignores
--- the LSP exit request), so on exit: ask every server to stop, give them a
--- moment, then force-stop (kill) whatever is left.
+-- On Windows a server can outlive Neovim: PowerShell Editor Services ignores
+-- both the LSP exit request and its input closing. So on exit: ask every
+-- server to stop, give them a moment, force-stop (kill) whatever is left, and
+-- kill any pwsh.exe Neovim started that isn't a registered client yet (a
+-- server still starting up). Terminal shells end with Neovim anyway.
 function M.shutdown(grace_ms)
   local clients = vim.lsp.get_clients()
   for _, client in ipairs(clients) do client:stop() end
@@ -59,6 +61,10 @@ function M.shutdown(grace_ms)
     return true
   end, 20)
   for _, client in ipairs(clients) do client:stop(true) end
+  for _, pid in ipairs(vim.api.nvim_get_proc_children(vim.fn.getpid())) do
+    local proc = vim.api.nvim_get_proc(pid)
+    if proc and proc.name:lower() == 'pwsh.exe' then pcall(vim.uv.kill, pid, 'sigkill') end
+  end
 end
 Config.autocmd('VimLeavePre', nil, function() M.shutdown() end, 'Stop language servers')
 

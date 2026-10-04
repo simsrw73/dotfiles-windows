@@ -109,6 +109,8 @@ nmap_leader('lR', '<Cmd>lua vim.lsp.buf.references()<CR>', 'References')
 nmap_leader('ls', '<Cmd>lua vim.lsp.buf.definition()<CR>', 'Source definition')
 nmap_leader('lt', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', 'Type definition')
 xmap_leader('lf', '<Cmd>lua require("conform").format()<CR>', 'Format selection')
+nmap_leader('lx', function() require('config.format').toggle() end, 'Format on save (toggle)')
+nmap_leader('lF', function() require('config.format').info() end, 'Formatter info')
 
 -- m: map
 nmap_leader('mf', '<Cmd>lua MiniMap.toggle_focus()<CR>', 'Focus (toggle)')
