@@ -68,7 +68,9 @@ packages:
       - koffee
       - less
       - libwebp
+      - llvm
       - lsd
+      - lua-language-server
       - mandoc
       - mediainfo
       - micro
@@ -87,15 +89,19 @@ packages:
       - psmux
       - resvg
       - ripgrep
+      - ruff
       - scoop-search
       - sed
       - sfsu
       - skim
       - starship
+      - stylua
       - sysinternals
+      - taplo
       - television
       - tidy
       - tmuxpanel/tmuxpanel
+      - tree-sitter
       - unzip
       - vcpkg
       - vcredist2022
@@ -302,9 +308,13 @@ packages:
       - "@google/gemini-cli"
       - "@microsoft/inshellisense"
       - "@openai/codex"
+      - "@vtsls/language-server"
       - gtop
       - neovim
+      - prettier
       - tsx
+      - vscode-langservers-extracted
+      - yaml-language-server
 
   # Python via the Python install manager (Python.PythonInstallManager from winget).
   python:
@@ -316,5 +326,6 @@ packages:
     - glances
     - rich-cli
   uvtools:
+    - basedpyright
     - pls
     - pynvim

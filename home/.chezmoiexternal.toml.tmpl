@@ -14,3 +14,23 @@
     type = "file"
     url = "https://raw.githubusercontent.com/simsrw73/starship-p9cat/main/p9cat.transient.ps1"
     refreshPeriod = "168h"
+
+# Language tools for Neovim with no scoop/npm package (see linked/nvim).
+[".local/share/powershell-editor-services"]
+    type = "archive"
+    url = "https://github.com/PowerShell/PowerShellEditorServices/releases/latest/download/PowerShellEditorServices.zip"
+    exact = true
+    refreshPeriod = "168h"
+
+[".local/share/lemminx"]
+    type = "archive"
+    url = "https://github.com/redhat-developer/vscode-xml/releases/latest/download/lemminx-win32.zip"
+    exact = true
+    refreshPeriod = "168h"
+
+[".local/share/js-debug"]
+    type = "archive"
+    url = {{ gitHubLatestReleaseAssetURL "microsoft/vscode-js-debug" "js-debug-dap-v*.tar.gz" | quote }}
+    stripComponents = 1
+    exact = true
+    refreshPeriod = "168h"
