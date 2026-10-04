@@ -2,7 +2,8 @@
 -- Run from the config folder:  nvim --headless "+luafile scripts/check.lua"
 -- Prints one line per test; exits 1 if any test fails.
 
-local here = vim.fs.dirname(vim.fs.normalize(debug.getinfo(1, 'S').source:sub(2)))
+-- Absolute: mini.misc's auto-root changes the working directory as files open.
+local here = vim.fs.dirname(vim.fs.normalize(vim.fn.fnamemodify(debug.getinfo(1, 'S').source:sub(2), ':p')))
 local failures, total = 0, 0
 
 local function out(line) io.stdout:write(line .. '\n') end
@@ -303,6 +304,96 @@ test('<Leader>lx turns format on save off for the session', function()
   fmt().toggle()
   eq(fmt().should_format_on_save(buf), true, 'after second toggle')
   ok(vim.fn.maparg(' lx', 'n') ~= '' and vim.fn.maparg(' lF', 'n') ~= '', 'lx / lF keys')
+end)
+
+-- Debugging ===================================================================
+
+test('debug adapters are registered and their programs exist', function()
+  local dap = require('dap')
+  local tools = require('config.tools')
+  ok(dap.adapters.lldb and tools.available(dap.adapters.lldb.command), 'lldb-dap')
+  local node = dap.adapters['pwa-node']
+  ok(node and tools.available(node.executable.command) and tools.available(node.executable.args[1]), 'js-debug')
+  ok(dap.adapters.powershell and tools.available(tools.pses_start), 'PowerShell Editor Services')
+  ok(dap.adapters.python and tools.available('uv'), 'debugpy via uv')
+end)
+
+test('every language has a debug configuration', function()
+  for _, ft in ipairs({ 'c', 'cpp', 'rust', 'python', 'javascript', 'typescript', 'ps1' }) do
+    ok(#(require('dap').configurations[ft] or {}) > 0, 'no configuration for ' .. ft)
+  end
+end)
+
+-- Runs a real debug session: breakpoint on `line`, launch, wait for the stop.
+local function debug_stops_at(file, line, config)
+  local dap = require('dap')
+  local stopped = false
+  dap.listeners.after.event_stopped['check'] = function() stopped = true end
+  open(file)
+  vim.api.nvim_win_set_cursor(0, { line, 0 })
+  dap.set_breakpoint()
+  dap.run(config)
+  local hit = vim.wait(60000, function()
+    local s = dap.session()
+    return stopped and s ~= nil and s.current_frame ~= nil
+  end, 100)
+  local frame_line = hit and dap.session().current_frame.line
+  pcall(dap.terminate)
+  vim.wait(5000, function() return dap.session() == nil end, 100)
+  dap.clear_breakpoints()
+  dap.listeners.after.event_stopped['check'] = nil
+  ok(hit, 'did not stop at the breakpoint')
+  eq(frame_line, line, 'stopped line')
+end
+
+local function debug_dir()
+  local dir = project({})
+  for _, name in ipairs({ 'main.cpp', 'main.ts', 'script.ps1' }) do
+    vim.fn.writefile(vim.fn.readfile(fixture('files/' .. name)), dir .. '/' .. name)
+  end
+  vim.fn.writefile({ 'def main():', '    x = 41', '    print(x + 1)', '', 'main()' }, dir .. '/main.py')
+  return dir
+end
+
+test('C++ debugging stops at a breakpoint (lldb-dap)', function()
+  local dir = debug_dir()
+  local build = vim.system({ 'clang++', '-g', '-O0', 'main.cpp', '-o', 'main.exe' }, { cwd = dir }):wait()
+  eq(build.code, 0, 'clang++ ' .. (build.stderr or ''))
+  local config = vim.tbl_extend('force', require('dap').configurations.cpp[1], { program = dir .. '/main.exe', cwd = dir })
+  debug_stops_at(dir .. '/main.cpp', 2, config)
+end)
+
+test('Rust debugging stops at a breakpoint (lldb-dap)', function()
+  local crate = fixture('rust')
+  local build = vim.system({ 'cargo', 'build', '-q' }, { cwd = crate }):wait()
+  eq(build.code, 0, 'cargo build ' .. (build.stderr or ''))
+  local config = vim.tbl_extend('force', require('dap').configurations.rust[1], { program = crate .. '/target/debug/fixture.exe', cwd = crate })
+  debug_stops_at(crate .. '/src/main.rs', 2, config)
+end)
+
+test('Python debugging stops at a breakpoint (debugpy)', function()
+  local dir = debug_dir()
+  open(dir .. '/main.py')
+  local config = vim.tbl_extend('force', require('dap').configurations.python[1], { cwd = dir })
+  debug_stops_at(dir .. '/main.py', 3, config)
+end)
+
+test('TypeScript debugging stops at a breakpoint (js-debug)', function()
+  local dir = debug_dir()
+  local config = vim.tbl_extend('force', require('dap').configurations.typescript[1], { program = dir .. '/main.ts', cwd = dir })
+  debug_stops_at(dir .. '/main.ts', 2, config)
+end)
+
+test('PowerShell debugging stops at a breakpoint (PSES)', function()
+  local dir = debug_dir()
+  local config = vim.tbl_extend('force', require('dap').configurations.ps1[1], { script = dir .. '/script.ps1', cwd = dir })
+  debug_stops_at(dir .. '/script.ps1', 2, config)
+end)
+
+test('debug keys exist', function()
+  for _, lhs in ipairs({ ' db', ' dB', ' dc', ' di', ' do', ' dO', ' dr', ' dt', ' dv', ' de', '<F5>', '<F10>', '<F11>', '<S-F11>' }) do
+    ok(vim.fn.maparg(lhs, 'n') ~= '', 'missing ' .. lhs)
+  end
 end)
 
 -- @@ tests end @@

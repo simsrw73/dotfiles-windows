@@ -34,6 +34,23 @@ nmap_leader('bs', new_scratch_buffer, 'Scratch')
 nmap_leader('bw', '<Cmd>lua MiniBufremove.wipeout()<CR>', 'Wipeout')
 nmap_leader('bW', '<Cmd>lua MiniBufremove.wipeout(0, true)<CR>', 'Wipeout!')
 
+-- d: debug (plus the Visual Studio F-keys)
+local dap = function(fn) return function(...) return require('dap')[fn](...) end end
+nmap_leader('db', dap('toggle_breakpoint'), 'Breakpoint')
+nmap_leader('dB', function() require('dap').set_breakpoint(vim.fn.input('Condition: ')) end, 'Conditional breakpoint')
+nmap_leader('dc', dap('continue'), 'Start / continue')
+nmap_leader('di', dap('step_into'), 'Step into')
+nmap_leader('do', dap('step_over'), 'Step over')
+nmap_leader('dO', dap('step_out'), 'Step out')
+nmap_leader('dr', dap('run_to_cursor'), 'Run to cursor')
+nmap_leader('dt', dap('terminate'), 'Stop')
+nmap_leader('dv', '<Cmd>DapViewToggle<CR>', 'Debugger view')
+nmap_leader('de', function() require('dap.ui.widgets').hover() end, 'Evaluate under cursor')
+nmap('<F5>', dap('continue'), 'Debug: continue')
+nmap('<F10>', dap('step_over'), 'Debug: step over')
+nmap('<F11>', dap('step_into'), 'Debug: step into')
+nmap('<S-F11>', dap('step_out'), 'Debug: step out')
+
 -- e: explore / edit config
 local edit_config = function(file)
   return ('<Cmd>edit %s/lua/config/%s<CR>'):format(vim.fn.stdpath('config'), file)
