@@ -129,6 +129,31 @@ test('a big file skips tree-sitter and is marked', function()
   ok(not vim.treesitter.highlighter.active[buf], 'tree-sitter is active on a big file')
 end)
 
+-- Writes a file of about `mb` megabytes made of `line`.
+local function big_file(name, line, mb)
+  local path = project({}) .. '/' .. name
+  local lines = {}
+  for i = 1, math.ceil(mb * 1024 * 1024 / #line) do lines[i] = line end
+  vim.fn.writefile(lines, path)
+  return path
+end
+
+test('big Lua and Markdown files skip tree-sitter too (their ftplugins start it)', function()
+  for _, spec in ipairs({ { 'big.lua', 'local x = { a = 1, b = "two" } -- filler line' }, { 'big.md', 'Some *markdown* text with `code` for size.' } }) do
+    local buf = open(big_file(spec[1], spec[2], 3))
+    vim.wait(200, function() return false end)   -- let scheduled callbacks run
+    ok(vim.b[buf].bigfile, spec[1] .. ': bigfile flag')
+    ok(not vim.treesitter.highlighter.active[buf], spec[1] .. ': tree-sitter is active')
+  end
+end)
+
+test('a big log file is not polled for changes', function()
+  local buf = open(big_file('huge.log', '2026-10-04 12:00:00 INFO filler line for size', 3))
+  eq(require('config.filetypes').watching(buf), false, 'watching a big log')
+  local small = open(fixture('files/app.log'))
+  eq(require('config.filetypes').watching(small), true, 'watching a small log')
+end)
+
 test('a log buffer reloads when the file grows and follows the tail', function()
   local root = project({ ['tail.log'] = '2026-10-04 INFO one' })
   local path = root .. '/tail.log'
@@ -388,6 +413,33 @@ test('PowerShell debugging stops at a breakpoint (PSES)', function()
   local dir = debug_dir()
   local config = vim.tbl_extend('force', require('dap').configurations.ps1[1], { script = dir .. '/script.ps1', cwd = dir })
   debug_stops_at(dir .. '/script.ps1', 2, config)
+end)
+
+test('lldb-dap gets Python 3.14 on PATH but no PYTHONHOME (it would leak into the program)', function()
+  local tools = require('config.tools')
+  ok(tools.lldb_python and tools.lldb_python:find('%-64$'), 'expected the 64-bit Python 3.14: ' .. tostring(tools.lldb_python))
+  local env = (require('dap').adapters.lldb.options or {}).env or {}
+  local path, home
+  for _, item in ipairs(env) do
+    if item:upper():find('^PATH=') then path = item end
+    if item:upper():find('^PYTHONHOME=') then home = item end
+  end
+  eq(home, nil, 'PYTHONHOME in the adapter env')
+  ok(path and path:sub(6, 5 + #tools.lldb_python) == tools.lldb_python, 'Python 3.14 first on PATH: ' .. tostring(path))
+end)
+
+test('node tools are found without an fnm shell (fnm default alias on PATH)', function()
+  local saved = vim.env.PATH
+  local parts = vim.tbl_filter(function(dir) return not dir:lower():find('fnm', 1, true) end, vim.split(saved, ';'))
+  vim.env.PATH = table.concat(parts, ';')
+  local ok_node = pcall(function()
+    eq(vim.fn.executable('node'), 0, 'node should be gone from the test PATH')
+    require('config.tools').ensure_node()
+    eq(vim.fn.executable('node'), 1, 'node after ensure_node')
+    ok(vim.fn.exepath('vtsls.cmd') ~= '', 'vtsls.cmd after ensure_node')
+  end)
+  vim.env.PATH = saved
+  ok(ok_node, 'ensure_node did not restore node')
 end)
 
 test('debug keys exist', function()

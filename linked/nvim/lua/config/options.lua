@@ -64,11 +64,12 @@ o.completetimeout = 100
 -- Don't continue comments with o/O
 Config.autocmd('FileType', nil, function() vim.cmd('setlocal formatoptions-=c formatoptions-=o') end, 'formatoptions')
 
+local severity = vim.diagnostic.severity
 vim.diagnostic.config({
-  signs = { priority = 9999, severity = { min = 'WARN', max = 'ERROR' } },
-  underline = { severity = { min = 'HINT', max = 'ERROR' } },
+  signs = { priority = 9999, severity = { min = severity.WARN, max = severity.ERROR } },
+  underline = { severity = { min = severity.HINT, max = severity.ERROR } },
   virtual_lines = false,
-  virtual_text = { current_line = true, severity = { min = 'ERROR', max = 'ERROR' } },
+  virtual_text = { current_line = true, severity = { min = severity.ERROR, max = severity.ERROR } },
   update_in_insert = false,
   severity_sort = true,
 })

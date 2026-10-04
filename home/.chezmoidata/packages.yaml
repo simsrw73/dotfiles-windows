@@ -323,7 +323,7 @@ packages:
 
   # Python via the Python install manager (Python.PythonInstallManager from winget).
   python:
-    - "3.14"
+    - "3.14"   # Neovim: LLVM's lldb-dap embeds Python 3.14 (linked/nvim/lua/config/tools.lua)
 
   # pipx from scoop; uv from winget (astral-sh.uv).
   pipx:

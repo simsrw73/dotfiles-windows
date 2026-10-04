@@ -19,12 +19,13 @@ end
 -- C, C++, Rust ---------------------------------------------------------------
 dap.adapters.lldb = { type = 'executable', command = 'lldb-dap', name = 'lldb' }
 if tools.lldb_python then
-  -- Point lldb's embedded Python at a full install (see tools.lldb_python).
+  -- Put the full Python 3.14 first on lldb-dap's PATH so its python314.dll
+  -- (with its standard library) loads (see tools.lldb_python). No PYTHONHOME:
+  -- it isn't needed and would leak into the program being debugged.
   -- nvim-dap passes options.env to uv.spawn, which wants "KEY=value" strings.
   local env = vim.fn.environ()
   local path = env.PATH or env.Path or ''
   env.PATH, env.Path = nil, nil
-  env.PYTHONHOME = tools.lldb_python
   env.PATH = tools.lldb_python .. ';' .. path
   local list = {}
   for key, value in pairs(env) do table.insert(list, key .. '=' .. value) end

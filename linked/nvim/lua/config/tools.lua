@@ -11,13 +11,26 @@ M.js_debug = M.share .. '/js-debug/src/dapDebugServer.js'
 -- LLVM's liblldb embeds Python 3.14 (python314.dll). Windows would otherwise
 -- load the first python314.dll on PATH (YASB ships one without the standard
 -- library) and lldb-dap dies with "No module named 'encodings'". The Python
--- install manager puts 3.14 here; nil if it isn't installed.
+-- install manager puts 3.14 here (64-bit, like LLVM); nil if it isn't
+-- installed. Keep in step with `python:` in packages.yaml.
 M.lldb_python = (function()
   local base = vim.env.LOCALAPPDATA and (vim.fs.normalize(vim.env.LOCALAPPDATA) .. '/Python') or ''
-  for _, dir in ipairs(vim.fn.glob(base .. '/pythoncore-3.14-*', false, true)) do
-    if vim.uv.fs_stat(dir .. '/python314.dll') then return vim.fs.normalize(dir) end
-  end
+  local dir = base .. '/pythoncore-3.14-64'
+  if vim.uv.fs_stat(dir .. '/python314.dll') then return dir end
 end)()
+
+-- node and npm's global tools live in fnm's per-shell folder, which exists only
+-- in shells that ran `fnm env`. Started any other way (Explorer, a shortcut),
+-- Neovim would have no node: fall back to fnm's default Node version.
+function M.ensure_node()
+  if vim.fn.executable('node') == 1 then return end
+  local fnm = vim.env.FNM_DIR or vim.fs.normalize('~/.local/share/fnm')
+  local default = fnm .. '/aliases/default'
+  if vim.uv.fs_stat(default .. '/node.exe') then
+    vim.env.PATH = vim.fs.normalize(default) .. ';' .. vim.env.PATH
+  end
+end
+M.ensure_node()
 
 -- The program to run for a command on PATH. npm installs three launchers per
 -- command (name, name.cmd, name.ps1); started from Git Bash, Neovim resolves
