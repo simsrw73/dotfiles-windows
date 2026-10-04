@@ -1,3 +1,4 @@
 - [Never run AHK from Git Bash](ahk-never-from-git-bash.md) — /ErrorStdOut gets mangled into a path; use PowerShell
 - [Legend AHK library](legend-ahk-library.md) — user's public shortcut-overlay lib; repo, dotfiles submodule, next steps
 - [No git | head](git-no-pipe-to-head.md) — piping git diff/status into head leaves a stale index.lock
+- [Neovim mini config](neovim-mini-config.md) — in-progress nvim rewrite; spec staged, awaiting review then plan
