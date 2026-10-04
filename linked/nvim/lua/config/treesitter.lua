@@ -1,12 +1,13 @@
 -- Tree-sitter: parsers (built locally by the tree-sitter CLI and a C
 -- compiler), highlighting, folds and indent. Missing parsers fall back to
--- regex syntax. Text objects (aF/iF, aC/iC) are in mini.lua via mini.ai.
+-- regex syntax (gitcommit too: its grammar takes ~3 minutes to compile, past
+-- nvim-treesitter's build limit). Text objects (aF/iF, aC/iC) are in mini.lua via mini.ai.
 local M = {}
 
 M.languages = {
   'c', 'cpp', 'cmake', 'rust', 'ron', 'python', 'javascript', 'typescript', 'tsx',
   'powershell', 'json', 'yaml', 'toml', 'ini', 'xml', 'lua', 'luadoc', 'vim', 'vimdoc',
-  'query', 'markdown', 'markdown_inline', 'bash', 'diff', 'gitcommit', 'regex',
+  'query', 'markdown', 'markdown_inline', 'bash', 'diff', 'regex',
 }
 
 vim.treesitter.language.register('json', 'jsonc')

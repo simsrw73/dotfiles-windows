@@ -300,6 +300,11 @@ packages:
     - crate: wpmctl
       git: https://github.com/LGUG2Z/wpm
 
+  # rustup components (rustup itself from winget).
+  rustup:
+    components:
+      - rust-analyzer
+
   # Node via fnm (Schniz.fnm from winget); first version becomes the default.
   node:
     versions:

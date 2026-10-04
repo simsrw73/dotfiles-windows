@@ -103,7 +103,8 @@ end)
 test('tree-sitter parsers are installed for every language', function()
   local missing = {}
   for _, lang in ipairs(require('config.treesitter').languages) do
-    if not pcall(vim.treesitter.language.add, lang) then table.insert(missing, lang) end
+    local loaded, found = pcall(vim.treesitter.language.add, lang)   -- returns false, not an error, when absent
+    if not (loaded and found) then table.insert(missing, lang) end
   end
   eq(missing, {}, 'missing parsers')
 end)
@@ -146,6 +147,76 @@ test('a modified log buffer is left alone (no reload prompt)', function()
   vim.fn.writefile({ 'one', 'two' }, path)
   vim.wait(require('config.filetypes').log_interval_ms * 3)
   eq(vim.api.nvim_buf_get_lines(buf, 0, -1, false), { 'edited' }, 'buffer text')
+end)
+
+-- Language servers ============================================================
+
+test('partition enables available servers and lists the missing ones', function()
+  local lsp = require('config.lsp')
+  local servers = { { name = 'a', exe = 'a.exe', install = 'get a' }, { name = 'b', exe = 'b.exe', install = 'get b' } }
+  local enabled, missing = lsp.partition(servers, function(exe) return exe == 'a.exe' end)
+  eq(enabled, { 'a' }, 'enabled')
+  eq(#missing, 1, 'missing count')
+  ok(lsp.missing_message(missing):find('b (get b)', 1, true), 'message names the install command')
+  eq(lsp.missing_message({}), nil, 'no message when nothing is missing')
+end)
+
+test('every server in the table is installed', function()
+  local _, missing = require('config.lsp').partition(require('config.lsp').servers, require('config.tools').available)
+  eq(vim.tbl_map(function(s) return s.name end, missing), {}, 'missing servers')
+end)
+
+local function attaches(rel, names)
+  local buf = open(fixture(rel))
+  for _, name in ipairs(names) do
+    local found = vim.wait(30000, function() return #vim.lsp.get_clients({ bufnr = buf, name = name }) > 0 end, 100)
+    ok(found, name .. ' did not attach to ' .. rel)
+  end
+end
+
+test('clangd attaches to C++', function() attaches('files/main.cpp', { 'clangd' }) end)
+test('rust-analyzer attaches to Rust', function() attaches('rust/src/main.rs', { 'rust_analyzer' }) end)
+test('basedpyright and ruff attach to Python', function() attaches('files/main.py', { 'basedpyright', 'ruff' }) end)
+test('vtsls attaches to TypeScript', function() attaches('files/main.ts', { 'vtsls' }) end)
+test('PowerShell Editor Services attaches to .ps1', function() attaches('files/script.ps1', { 'powershell_es' }) end)
+test('jsonls attaches to JSON and JSONC', function()
+  attaches('files/data.json', { 'jsonls' })
+  attaches('files/settings.jsonc', { 'jsonls' })
+end)
+test('yamlls attaches to YAML', function() attaches('files/data.yaml', { 'yamlls' }) end)
+test('taplo attaches to TOML', function() attaches('files/data.toml', { 'taplo' }) end)
+test('lemminx attaches to XML and XAML', function()
+  attaches('files/data.xml', { 'lemminx' })
+  attaches('files/View.xaml', { 'lemminx' })
+end)
+test('lua_ls attaches to this config and knows `vim`', function()
+  local buf = open(vim.fn.stdpath('config') .. '/lua/config/options.lua')
+  ok(vim.wait(30000, function() return #vim.lsp.get_clients({ bufnr = buf, name = 'lua_ls' }) > 0 end, 100), 'lua_ls did not attach')
+  vim.wait(8000, function() return false end)   -- let diagnostics arrive
+  for _, d in ipairs(vim.diagnostic.get(buf)) do
+    ok(not d.message:find("Undefined global `vim`", 1, true), 'lua_ls does not know vim: ' .. d.message)
+  end
+end)
+test('servers are shut down on exit (PowerShell Editor Services outlived Neovim)', function()
+  attaches('files/script.ps1', { 'powershell_es' })
+  local children = vim.api.nvim_get_proc_children(vim.fn.getpid())
+  ok(#children > 0, 'no server process found')
+  vim.api.nvim_exec_autocmds('VimLeavePre', {})
+  vim.wait(3000, function() return false end)
+  local alive = vim.tbl_filter(function(pid) return vim.api.nvim_get_proc(pid) ~= nil end, children)
+  eq(alive, {}, 'server processes still running')
+end)
+
+test('no server attaches to a big file', function()
+  local root = project({})
+  local path = root .. '/big.json'
+  local lines = { '[' }
+  for i = 1, 120000 do lines[#lines + 1] = '  {"key": "value value value", "n": ' .. i .. '},' end
+  lines[#lines + 1] = '  {}]'
+  vim.fn.writefile(lines, path)
+  local buf = open(path)
+  vim.wait(5000, function() return false end)
+  eq(#vim.lsp.get_clients({ bufnr = buf }), 0, 'clients on a big file')
 end)
 
 -- @@ tests end @@
