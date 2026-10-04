@@ -32,6 +32,15 @@ source, `linked/` holds folders that `~/.config/<name>` junctions point to
   the Win+Space launcher; keep them in step when the launcher changes.
 - Don't send keys or open menus on the user's screen without asking.
 
+## Neovim (`linked/nvim`)
+
+mini.nvim on vim.pack (see its README). Test with
+`nvim --headless "+luafile scripts/check.lua"` from `linked/nvim`, in
+PowerShell; add a test to `scripts/check.lua` for any change. Language tools
+come from packages.yaml / .chezmoiexternal, never mason. Commit
+`nvim-pack-lock.json` after plugin updates. Fixtures named `*.log` need
+`git add -f` (the global git ignore has `*.log`).
+
 ## Public mirror
 
 `~/projects/w11dwm.config` (simsrw73/w11dwm-config) publishes the desktop

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+  "runtime.version": "LuaJIT",
+  "runtime.path": ["lua/?.lua", "lua/?/init.lua"],
+  "workspace.checkThirdParty": false,
+  "workspace.library": [
+    "C:/Program Files/Neovim/share/nvim/runtime",
+    "${3rd}/luv/library",
+    "~/.local/share/nvim-data/site/pack/core/opt/mini.nvim",
+    "~/.local/share/nvim-data/site/pack/core/opt/nvim-dap",
+    "~/.local/share/nvim-data/site/pack/core/opt/conform.nvim"
+  ],
+  "diagnostics.globals": ["Config"]
+}
