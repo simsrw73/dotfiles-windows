@@ -1,0 +1,3 @@
+# Build output from the Rust fixture (rust-analyzer runs cargo check on it)
+scripts/fixtures/rust/target/
+scripts/fixtures/rust/Cargo.lock

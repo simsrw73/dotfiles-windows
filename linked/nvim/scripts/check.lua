@@ -161,6 +161,13 @@ test('partition enables available servers and lists the missing ones', function(
   eq(lsp.missing_message({}), nil, 'no message when nothing is missing')
 end)
 
+test('npm servers run through their .cmd launcher (Git Bash would pick the shell script)', function()
+  for _, name in ipairs({ 'vtsls', 'vscode-json-language-server', 'yaml-language-server', 'vscode-eslint-language-server' }) do
+    ok(require('config.tools').command(name):lower():match('%.cmd$'), name .. ' resolves to ' .. require('config.tools').command(name))
+  end
+  ok(vim.lsp.config.vtsls.cmd[1]:lower():match('%.cmd$'), 'vtsls cmd: ' .. vim.inspect(vim.lsp.config.vtsls.cmd))
+end)
+
 test('every server in the table is installed', function()
   local _, missing = require('config.lsp').partition(require('config.lsp').servers, require('config.tools').available)
   eq(vim.tbl_map(function(s) return s.name end, missing), {}, 'missing servers')

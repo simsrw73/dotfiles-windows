@@ -34,6 +34,11 @@ function M.missing_message(missing)
   return 'Language servers not installed: ' .. table.concat(parts, ', ')
 end
 
+-- npm-installed servers: run the .cmd launcher (see tools.command).
+for name, exe in pairs({ vtsls = 'vtsls', jsonls = 'vscode-json-language-server', yamlls = 'yaml-language-server', eslint = 'vscode-eslint-language-server' }) do
+  vim.lsp.config(name, { cmd = { tools.command(exe), '--stdio' } })
+end
+
 local missing
 M.enabled, missing = M.partition(M.servers, tools.available)
 vim.lsp.enable(M.enabled)
