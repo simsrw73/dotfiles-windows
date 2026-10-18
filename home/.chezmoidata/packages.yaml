@@ -14,7 +14,26 @@ packages:
         url: https://github.com/psmux/scoop-psmux
       - name: tmuxpanel
         url: https://github.com/marlocarlo/scoop-tmuxpanel
+      - name: insomnia
+        url: https://github.com/insomnimus/scoop-bucket
     apps:
+      # added 2026-10-18 before reinstall (installed but unlisted)
+      - btop-lhm
+      - charm-gum
+      - lua
+      - luacheck
+      - luarocks
+      - mise
+      - orca-ide
+      - ov
+      - peco
+      - poppler
+      - insomnia/ps-dotenv
+      - shellcheck
+      - shfmt
+      - smartmontools
+      - superfile
+      - vifm
       - 7zip
       - aria2
       - bandwhich
@@ -266,9 +285,35 @@ packages:
       - zadjii.ObsidianNotesExtension
       - ZedIndustries.Zed
       - Zen-Team.Zen-Browser
+      # added 2026-10-18 before reinstall (installed but unlisted)
+      - aria2.aria2
+      - DenoLand.Deno
+      - DuongDieuPhap.ImageGlass.MSI
+      - glzr-io.glazewm
+      - karlstav.cava
+      - KDE.KDiff3
+      - KurtZimmermann.RegCool
+      - Levitsky.FontBase
+      - LGUG2Z.whkd
+      - Meld.Meld
+      - MiTeC.TaskManagerDeLuxe
+      - mpv.net
+      - Notion.Notion
+      - qup1010.FilePilot
+      - SST.OpenCodeDesktop
+      - StablyAI.Orca
+      - StrawberryPerl.StrawberryPerl
+      - Vivaldi.Vivaldi
+      - Wilfred.difftastic
+      - WinMerge.WinMerge
+      - yt-dlp.FFmpeg
+      - yt-dlp.yt-dlp
     elevated:
       - AmN.yasb
       - LGUG2Z.komorebi
+      - LibreHardwareMonitor.LibreHardwareMonitor
+      - namazso.PawnIO
+      - StartIsBack.StartAllBack
   pwsh:
     - Admin
     - BurntToast
