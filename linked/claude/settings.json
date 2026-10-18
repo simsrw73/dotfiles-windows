@@ -121,7 +121,7 @@
   "autoUpdatesChannel": "latest",
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
-  "theme": "auto",
+  "theme": "custom:catppuccin-mocha",
   "editorMode": "normal",
   "preferredNotifChannel": "auto",
   "remoteControlAtStartup": true,

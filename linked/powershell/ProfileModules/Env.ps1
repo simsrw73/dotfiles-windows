@@ -9,8 +9,9 @@ $env:GIT_EDITOR = 'micro'
 #   FIXME: We should juggle the paths ourselves.
 # gsudo config PathPrecedence true
 
-
-
+#  This function is case sensitive, somehow.
+Add-DotenvPattern -Pattern "${Env:USERPROFILE}\projects\**\.env"
+echo "${Env:USERPROFILE}\projects\**\.env"
 # Themes
 $env:GLAMOUR_STYLE = Join-Path -Path $Env:XDG_CONFIG_HOME 'glamour' 'themes' 'catppuccin-mocha.json'
 
@@ -21,9 +22,13 @@ $env:GLAMOUR_STYLE = Join-Path -Path $Env:XDG_CONFIG_HOME 'glamour' 'themes' 'ca
 # Terminal detection — set $isVSCodeTerm; fill TERM_PROGRAM for terminals that don't set it
 $isVSCodeTerm = $Env:TERM_PROGRAM -eq 'vscode'
 if (-not $Env:TERM_PROGRAM) {
-    if ($Env:ALACRITTY_LOG) { $Env:TERM_PROGRAM = 'Alacritty' }
-    elseif ($Env:LC_EXTRATERM_COOKIE) { $Env:TERM_PROGRAM = 'ExtraTerm' }
-    elseif ($env:WT_SESSION) { $Env:TERM_PROGRAM = 'wt' }
+    if ($Env:ALACRITTY_LOG) {
+        $Env:TERM_PROGRAM = 'Alacritty'
+    } elseif ($Env:LC_EXTRATERM_COOKIE) {
+        $Env:TERM_PROGRAM = 'ExtraTerm'
+    } elseif ($env:WT_SESSION) {
+        $Env:TERM_PROGRAM = 'wt'
+    }
 }
 
 # Personal paths that are not managed by a DotForge tool record.
@@ -35,13 +40,13 @@ $env:GNUPGHOME = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'gnupg'
 # yazi
 $env:YAZI_CONFIG_HOME = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'yazi'
 function y {
-	$tmp = (New-TemporaryFile).FullName
-	yazi.exe @args --cwd-file="$tmp"
-	$cwd = Get-Content -Path $tmp -Encoding UTF8
-	if ($cwd -and $cwd -ne $PWD.Path -and (Test-Path -LiteralPath $cwd -PathType Container)) {
-		Set-Location -LiteralPath (Resolve-Path -LiteralPath $cwd).Path
-	}
-	Remove-Item -Path $tmp
+    $tmp = (New-TemporaryFile).FullName
+    yazi.exe @args --cwd-file="$tmp"
+    $cwd = Get-Content -Path $tmp -Encoding UTF8
+    if ($cwd -and $cwd -ne $PWD.Path -and (Test-Path -LiteralPath $cwd -PathType Container)) {
+        Set-Location -LiteralPath (Resolve-Path -LiteralPath $cwd).Path
+    }
+    Remove-Item -Path $tmp
 }
 
 #   - yazi requires the file command, and the best version we have is the one that comes with Git for Windows.
@@ -51,9 +56,9 @@ function Get-GitUsrBinPath {
         return $null
     }
 
-    $gitExe  = $cmd.Source
+    $gitExe = $cmd.Source
     $gitRoot = Split-Path (Split-Path $gitExe -Parent) -Parent
-    $usrBin  = Join-Path $gitRoot 'usr\bin'
+    $usrBin = Join-Path $gitRoot 'usr\bin'
 
     if (Test-Path $usrBin) {
         return $usrBin

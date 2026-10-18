@@ -4,51 +4,51 @@
     "frontend-design@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\frontend-design\\ab024cdcfa7c",
-        "version": "ab024cdcfa7c",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\frontend-design\\ea10b213686c",
+        "version": "ea10b213686c",
         "installedAt": "2026-06-15T21:55:07.643Z",
-        "lastUpdated": "2026-09-30T20:23:54.711Z",
-        "gitCommitSha": "2a8ad9f74633d10e3d9bb0660a03bfc6e50584b1"
+        "lastUpdated": "2026-10-16T14:11:55.663Z",
+        "gitCommitSha": "ea10b213686c90bb1984b2016937310e05336cf3"
       }
     ],
     "superpowers@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\superpowers\\6.4.1",
-        "version": "6.4.1",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\superpowers\\7.0.0",
+        "version": "7.0.0",
         "installedAt": "2026-06-15T21:55:08.542Z",
-        "lastUpdated": "2026-09-25T15:01:45.322Z",
-        "gitCommitSha": "6fd4507659784c351abbd2bc264c7162cfd386dc"
+        "lastUpdated": "2026-10-16T14:12:02.854Z",
+        "gitCommitSha": "bb92a77741419a4ab5f06e711a283343f1ada0c3"
       }
     ],
     "code-review@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\code-review\\ab024cdcfa7c",
-        "version": "ab024cdcfa7c",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\code-review\\ea10b213686c",
+        "version": "ea10b213686c",
         "installedAt": "2026-06-15T21:55:08.662Z",
-        "lastUpdated": "2026-09-30T20:23:54.695Z",
-        "gitCommitSha": "2a8ad9f74633d10e3d9bb0660a03bfc6e50584b1"
+        "lastUpdated": "2026-10-16T14:11:55.618Z",
+        "gitCommitSha": "ea10b213686c90bb1984b2016937310e05336cf3"
       }
     ],
     "context7@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\context7\\ab024cdcfa7c",
-        "version": "ab024cdcfa7c",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\context7\\ea10b213686c",
+        "version": "ea10b213686c",
         "installedAt": "2026-06-15T21:55:08.721Z",
-        "lastUpdated": "2026-09-30T20:23:54.683Z",
-        "gitCommitSha": "2a8ad9f74633d10e3d9bb0660a03bfc6e50584b1"
+        "lastUpdated": "2026-10-16T14:11:55.653Z",
+        "gitCommitSha": "ea10b213686c90bb1984b2016937310e05336cf3"
       }
     ],
     "skill-creator@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\skill-creator\\ab024cdcfa7c",
-        "version": "ab024cdcfa7c",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\skill-creator\\ea10b213686c",
+        "version": "ea10b213686c",
         "installedAt": "2026-06-15T21:55:08.798Z",
-        "lastUpdated": "2026-09-30T20:23:54.757Z",
-        "gitCommitSha": "2a8ad9f74633d10e3d9bb0660a03bfc6e50584b1"
+        "lastUpdated": "2026-10-16T14:11:55.641Z",
+        "gitCommitSha": "ea10b213686c90bb1984b2016937310e05336cf3"
       }
     ],
     "code-simplifier@claude-plugins-official": [
@@ -74,21 +74,21 @@
     "feature-dev@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\feature-dev\\ab024cdcfa7c",
-        "version": "ab024cdcfa7c",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\feature-dev\\ea10b213686c",
+        "version": "ea10b213686c",
         "installedAt": "2026-06-15T21:55:08.994Z",
-        "lastUpdated": "2026-09-30T20:23:54.725Z",
-        "gitCommitSha": "2a8ad9f74633d10e3d9bb0660a03bfc6e50584b1"
+        "lastUpdated": "2026-10-16T14:11:55.625Z",
+        "gitCommitSha": "ea10b213686c90bb1984b2016937310e05336cf3"
       }
     ],
     "security-guidance@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\security-guidance\\2.0.8",
-        "version": "2.0.8",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\security-guidance\\2.0.14",
+        "version": "2.0.14",
         "installedAt": "2026-06-15T21:55:09.068Z",
-        "lastUpdated": "2026-09-25T15:01:43.748Z",
-        "gitCommitSha": "ad30d62cd52ad0d0af1beda1eab7f61c601045d0"
+        "lastUpdated": "2026-10-16T14:11:55.595Z",
+        "gitCommitSha": "ea10b213686c90bb1984b2016937310e05336cf3"
       }
     ],
     "typescript-lsp@claude-plugins-official": [
@@ -104,21 +104,21 @@
     "commit-commands@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\commit-commands\\ab024cdcfa7c",
-        "version": "ab024cdcfa7c",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\commit-commands\\ea10b213686c",
+        "version": "ea10b213686c",
         "installedAt": "2026-06-15T21:55:09.205Z",
-        "lastUpdated": "2026-09-30T20:23:54.702Z",
-        "gitCommitSha": "2a8ad9f74633d10e3d9bb0660a03bfc6e50584b1"
+        "lastUpdated": "2026-10-16T14:11:55.610Z",
+        "gitCommitSha": "ea10b213686c90bb1984b2016937310e05336cf3"
       }
     ],
     "pr-review-toolkit@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\pr-review-toolkit\\ab024cdcfa7c",
-        "version": "ab024cdcfa7c",
+        "installPath": "C:\\Users\\simsr\\.config\\claude\\plugins\\cache\\claude-plugins-official\\pr-review-toolkit\\ea10b213686c",
+        "version": "ea10b213686c",
         "installedAt": "2026-06-15T21:55:09.280Z",
-        "lastUpdated": "2026-09-30T20:23:54.734Z",
-        "gitCommitSha": "2a8ad9f74633d10e3d9bb0660a03bfc6e50584b1"
+        "lastUpdated": "2026-10-16T14:11:55.633Z",
+        "gitCommitSha": "ea10b213686c90bb1984b2016937310e05336cf3"
       }
     ],
     "pyright-lsp@claude-plugins-official": [

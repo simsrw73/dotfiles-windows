@@ -5,14 +5,6 @@ Set-StrictMode -Version 'Latest'
 $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding
 
 
-if (Get-Command -Name 'FastFetch' -ErrorAction Ignore) {
-    Clear-Host
-    FastFetch
-    $v = $PSVersionTable.PSVersion
-    'PowerShell {0}.{1}.{2} ({3})' -f $v.Major, $v.Minor, $v.Patch, $PSVersionTable.PSEdition
-}
-
-
 # Preferred Setup
 #
 # Modules:
@@ -31,7 +23,9 @@ $moduleRoot = Join-Path $profileRoot 'ProfileModules'
 #   [LogLevel]::Warn  — warnings/errors only (scripting, CI)
 #   [LogLevel]::Info  — key status lines (default)
 #   [LogLevel]::Debug — full detail: modules, file loads, tool inventory
-enum LogLevel { Error = 0; Warn = 1; Info = 2; Debug = 3 }
+enum LogLevel {
+    Error = 0; Warn = 1; Info = 2; Debug = 3 
+}
 $Global:ProfileLogLevel = [LogLevel]::Info
 
 $isDebuggingProfile = $false
@@ -50,33 +44,65 @@ function global:Write-ProfileMsg {
         [LogLevel]$Level = [LogLevel]::Info,
         [string]$Color = ''
     )
-    $_effectiveLevel = if ($null -eq $Global:ProfileLogLevel) { [LogLevel]::Info } else { $Global:ProfileLogLevel }
-    if ([int]$Level -gt [int]$_effectiveLevel) { return }
-    switch ($Level) {
-        ([LogLevel]::Error) { Write-Error $Message; return }
-        ([LogLevel]::Warn) { Write-Warning $Message; return }
+    $_effectiveLevel = if ($null -eq $Global:ProfileLogLevel) {
+        [LogLevel]::Info 
+    } else {
+        $Global:ProfileLogLevel 
     }
-    $c = if ($Color) { $Color } else {
+    if ([int]$Level -gt [int]$_effectiveLevel) {
+        return 
+    }
+    switch ($Level) {
+        ([LogLevel]::Error) {
+            Write-Error $Message; return 
+        }
+        ([LogLevel]::Warn) {
+            Write-Warning $Message; return 
+        }
+    }
+    $c = if ($Color) {
+        $Color 
+    } else {
         switch ($Level) {
-            ([LogLevel]::Info) { 'Cyan' }
-            ([LogLevel]::Debug) { 'DarkGray' }
-            default { 'White' }
+            ([LogLevel]::Info) {
+                'Cyan' 
+            }
+            ([LogLevel]::Debug) {
+                'DarkGray' 
+            }
+            default {
+                'White' 
+            }
         }
     }
     Write-Host $Message -ForegroundColor $c
 }
 
-# ── DotForge config (set BEFORE Import-Module DotForge) ──────────────────────
+# ── DotForge config (passed to Start-DFSession -Config below) ────────────────
+# Only the tools listed here are configured; nothing is installed at load. Missing
+# ones are listed at the end of loading (Get-DFToolStatus -Missing shows them).
+# Groups: Get-DFToolGroup. oh-my-posh (replaced by starship) and lsd (eza fills
+# 'listing') are simply not requested; to switch back, request them here.
 $DFConfig = @{
-    PackageManagerOrder = @('scoop', 'winget')
-    SkipTools           = @('lsd', 'oh-my-posh')  # oh-my-posh: replaced by starship. To switch back, drop it here and reinstall it (winget JanDeDobbeleer.OhMyPosh; configs are in git history). lsd conflicts with eza FIXME: this should be automatically resolved. Adopt a default tool and let the user specify their preference.
-    CompletionMode      = 'Native'
-    PSReadLineEditMode  = 'Emacs'
-    PSReadLineTheme     = 'catppuccin-mocha'
+    Tools = @(
+        '+core', '+prompt', '+git', '+dev-tools', '+javascript-dev', '+python-dev', '+rust-dev',
+        '+admin-tools', '+markdown', '+package-managers'
+        # Not in any group. posh-git and Terminal-Icons were dropped: starship shows git
+        # status, carapace completes git, and eza (ls/ll/la/tree) draws its own icons.
+        'bitwarden', 'broot', 'choco', 'direnv', 'docker', 'inshellisense', 'mdcat', 'mdv',
+        'moor', 'ov', 'ps-dotenv', 'vcpkg', 'vivid'
+    )
+    ExcludeTools = @('lazygit')   # in +git, not installed
+    InstallOrder = @('scoop', 'winget')
+    PSReadLineEditMode = 'Emacs'
+    PSReadLineTheme = 'catppuccin-mocha'
+    # Startup banner: clears the screen, then fastfetch, drive health and the public IP,
+    # gathered while tools load and printed a line at a time.
+    ShowBanner = $true
 }
 
 # Starship transient prompt (p9cat): collapses each submitted prompt to "time dir ❯".
-# Must load after Register-DFTool (needs starship's init + zoxide's prompt wrapper).
+# Must load after Start-DFSession (needs starship's init + zoxide's prompt wrapper).
 $p9catTransient = Join-Path $HOME '.config' 'starship' 'p9cat.transient.ps1'
 
 # ── VS Code integrated terminal: fast / lite init ────────────────────────────
@@ -84,13 +110,15 @@ $p9catTransient = Join-Path $HOME '.config' 'starship' 'p9cat.transient.ps1'
 # Keeps: env vars, all aliases/functions, and tool completers.
 if ($Env:TERM_PROGRAM -eq 'vscode') {
     Import-Module DotForge -ErrorAction SilentlyContinue
-    Initialize-DFEnvironment
+    # Before Env.ps1, which reads the XDG variables Start-DFSession exports.
+    Start-DFSession -Config $DFConfig
     . (Join-Path $moduleRoot 'Env.ps1')
     . (Join-Path $moduleRoot 'Aliases.ps1')
     . (Join-Path $moduleRoot 'Functions.ps1')
     . (Join-Path $moduleRoot 'Completers.ps1')
-    Register-DFTool -All
-    if (Test-Path $p9catTransient) { . $p9catTransient }
+    if (Test-Path $p9catTransient) {
+        . $p9catTransient 
+    }
     return
 }
 
@@ -120,22 +148,28 @@ if (-not $_sshAgent -or $_sshAgent.Status -ne 'Running') {
 }
 
 Import-Module DotForge -ErrorAction Continue
-Initialize-DFEnvironment
+# Before Env.ps1, which reads the XDG variables Start-DFSession exports.
+Start-DFSession -Config $DFConfig
 . (Join-Path $moduleRoot 'Env.ps1')
 Write-ProfileMsg "  Terminal: $($Env:TERM_PROGRAM ?? 'unknown')" -Level Debug
 . (Join-Path $moduleRoot 'Aliases.ps1')
 . (Join-Path $moduleRoot 'Functions.ps1')
 . (Join-Path $moduleRoot 'Completers.ps1')
 
-Register-DFTool -All
-if (Test-Path $p9catTransient) { . $p9catTransient }
+if (Test-Path $p9catTransient) {
+    . $p9catTransient 
+}
 
 
 # Weekly module update (every Friday, once per day)
 if ((Get-Date).DayOfWeek -eq 'Friday') {
     $_sentinel = Join-Path ($Env:XDG_STATE_HOME ?? "$HOME/.local/state") 'ps_friday_maintenance'
     $_today = Get-Date -Format 'yyyy-MM-dd'
-    $_lastRun = if (Test-Path $_sentinel) { (Get-Content $_sentinel -Raw).Trim() } else { '' }
+    $_lastRun = if (Test-Path $_sentinel) {
+        (Get-Content $_sentinel -Raw).Trim() 
+    } else {
+        '' 
+    }
     if ($_lastRun -ne $_today) {
         Write-ProfileMsg '⚙  Running weekly module update…'
         Update-AllModules

@@ -15,21 +15,21 @@ prove every example by running it exactly as written.
 
 Every page has these parts, in this order:
 
-1. **Opening** (2–3 lines): who it's for, what it covers, what the reader can
-   do by the end. For example, for an image-resizing tool:
+1. Opening: two or three sentences of prose saying who the page is for and
+   what the reader can do by the end, with no bold labels. For example, for an
+   image-resizing tool:
    ```markdown
-   **Audience:** photographers comfortable opening a terminal.
-   **Topic:** batch-resizing photos with shrinkpic.
-   **Goal:** resize a folder of photos for the web in one command.
+   Resize a whole folder of photos for the web in one command with shrinkpic.
+   You need to be comfortable opening a terminal; no programming required.
    ```
-2. **Quick start**: the smallest complete program that does something useful,
+2. Quick start: the smallest complete program that does something useful,
    how to run it, and what appears.
-3. **Tasks**, simple to complex: one sentence of why, one complete example,
+3. Tasks, simple to complex: one sentence of why, one complete example,
    then a numbered explanation of what each part does.
-4. **Reference**: a table per function or option (name, type, default,
+4. Reference: a table per function or option (name, type, default,
    description), plus returns and errors raised.
-5. **Troubleshooting**: each error message or symptom, its cause, its fix.
-6. **Safety**: what it reads, writes (with paths), runs and sends over the
+5. Troubleshooting: each error message or symptom, its cause, its fix.
+6. Safety: what it reads, writes (with paths), runs and sends over the
    network, and what not to pass it. "None" is a valid answer per item.
 
 A small project fits all six in one README. A larger one gets a short README
@@ -39,9 +39,9 @@ only when the audience includes beginners in it.
 
 ## Examples contract
 
-- Each code block is a **complete program** (imports, setup, data) that runs
+- Each code block is a complete program (imports, setup, data) that runs
   when copied alone. Repeat setup instead of relying on an earlier block.
-- Shown output is **copied from a real run**. Mark output that varies:
+- Shown output is copied from a real run. Mark output that varies:
   `# e.g. 2026-10-04 09:15 ...`, or fix it (a fake clock, a temp folder).
 - Use realistic scenarios and only options that exist in the code you read.
 
@@ -58,11 +58,19 @@ on the line before it) and skip it in the check.
 
 ## Style
 
-- Active voice, second person, one idea per sentence.
+- Active voice and second person. Vary sentence length; mix short sentences
+  with longer ones.
 - Define a term on first use; one name per thing.
 - Commands and key combinations exactly as typed.
 - Alt text on every image, describing what it shows.
 - Link to the reference instead of repeating it.
+- Sentence-case headings, with no emojis, arrows or horizontal rules between
+  sections.
+- Start each section with its content, not a sentence that restates the
+  heading, and don't describe the page's own layout ("the table below
+  compares...").
+- Run the finished prose through the humanizer skill (embedded mode) before
+  calling the page done.
 
 ## Common mistakes
 

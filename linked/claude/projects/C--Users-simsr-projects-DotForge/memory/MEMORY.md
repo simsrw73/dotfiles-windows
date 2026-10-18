@@ -1,2 +1,7 @@
 - [Strict-safe code everywhere](strict-safe-code.md) — global, all languages: enable strict checking; never disable it to paper over unsafe access
+- [Arch review output](arch-review-output.md) — /improve-codebase-architecture → markdown arch-imp-audit-(claude).md in repo root, not HTML in temp
 - [Typora for doc review](typora-doc-review.md) — user reviews markdown specs/plans in Typora; global hook auto-opens them
+- [Delegation via Orca](delegation-via-orca.md) — hand easy work to Codex/Antigravity via orca; targeted tests only, review diffs, sentinel-XDG full run
+- [Pure-PowerShell fallbacks](pure-powershell-fallbacks.md) — preference (not yet a rule): tools DotForge itself needs, like gsudo, get a pure-PowerShell fallback
+- [Leave a folder before deleting it](leave-folder-before-deleting.md) — cd out of worktrees / stop scans first; my own cwd caused every Windows 'Permission denied' leftover
+- [Real tools write known folders](real-tools-write-known-folders.md) — glow writes real AppData despite XDG; broot edits shell profiles on first run; probe safely, clean up only what you created
