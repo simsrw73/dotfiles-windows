@@ -1,39 +1,129 @@
 {
+  "vim_mode": false,
+  "markdown_preview": {
+    "font_size": 18
+  },
   "agent_ui_font_size": 18.0,
   "buffer_font_weight": 400.0,
   "cli_default_open_behavior": "existing_window",
   "autosave": "on_focus_change",
+  "format_on_save": "on",
+  "formatter": "auto",
+  "auto_signature_help": true,
+  "colorize_brackets": true,
+  "show_whitespaces": "boundary",
+  "indent_guides": {
+    "enabled": true
+  },
+  "inlay_hints": {
+    "enabled": true
+  },
+  "diagnostics": {
+    "inline": {
+      "enabled": true
+    }
+  },
+  "terminal": {
+    "shell": {
+      "program": "pwsh"
+    },
+    "working_directory": "current_project_directory"
+  },
+  "debugger": {
+    "dock": "bottom",
+    "save_breakpoints": true
+  },
+  "auto_install_extensions": {
+    "powershell": true,
+    "perl": true,
+    "csharp": true,
+    "lua": true,
+    "ruby": true,
+    "ini": true,
+    "toml": true,
+    "tombi": true,
+    "log": true,
+    "dockerfile": true,
+    "html": true,
+    "xml": true,
+    "scss": true,
+    "sql": true,
+    "make": true,
+    "env": true,
+    "csv": true,
+    "python-requirements": true,
+    "git-firefly": true,
+    "ssh-config": true,
+    "marksman": true,
+    "markdownlint": true
+  },
+  "file_types": {
+    "PowerShell": ["ps1", "psm1", "psd1"],
+    "JSONC": [
+      "**/.zed/**/*.json",
+      "**/zed/**/*.json",
+      "**/Zed/**/*.json",
+      "**/.vscode/**/*.json",
+      "tsconfig*.json",
+      "jsconfig*.json"
+    ],
+    "Dockerfile": [
+      "Dockerfile",
+      "Dockerfile.*",
+      "*.dockerfile",
+      "Containerfile",
+      "Containerfile.*"
+    ],
+    "Docker Compose": [
+      "compose.yaml",
+      "compose.yml",
+      "compose.*.yaml",
+      "compose.*.yml",
+      "docker-compose.yaml",
+      "docker-compose.yml",
+      "docker-compose.*.yaml",
+      "docker-compose.*.yml"
+    ]
+  },
   "edit_predictions": {
-    "provider": "copilot",
+    "provider": "copilot"
   },
   "agent_servers": {
+    "Oh My Pi": {
+      "type": "custom",
+      "command": "omp",
+      "args": ["acp"]
+    },
     "codex-acp": {
-      "type": "registry",
+      "default_config_options": {
+        "model": "gpt-6.1-sol"
+      },
+      "type": "registry"
     },
     "claude-acp": {
       "default_config_options": {
         "model": "sonnet"
       },
-      "type": "registry",
-    },
+      "type": "registry"
+    }
   },
   "buffer_font_family": "AtkynsonMono Nerd Font Mono",
   "project_panel": {
-    "dock": "right",
+    "dock": "right"
   },
   "outline_panel": {
-    "dock": "right",
+    "dock": "right"
   },
   "collaboration_panel": {
-    "dock": "right",
+    "dock": "right"
   },
   "agent": {
     "dock": "left",
     "favorite_models": [],
-    "model_parameters": [],
+    "model_parameters": []
   },
   "git_panel": {
-    "dock": "right",
+    "dock": "right"
   },
   "icon_theme": "Catppuccin Mocha",
   "ui_font_size": 18.0,
@@ -41,33 +131,270 @@
   "theme": {
     "mode": "system",
     "light": "One Light",
-    "dark": "Catppuccin Mocha (Blur)",
+    "dark": "Catppuccin Mocha"
   },
-  "markdown_preview_font_size": 18,
   "lsp": {
     "powershell-es": {
       "initialization_timeout": 600,
       "initialization_options": {
         "enableProfileLoading": false
+      },
+      "settings": {
+        "powershell": {
+          "enableProfileLoading": false,
+          "scriptAnalysis": {
+            "enable": true
+          },
+          "codeFormatting": {
+            "preset": "OTBS",
+            "whitespaceBeforeOpenBrace": true,
+            "whitespaceBeforeOpenParen": true,
+            "whitespaceAroundOperator": true,
+            "whitespaceAfterSeparator": true,
+            "whitespaceBetweenParameters": true,
+            "whitespaceInsideBrace": true,
+            "addWhitespaceAroundPipe": true
+          }
+        }
+      }
+    },
+    "perlnavigator-server": {
+      // The extension launches a POSIX npm shim on Windows; use its JavaScript entrypoint.
+      "binary": {
+        "path": "C:\\Users\\simsr\\.local\\share\\fnm\\aliases\\default\\node.exe",
+        "arguments": [
+          "C:\\Users\\simsr\\.local\\share\\zed\\extensions\\work\\perl\\node_modules\\perlnavigator-server\\bin\\perlnavigator",
+          "--stdio"
+        ]
+      },
+      "settings": {
+        "perlnavigator": {
+          // Use native Perl, not the interpreter bundled with Git.
+          "perlPath": "C:\\Users\\simsr\\.local\\share\\StrawberryPerl\\perl\\bin\\perl.exe",
+          "enableWarnings": true,
+          "perlCompileEnabled": true,
+          "perltidyEnabled": true,
+          "perlcriticEnabled": true
+        }
+      }
+    },
+    "rust-analyzer": {
+      "initialization_options": {
+        "check": {
+          "command": "clippy"
+        }
+      }
+    },
+    "clangd": {
+      "binary": {
+        "arguments": ["--clang-tidy"]
+      }
+    },
+    "eslint": {
+      "settings": {
+        "workingDirectory": {
+          "mode": "auto"
+        }
+      }
+    },
+    "ruby-lsp": {
+      "initialization_options": {
+        "enabledFeatures": {
+          "diagnostics": false
+        }
+      }
+    },
+    "rubocop": {
+      "initialization_options": {
+        "safeAutocorrect": true
       }
     }
   },
   "languages": {
     "PowerShell": {
-      "binary": {
-        "path": "pwsh",
-        "arguments": [
-          "-NoProfile",
-          "-NonInteractive",
-          "-ExecutionPolicy",
-          "Bypass",
-          "-File",
-          "C:\\Users\\simsr\\.local\\share\\zed\\extensions\\work\\powershell\\powershell-es-v4.7.0\\PowerShellEditorServices\\Start-EditorServices.ps1",
-          "-Stdio",
-          "-LogLevel",
-          "Normal"
-        ]
+      "tab_size": 4,
+      "language_servers": ["powershell-es"],
+      "formatter": "language_server"
+    },
+    "Perl": {
+      "tab_size": 4,
+      "language_servers": ["perlnavigator-server"],
+      "formatter": "language_server"
+    },
+    "JavaScript": {
+      "tab_size": 2,
+      "language_servers": ["vtsls", "eslint", "tailwindcss-language-server"],
+      "formatter": "prettier",
+      "code_actions_on_format": {
+        "source.fixAll.eslint": true
       }
+    },
+    "TypeScript": {
+      "tab_size": 2,
+      "language_servers": ["vtsls", "eslint", "tailwindcss-language-server"],
+      "formatter": "prettier",
+      "code_actions_on_format": {
+        "source.fixAll.eslint": true
+      }
+    },
+    "TSX": {
+      "tab_size": 2,
+      "language_servers": ["vtsls", "eslint", "tailwindcss-language-server"],
+      "formatter": "prettier",
+      "code_actions_on_format": {
+        "source.fixAll.eslint": true
+      }
+    },
+    "Python": {
+      "tab_size": 4,
+      "language_servers": ["basedpyright", "ruff"],
+      "code_actions_on_format": {
+        "source.organizeImports.ruff": true,
+        "source.fixAll.ruff": true
+      },
+      "formatter": {
+        "language_server": {
+          "name": "ruff"
+        }
+      }
+    },
+    "Rust": {
+      "tab_size": 4,
+      "language_servers": ["rust-analyzer"],
+      "formatter": "language_server"
+    },
+    "C": {
+      "tab_size": 4,
+      "language_servers": ["clangd"],
+      "formatter": "language_server"
+    },
+    "C++": {
+      "tab_size": 4,
+      "language_servers": ["clangd"],
+      "formatter": "language_server"
+    },
+    "CSharp": {
+      "tab_size": 4,
+      "language_servers": ["roslyn"],
+      "formatter": "language_server"
+    },
+    "Lua": {
+      "tab_size": 4,
+      "language_servers": ["lua-language-server"],
+      "formatter": {
+        "external": {
+          "command": "stylua",
+          "arguments": [
+            "--respect-ignores",
+            "--stdin-filepath",
+            "{buffer_path}",
+            "-"
+          ]
+        }
+      }
+    },
+    "Ruby": {
+      "tab_size": 2,
+      "language_servers": ["ruby-lsp", "rubocop"],
+      "formatter": {
+        "language_server": {
+          "name": "rubocop"
+        }
+      }
+    },
+    // INI dialects have no shared safe formatter; Prettier has no INI parser.
+    "ini": {
+      "format_on_save": "off",
+      "formatter": "none"
+    },
+    "JSON": {
+      "tab_size": 2,
+      "formatter": "prettier"
+    },
+    "JSONC": {
+      "tab_size": 2,
+      "formatter": "prettier",
+      "prettier": {
+        "trailingComma": "none"
+      }
+    },
+    "TOML": {
+      "tab_size": 2,
+      "language_servers": ["tombi"],
+      "formatter": "language_server"
+    },
+    "YAML": {
+      "tab_size": 2,
+      "language_servers": ["yaml-language-server"],
+      "formatter": "prettier"
+    },
+    "Markdown": {
+      "tab_size": 2,
+      "soft_wrap": "editor_width",
+      "preferred_line_length": 100,
+      "language_servers": ["marksman", "markdownlint"],
+      "formatter": "prettier",
+      "prettier": {
+        "proseWrap": "preserve"
+      },
+      "remove_trailing_whitespace_on_save": false
+    },
+    // Preserve log contents, including trailing spaces and missing final newlines.
+    "LOG": {
+      "format_on_save": "off",
+      "formatter": "none",
+      "remove_trailing_whitespace_on_save": false,
+      "ensure_final_newline_on_save": false,
+      "soft_wrap": "none"
+    },
+    "Dockerfile": {
+      "tab_size": 4,
+      "language_servers": ["docker-language-server"],
+      "formatter": "language_server"
+    },
+    "Docker Compose": {
+      "tab_size": 2,
+      "language_servers": ["docker-language-server", "yaml-language-server"],
+      "formatter": "prettier",
+      "prettier": {
+        "allowed": true,
+        "parser": "yaml"
+      }
+    },
+    "HTML": {
+      "tab_size": 2,
+      "formatter": "prettier"
+    },
+    "CSS": {
+      "tab_size": 2,
+      "formatter": "prettier"
+    },
+    "SCSS": {
+      "tab_size": 2,
+      "formatter": "prettier"
+    },
+    "XML": {
+      "tab_size": 2,
+      "formatter": "prettier"
+    },
+    "Shell Script": {
+      "tab_size": 2,
+      "language_servers": ["bash-language-server"],
+      "formatter": {
+        "external": {
+          "command": "shfmt",
+          "arguments": ["-filename", "{buffer_path}", "-"]
+        }
+      }
+    },
+    "CSV": {
+      "format_on_save": "off",
+      "formatter": "none",
+      "remove_trailing_whitespace_on_save": false
+    },
+    "Plain Text": {
+      "format_on_save": "off",
+      "formatter": "none"
     }
   }
 }

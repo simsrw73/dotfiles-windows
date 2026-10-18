@@ -1,20 +1,25 @@
-// Zed settings
-//
-// For information on how to configure Zed, see the Zed
-// documentation: https://zed.dev/docs/configuring-zed
-//
-// To see all of Zed's default settings without changing your
-// custom settings, run `zed: open default settings` from the
-// command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "agent_ui_font_size": 18.0,
   "buffer_font_weight": 400.0,
   "cli_default_open_behavior": "existing_window",
   "autosave": "on_focus_change",
+  // "format_on_save": "on",
+  "edit_predictions": {
+    "provider": "copilot",
+  },
   "agent_servers": {
+    "Oh My Pi": {
+      "type": "custom",
+      "command": "omp",
+      "args": ["acp"],
+    },
     "codex-acp": {
       "type": "registry",
     },
     "claude-acp": {
+      "default_config_options": {
+        "model": "sonnet",
+      },
       "type": "registry",
     },
   },
@@ -33,25 +38,42 @@
     "favorite_models": [],
     "model_parameters": [],
   },
-  "features": {
-    "edit_prediction_provider": "copilot",
-  },
-  "assistant": {
-    "version": "2",
-    "default_model": {
-      "provider": "copilot_chat",
-      "model": "claude-3-7-sonnet",
-    },
-  },
   "git_panel": {
     "dock": "right",
   },
   "icon_theme": "Catppuccin Mocha",
-  "ui_font_size": 16.0,
+  "ui_font_size": 18.0,
   "buffer_font_size": 18.0,
   "theme": {
     "mode": "system",
     "light": "One Light",
-    "dark": "Catppuccin Macchiato",
+    "dark": "Catppuccin Mocha (Blur)",
+  },
+  "markdown_preview_font_size": 18,
+  "lsp": {
+    "powershell-es": {
+      "initialization_timeout": 600,
+      "initialization_options": {
+        "enableProfileLoading": false,
+      },
+    },
+  },
+  "languages": {
+    "PowerShell": {
+      "binary": {
+        "path": "pwsh",
+        "arguments": [
+          "-NoProfile",
+          "-NonInteractive",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\simsr\\.local\\share\\zed\\extensions\\work\\powershell\\powershell-es-v4.7.0\\PowerShellEditorServices\\Start-EditorServices.ps1",
+          "-Stdio",
+          "-LogLevel",
+          "Normal",
+        ],
+      },
+    },
   },
 }

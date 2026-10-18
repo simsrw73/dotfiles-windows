@@ -1,15 +1,26 @@
 ---
 name: dotfiles-repo-layout
-description: How ~/.config (dotfiles-windows repo) decides what is tracked; secrets purged 2026-09-26; AHK/FlowLauncher junctions
+description: "Dotfiles are chezmoi (~/.local/share/chezmoi -> simsrw73/dotfiles-windows); linked/ junctions, Bitwarden secrets, OneDrive clobber hazard"
 metadata:
+  node_type: memory
   type: project
+  originSessionId: 3492d0e6-af52-4e25-9fa9-db0334ec0323
+  modified: 2026-10-18T19:36:47.270Z
 ---
-~/.config is the private repo simsrw73/dotfiles-windows. On 2026-09-26 the history was rewritten with git-filter-repo to remove pushed secrets (GPG private keys, claude/.credentials.json, copilot auth.db, docker token seed) and Claude transcripts. It was then force-pushed. The old history is in ~/dotfiles-backup-2026-09-26.git.
 
-**Why:** a blanket "Backup" commit had swept up secrets and runtime junk.
+Since ~2026-09-27 the dotfiles live in chezmoi source `~/.local/share/chezmoi` (repo simsrw73/dotfiles-windows).
+`~/.config` is no longer a git repo. `~/.config/<name>` for AutoHotKey, FlowLauncher, claude, komorebi, nvim,
+powershell, psmux, wpm, yasb and yazi are junctions into `linked/<name>`, so edits there show in the source's git status.
+Secrets (ssh keys, gpg key 8FDC1EB03BECE139, env, flow-github) come from Bitwarden folder `dotfiles`. `bootstrap.ps1` + README
+"Fresh machine" / "Before wiping" sections are the restore runbook. Pre-commit runs gitleaks.
+
+**Why:** the 2026-09-26 history rewrite purged pushed secrets. The pre-purge history is in ~/dotfiles-backup-2026-09-26.git (USB only).
 **How to apply:**
-- claude/ is whitelisted in .gitignore: only settings.json, hooks/, skills/ (not skills/synced), the plugin manifests and projects/*/memory/. Never `git add -f` anything else there.
-- gnupg/, github-copilot/, docker/ and gh/hosts.yml are ignored on purpose.
-- FlowLauncher's "Github Quick Launcher" plugin settings hold a GitHub token and are ignored.
-- AutoHotKey/ and FlowLauncher/ are the real folders now. %APPDATA%\FlowLauncher and OneDrive\Documents\AutoHotkey are junctions pointing into .config. AutoHotKey/Lib/KeyChord is a submodule.
+- The claude/ whitelist in .gitignore still applies. Skills junctioned from `~/.agents/skills` (an installer store, not in any repo)
+  show up as untracked: don't commit them.
+- OneDrive hazard: `OneDrive\Documents\AutoHotkey` was a junction into .config. On 2026-10-18 OneDrive put older copies of the AHK
+  files and the Legend submodule back in place and left the current ones as `*-cassiel.ahk` conflict copies. Before committing
+  "modified" AHK/Flow files, check whether their content is just an older blob from history.
+- projects/dotfiles-chezmoi is an orphan worktree of the deleted ~/.config/.git; projects/dotfiles-windows is an old clone.
+- `chezmoi status` needs Bitwarden unlocked (the private_dot_env.tmpl template).
 Related: [[yasb-bar-design]], [[komorebi-ahk-setup]]
