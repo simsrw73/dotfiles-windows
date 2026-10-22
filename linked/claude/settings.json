@@ -8,7 +8,7 @@
     "allow": [],
     "defaultMode": "plan",
     "additionalDirectories": [
-      "C:\\Users\\simsr\\projects"
+      "~/projects"
     ]
   },
   "hooks": {
@@ -18,14 +18,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "pwsh",
-            "args": [
-              "-NoProfile",
-              "-ExecutionPolicy",
-              "Bypass",
-              "-File",
-              "C:\\Users\\simsr\\.config\\claude\\hooks\\confirm-window.ps1"
-            ],
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$HOME\\.config\\claude\\hooks\\confirm-window.ps1\"",
+            "shell": "powershell",
             "timeout": 3600,
             "statusMessage": "Waiting for you to OK a window..."
           }
@@ -38,7 +32,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$j=[Console]::In.ReadToEnd()|ConvertFrom-Json; $f=$j.tool_response.filePath; if(-not $f){$f=$j.tool_input.file_path}; if($f -and $f -match '\\.md$' -and $f -match '([\\\\/](specs|plans)[\\\\/]|-design\\.md$)'){Start-Process 'C:\\Users\\simsr\\AppData\\Local\\Programs\\Typora\\Typora.exe' -ArgumentList $f}",
+            "command": "$j=[Console]::In.ReadToEnd()|ConvertFrom-Json; $f=$j.tool_response.filePath; if(-not $f){$f=$j.tool_input.file_path}; if($f -and $f -match '\\.md$' -and $f -match '([\\\\/](specs|plans)[\\\\/]|-design\\.md$)'){Start-Process \"$env:LOCALAPPDATA\\Programs\\Typora\\Typora.exe\" -ArgumentList $f}",
             "shell": "powershell",
             "statusMessage": "Opening doc in Typora...",
             "async": true
@@ -52,14 +46,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "pwsh",
-            "args": [
-              "-NoProfile",
-              "-ExecutionPolicy",
-              "Bypass",
-              "-File",
-              "C:\\Users\\simsr\\.config\\claude\\hooks\\claude-notify.ps1"
-            ]
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$HOME\\.config\\claude\\hooks\\claude-notify.ps1\"",
+            "shell": "powershell"
           }
         ]
       }
@@ -69,14 +57,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "pwsh",
-            "args": [
-              "-NoProfile",
-              "-ExecutionPolicy",
-              "Bypass",
-              "-File",
-              "C:\\Users\\simsr\\.config\\claude\\hooks\\claude-notify.ps1"
-            ]
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$HOME\\.config\\claude\\hooks\\claude-notify.ps1\"",
+            "shell": "powershell"
           }
         ]
       }
@@ -89,7 +71,7 @@
   "defaultShell": "powershell",
   "statusLine": {
     "type": "command",
-    "command": "cols=${COLUMNS:-}; case \"$cols\" in \"\"|*[!0-9]*) cols=$(stty size </dev/tty 2>/dev/null | awk '{print $2}');; esac; case \"$cols\" in \"\"|*[!0-9]*) cols=120;; esac; export COLUMNS=$(( cols > 4 ? cols - 4 : 1 )); plugin_dir=$(ls -1d \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/plugins/cache/*/claude-hud/*/ 2>/dev/null | sort -V | tail -1); exec \"/c/Users/simsr/.local/share/fnm/aliases/default/node\" \"${plugin_dir}dist/index.js\""
+    "command": "exec \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/claude-hud/statusline.cmd\""
   },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,

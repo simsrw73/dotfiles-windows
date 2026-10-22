@@ -167,6 +167,47 @@ Describe 'Move-IntoLinked' {
     }
 }
 
+Describe 'Update-HomePath' {
+    BeforeEach {
+        $file = Join-Path $TestDrive "$(New-Guid).json"
+        $homeDir = 'C:\Users\newname'
+    }
+    It 'rewrites plain, JSON-escaped, forward-slash and POSIX paths' {
+        $in = @(
+            'C:\Users\old\AppData\x.exe'
+            '"C:\\Users\\old\\.config\\y.png"'
+            'c:/Users/old/.local/z'
+            'exec "/c/Users/old/.local/share/node"'
+        ) -join "`n"
+        Set-Content -LiteralPath $file -Value $in -NoNewline
+        Update-HomePath -Path $file -HomeDir $homeDir | Should -Be 4
+        Get-Content -LiteralPath $file -Raw | Should -Be (@(
+            'C:\Users\newname\AppData\x.exe'
+            '"C:\\Users\\newname\\.config\\y.png"'
+            'C:/Users/newname/.local/z'
+            'exec "/c/Users/newname/.local/share/node"'
+        ) -join "`n")
+    }
+    It 'leaves current, Public and Default paths, and the file, alone' {
+        Set-Content -LiteralPath $file -Value 'C:\Users\NewName\a; C:\Users\Public\b; C:\Users\Default\c' -NoNewline
+        $before = (Get-Item -LiteralPath $file).LastWriteTimeUtc
+        Start-Sleep -Milliseconds 20
+        Update-HomePath -Path $file -HomeDir $homeDir | Should -Be 0
+        (Get-Item -LiteralPath $file).LastWriteTimeUtc | Should -Be $before
+    }
+    It 'keeps a UTF-8 BOM and CRLF line endings' {
+        [IO.File]::WriteAllText($file, "C:\Users\old\a`r`nb", [Text.UTF8Encoding]::new($true))
+        Update-HomePath -Path $file -HomeDir $homeDir | Should -Be 1
+        $bytes = [IO.File]::ReadAllBytes($file)
+        $bytes[0..2] | Should -Be @(0xEF, 0xBB, 0xBF)
+        [Text.Encoding]::UTF8.GetString($bytes, 3, $bytes.Length - 3) | Should -Be "C:\Users\newname\a`r`nb"
+    }
+    It 'throws for a home outside C:\Users' {
+        Set-Content -LiteralPath $file -Value 'x'
+        { Update-HomePath -Path $file -HomeDir 'D:\home\me' } | Should -Throw '*not C:\Users*'
+    }
+}
+
 Describe 'ConvertFrom-CargoInstallList' {
     It 'returns crate names from `cargo install --list` output, including git installs' {
         $text = @(

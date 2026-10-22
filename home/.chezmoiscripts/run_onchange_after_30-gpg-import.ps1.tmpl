@@ -2,6 +2,8 @@
 $ErrorActionPreference = 'Stop'
 # chezmoi's process predates the user env var set by 05-user-env, so set it here.
 $env:GNUPGHOME = Join-Path $HOME '.config\gnupg'
+# gpg refuses a GNUPGHOME that doesn't exist yet (fresh install).
+New-Item -ItemType Directory -Force $env:GNUPGHOME | Out-Null
 $gpg = git config --global --get gpg.program; if (-not $gpg) { $gpg = 'gpg' }
 & $gpg --list-secret-keys 8FDC1EB03BECE139 *> $null
 if ($LASTEXITCODE -eq 0) { Write-Host 'gpg key already present'; return }

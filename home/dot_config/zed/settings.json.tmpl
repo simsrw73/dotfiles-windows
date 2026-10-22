@@ -161,16 +161,16 @@
     "perlnavigator-server": {
       // The extension launches a POSIX npm shim on Windows; use its JavaScript entrypoint.
       "binary": {
-        "path": "C:\\Users\\simsr\\.local\\share\\fnm\\aliases\\default\\node.exe",
+        "path": "{{ .chezmoi.homeDir | replace "\\" "/" }}/.local/share/fnm/aliases/default/node.exe",
         "arguments": [
-          "C:\\Users\\simsr\\.local\\share\\zed\\extensions\\work\\perl\\node_modules\\perlnavigator-server\\bin\\perlnavigator",
+          "{{ .chezmoi.homeDir | replace "\\" "/" }}/.local/share/zed/extensions/work/perl/node_modules/perlnavigator-server/bin/perlnavigator",
           "--stdio"
         ]
       },
       "settings": {
         "perlnavigator": {
           // Use native Perl, not the interpreter bundled with Git.
-          "perlPath": "C:\\Users\\simsr\\.local\\share\\StrawberryPerl\\perl\\bin\\perl.exe",
+          "perlPath": "{{ .chezmoi.homeDir | replace "\\" "/" }}/.local/share/StrawberryPerl/perl/bin/perl.exe",
           "enableWarnings": true,
           "perlCompileEnabled": true,
           "perltidyEnabled": true,

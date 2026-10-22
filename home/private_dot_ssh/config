@@ -32,34 +32,34 @@ Host rt1
 Hostname 192.168.99.1
 user Yosef
 port 42022
-IdentityFile C:\Users\simsr\.ssh\routeros_rsa
+IdentityFile ~/.ssh/routeros_rsa
 
 Host sw1
 Hostname 192.168.99.2
 user Yosef
 port 42022
-IdentityFile C:\Users\simsr\.ssh\routeros_rsa
+IdentityFile ~/.ssh/routeros_rsa
 
 Host sw2
 Hostname 192.168.99.3
 user Yosef
 port 42022
-IdentityFile C:\Users\simsr\.ssh\routeros_rsa
+IdentityFile ~/.ssh/routeros_rsa
 
 Host ap1
 Hostname 192.168.99.11
 user Yosef
 port 42022
-IdentityFile C:\Users\simsr\.ssh\routeros_rsa
+IdentityFile ~/.ssh/routeros_rsa
 
 Host ap2
 Hostname 192.168.99.12
 user Yosef
 port 42022
-IdentityFile C:\Users\simsr\.ssh\routeros_rsa
+IdentityFile ~/.ssh/routeros_rsa
 
 Host ap3
 Hostname 192.168.99.13
 user Yosef
 port 42022
-IdentityFile C:\Users\simsr\.ssh\routeros_rsa
+IdentityFile ~/.ssh/routeros_rsa

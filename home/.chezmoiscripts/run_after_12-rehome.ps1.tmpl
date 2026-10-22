@@ -1,0 +1,14 @@
+# Runs on every apply: apps can write an old home path back at any time.
+$ErrorActionPreference = 'Stop'
+Import-Module '{{ joinPath .chezmoi.workingTree "lib" "Dotfiles.psm1" }}' -Force
+
+$files = @(
+{{- range .rehome }}
+    '{{ joinPath $.chezmoi.workingTree . }}'
+{{- end }}
+)
+foreach ($f in $files) {
+    if (-not (Test-Path -LiteralPath $f)) { continue }
+    $n = Update-HomePath -Path $f
+    if ($n) { Write-Host "rehome $f : $n path(s)" }
+}

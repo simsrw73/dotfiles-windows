@@ -1,0 +1,4 @@
+{{- $pnpm := printf "%s/.local/share/scoop/apps/pnpm/current" (.chezmoi.homeDir | replace "\\" "/") -}}
+cacheDir: {{ $pnpm }}/cache
+stateDir: {{ $pnpm }}/state
+storeDir: {{ $pnpm }}/store

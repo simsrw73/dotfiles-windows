@@ -6,7 +6,7 @@
 # live copies have mixed line endings: store bytes exactly
 home/dot_config/carapace/specs/*.yaml -text
 home/dot_config/delta/catppuccin.gitconfig -text
-home/dot_config/git/config -text
+home/dot_config/git/config.tmpl -text
 linked/claude/projects/C--Users-simsr--config/memory/yasb-bar-design.md -text
 
 # Flow Launcher rewrites runtime state into its settings; lib/flow-state.sed

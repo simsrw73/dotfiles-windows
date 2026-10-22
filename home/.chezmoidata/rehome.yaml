@@ -1,0 +1,9 @@
+# Files that apps rewrite with absolute paths, so they can't use ~ or templates.
+# run_after_12-rehome.ps1 points any C:\Users\<other>\ in them at the current
+# home on every apply. Paths are relative to the chezmoi working tree.
+rehome:
+  - linked/FlowLauncher/Settings/Settings.json
+  - linked/FlowLauncher/Settings/Plugins/Flow.Launcher.Plugin.Zoxide/Settings.json
+  - linked/yasb/launchpad/apps.json
+  - linked/claude/plugins/installed_plugins.json
+  - linked/claude/plugins/known_marketplaces.json

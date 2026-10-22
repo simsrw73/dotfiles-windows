@@ -23,7 +23,7 @@
   "Theme": "Catppuccin Mocha",
   "UseDropShadowEffect": true,
   "BackdropType": 1,
-  "ReleaseNotesVersion": "2.1.4",
+  "ReleaseNotesVersion": "2.1.3",
   "WindowHeightSize": 42,
   "ItemHeightSize": 58,
   "QueryBoxFontSize": 16,
@@ -161,7 +161,7 @@
   "CustomShortcuts": [],
   "DontPromptUpdateMsg": false,
   "EnableUpdateLog": false,
-  "StartFlowLauncherOnSystemStartup": false,
+  "StartFlowLauncherOnSystemStartup": true,
   "UseLogonTaskForStartup": false,
   "HideOnStartup": true,
   "HideNotifyIcon": false,
@@ -171,8 +171,8 @@
   "ShowAtTopmost": false,
   "SearchQueryResultsWithDelay": true,
   "SearchDelayTime": 150,
-  "SearchWindowScreen": "Cursor",
-  "SearchWindowAlign": "Center",
+  "SearchWindowScreen": "Focus",
+  "SearchWindowAlign": "CenterTop",
   "CustomScreenNumber": 1,
   "IgnoreHotkeysOnFullscreen": false,
   "Proxy": {
@@ -186,8 +186,8 @@
   "AnimationSpeed": "Medium",
   "CustomAnimationLength": 360,
   "PluginSettings": {
-    "PythonExecutablePath": "C:\\Users\\simsr\\AppData\\Local\\Python\\bin\\pythonw.exe",
-    "NodeExecutablePath": "C:\\Users\\simsr\\.local\\state\\fnm_multishells\\31168_1790347936793\\node.exe",
+    "PythonExecutablePath": "C:\\Users\\simsrw73\\AppData\\Local\\Python\\bin\\pythonw.exe",
+    "NodeExecutablePath": "C:\\Users\\simsrw73\\.local\\state\\fnm_multishells\\31168_1790347936793\\node.exe",
     "Plugins": {
       "0ECADE17459B49F587BF81DC3A125110": {
         "ID": "0ECADE17459B49F587BF81DC3A125110",

@@ -87,7 +87,7 @@ if (-not (Get-Command 'file' -ErrorAction SilentlyContinue)) {
 }
 
 # PNPM
-#    C:\Users\simsr\.local\share\pnpm
+#    ~\.local\share\pnpm
 $Env:PNPM_HOME = Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'pnpm'
 Add-DFToPath (Join-Path -Path $Env:XDG_DATA_HOME -ChildPath 'pnpm')
 
@@ -122,4 +122,4 @@ if (Get-Command moor.exe -ErrorAction Ignore) {
 
 # Window manager configs
 $Env:KOMOREBI_CONFIG_HOME = Join-Path -Path $Env:XDG_CONFIG_HOME -ChildPath 'komorebi'
-$Env:KOMOREBI_AHK_EXE = "C:\Users\simsr\AppData\Local\Programs\AutoHotkey\v2\AutoHotkey64.exe"
+$Env:KOMOREBI_AHK_EXE = "$Env:LOCALAPPDATA\Programs\AutoHotkey\v2\AutoHotkey64.exe"

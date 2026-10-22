@@ -96,6 +96,45 @@ function Move-IntoLinked {
     Set-DirectoryLink -Path $Live -Target $Linked -Kind Junction -Now $Now
 }
 
+function Update-HomePath {
+    # Points paths under another profile folder (C:\Users\<old>\...) at HomeDir, for
+    # files apps write with absolute paths. Handles plain, JSON-escaped (\\), forward
+    # slash and POSIX (/c/Users/...) forms. Returns how many paths it changed; the file
+    # is rewritten, in its own encoding, only when that is more than zero.
+    [CmdletBinding()]
+    [OutputType([int])]
+    param([Parameter(Mandatory)][string] $Path, [string] $HomeDir = $HOME)
+    if ($HomeDir.TrimEnd('\', '/') -notmatch '^([A-Za-z]):[\\/]Users[\\/]([^\\/]+)$') {
+        throw "Home is not C:\Users\<name>: $HomeDir"
+    }
+    $drive = $Matches[1].ToUpper()
+    $user = $Matches[2]
+    $keep = @($user, 'Public', 'Default')
+    $count = [ref] 0
+
+    $reader = [IO.StreamReader]::new($Path, [Text.UTF8Encoding]::new($false), $true)
+    try { $text = $reader.ReadToEnd(); $encoding = $reader.CurrentEncoding }
+    finally { $reader.Dispose() }
+
+    $windows = {
+        param($m)
+        if ($keep -contains $m.Groups['name'].Value) { return $m.Value }
+        $count.Value++
+        $s = $m.Groups['sep'].Value
+        "${drive}:${s}Users$s$user$s"
+    }
+    $posix = {
+        param($m)
+        if ($keep -contains $m.Groups['name'].Value) { return $m.Value }
+        $count.Value++
+        "/$($drive.ToLower())/Users/$user/"
+    }
+    $text = [regex]::Replace($text, '(?i)\b[A-Z]:(?<sep>\\\\|\\|/)Users\k<sep>(?<name>[^\\/"\s]+)\k<sep>', $windows)
+    $text = [regex]::Replace($text, '(?i)(?<![\w:])/[a-z]/Users/(?<name>[^/"\s]+)/', $posix)
+    if ($count.Value) { [IO.File]::WriteAllText($Path, $text, $encoding) }
+    $count.Value
+}
+
 function ConvertFrom-CargoInstallList {
     # Crate names from `cargo install --list`: unindented "name vX.Y.Z[ (source)]:" lines.
     param([string[]] $Lines = @())
@@ -131,4 +170,4 @@ function Get-ScoopNote {
     [pscustomobject]@{ App = $App; Notes = $text }
 }
 
-Export-ModuleMember -Function ConvertFrom-CargoInstallList, ConvertFrom-NameVersionList, Get-Missing, Get-ScoopNote, Get-BackupPath, Set-DirectoryLink, Move-IntoLinked
+Export-ModuleMember -Function ConvertFrom-CargoInstallList, ConvertFrom-NameVersionList, Get-Missing, Get-ScoopNote, Get-BackupPath, Set-DirectoryLink, Move-IntoLinked, Update-HomePath

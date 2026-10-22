@@ -11,5 +11,5 @@ window can't appear from your session.
 - Batch commits toward the end of a task so I only have to unlock once.
 
 # graphify
-- **graphify** (`C:\Users\simsr\.config\claude\skills\graphify\SKILL.md`) - any input to knowledge graph. Trigger: `/graphify`
+- **graphify** (`~\.config\claude\skills\graphify\SKILL.md`) - any input to knowledge graph. Trigger: `/graphify`
 When the user types `/graphify`, use the installed graphify skill or instructions before doing anything else.

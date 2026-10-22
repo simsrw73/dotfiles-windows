@@ -1,7 +1,8 @@
 <Configuration>
   <MappedFolders>
     <MappedFolder>
-      <HostFolder>C:\Users\simsr\.local\share\chezmoi</HostFolder>
+      <!-- .wsb files can't expand variables: edit this when the user folder changes. -->
+      <HostFolder>C:\Users\simsrw73\.local\share\chezmoi</HostFolder>
       <SandboxFolder>C:\dotfiles</SandboxFolder>
       <ReadOnly>true</ReadOnly>
     </MappedFolder>
