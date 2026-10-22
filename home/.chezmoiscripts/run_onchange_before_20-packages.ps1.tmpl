@@ -46,6 +46,20 @@ foreach ($m in (Get-Missing -Wanted @({{ range $i, $a := .packages.pwsh }}{{ if 
     Install-PSResource -Name $m -Scope CurrentUser -TrustRepository -Quiet
 }
 
+# --- DotForge: the shell runs an installed module, never a link to the checkout.
+# Releases come from PSGallery (prerelease until 1.0); dev builds from LocalGallery
+# (DotForge's build/Publish-DFLocal.ps1 -Install). Module-qualified: an old
+# PowerShellGet beta can shadow PSResourceGet's command names.
+$psrg = 'Microsoft.PowerShell.PSResourceGet'
+$localGallery = Join-Path $HOME 'repos\Local_PSGallery'
+New-Item -ItemType Directory -Force $localGallery | Out-Null
+$repo = & "$psrg\Get-PSResourceRepository" -Name LocalGallery -ErrorAction Ignore
+if (-not $repo) { & "$psrg\Register-PSResourceRepository" -Name LocalGallery -Uri $localGallery -Trusted }
+elseif ($repo.Uri.LocalPath.TrimEnd('\') -ne $localGallery) { & "$psrg\Set-PSResourceRepository" -Name LocalGallery -Uri $localGallery }
+if (-not (& "$psrg\Get-InstalledPSResource" -Name DotForge -ErrorAction Ignore)) {
+    & "$psrg\Install-PSResource" -Name DotForge -Repository PSGallery -Prerelease -TrustRepository -Scope CurrentUser -Quiet
+}
+
 # --- MSVC linker for cargo builds: winget installs Visual Studio without the C++ workload.
 $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
 if (Test-Path $vswhere) {

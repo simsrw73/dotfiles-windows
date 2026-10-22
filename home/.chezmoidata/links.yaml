@@ -29,5 +29,5 @@ links:
     target: "~/.config/zed"
   - path: "%LOCALAPPDATA%/Zed"
     target: "~/.local/share/zed"
-  - path: "~/{docs}/PowerShell/Modules/DotForge"
-    target: "~/projects/DotForge"
+# No link for DotForge: the shell runs an installed module (packages script),
+# and dev builds go through LocalGallery (DotForge's build/Publish-DFLocal.ps1).
