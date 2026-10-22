@@ -46,6 +46,19 @@ foreach ($m in (Get-Missing -Wanted @({{ range $i, $a := .packages.pwsh }}{{ if 
     Install-PSResource -Name $m -Scope CurrentUser -TrustRepository -Quiet
 }
 
+# --- MSVC linker for cargo builds: winget installs Visual Studio without the C++ workload.
+$vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+if (Test-Path $vswhere) {
+    $hasVC = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+    $vs = & $vswhere -latest -products * -property installationPath
+    if (-not $hasVC -and $vs) {
+        $setup = Join-Path (Split-Path $vswhere) 'setup.exe'
+        Write-Host "Adding the C++ workload to $vs (for cargo's linker)"
+        gsudo pwsh -NoProfile -Command "Start-Process -Wait -FilePath '$setup' -ArgumentList 'modify', '--installPath', '`"$vs`"', '--add', 'Microsoft.VisualStudio.Workload.NativeDesktop', '--includeRecommended', '--passive', '--norestart'"
+    }
+}
+else { Write-Warning 'Visual Studio not found; cargo installs will fail without the MSVC linker' }
+
 # --- cargo (rustup from winget; homes match DotForge's XDG layout)
 $env:RUSTUP_HOME = Join-Path $HOME '.local\share\rustup'
 $env:CARGO_HOME = Join-Path $HOME '.local\share\cargo'

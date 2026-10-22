@@ -1,0 +1,60 @@
+# Persistent user env vars apps need before first launch (and outside the pwsh profile).
+# Runs on every apply (it only writes what differs), so changes to DotForge's
+# records reach the user environment too.
+$ErrorActionPreference = 'Stop'
+$xdg = [ordered]@{
+    XDG_CONFIG_HOME = Join-Path $HOME '.config'
+    XDG_DATA_HOME   = Join-Path $HOME '.local\share'
+    XDG_STATE_HOME  = Join-Path $HOME '.local\state'
+    XDG_CACHE_HOME  = Join-Path $HOME '.cache'
+    XDG_BIN_HOME    = Join-Path $HOME '.local\bin'
+}
+$vars = [ordered]@{}
+foreach ($k in $xdg.Keys) { $vars[$k] = $xdg[$k] }
+$vars.SCOOP = Join-Path $HOME '.local\share\scoop'
+$vars.KOMOREBI_CONFIG_HOME = Join-Path $HOME '.config\komorebi'
+$vars.GNUPGHOME = Join-Path $HOME '.config\gnupg'
+
+# Every tool's xdg.vars from DotForge's records, expanded as DotForge does
+# (${XDG_*_HOME} filled in, then canonicalized), so its session sees them as
+# already set. Only unset ones are added. bootstrap.ps1 clones DotForge before
+# the first apply.
+# Skipped: docker (Docker Desktop writes ~/.docker whatever DOCKER_CONFIG says).
+$skipTools = @('docker')
+$tools = Join-Path $HOME 'projects\DotForge\Tools'
+if (Test-Path $tools) {
+    foreach ($file in Get-ChildItem $tools -Filter *.json) {
+        $rec = Get-Content -LiteralPath $file.FullName -Raw | ConvertFrom-Json
+        if ($rec.xdg.method -ne 'env' -or $rec.name -in $skipTools) { continue }
+        foreach ($p in @($rec.xdg.vars?.PSObject.Properties)) {
+            if (-not $p) { continue }
+            $v = [regex]::Replace($p.Value, '\$\{(XDG_[A-Z]+_HOME)\}', { param($m) $xdg[$m.Groups[1].Value] })
+            if ($v -match '\$\{') { Write-Warning "user-env: skipped $($p.Name)=$($p.Value) ($($file.Name))"; continue }
+            # Defaults, as in DotForge: a value set elsewhere (scoop sets VCPKG_ROOT) stays.
+            if ([Environment]::GetEnvironmentVariable($p.Name, 'User')) { continue }
+            $vars[$p.Name] = [IO.Path]::GetFullPath($v).TrimEnd('\')
+        }
+    }
+}
+else { Write-Warning "user-env: $tools not found; only the XDG base folders are set" }
+
+# Written to the registry with one broadcast at the end: SetEnvironmentVariable
+# broadcasts on every call and waits on slow windows (seconds per variable).
+$changed = $false
+foreach ($k in $vars.Keys) {
+    if ([Environment]::GetEnvironmentVariable($k, 'User') -ne $vars[$k]) {
+        Set-ItemProperty -Path 'HKCU:\Environment' -Name $k -Value $vars[$k]
+        Write-Host "set $k=$($vars[$k])"
+        $changed = $true
+    }
+    Set-Item "env:$k" $vars[$k]
+}
+if ($changed) {
+    Add-Type -Namespace Win32 -Name UserEnv -MemberDefinition '
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint msg, UIntPtr wParam, string lParam,
+            uint flags, uint timeoutMs, out UIntPtr result);'
+    $r = [UIntPtr]::Zero
+    # HWND_BROADCAST, WM_SETTINGCHANGE, SMTO_ABORTIFHUNG, 2 s per window
+    [Win32.UserEnv]::SendMessageTimeout([IntPtr] 0xffff, 0x1A, [UIntPtr]::Zero, 'Environment', 2, 2000, [ref] $r) | Out-Null
+}

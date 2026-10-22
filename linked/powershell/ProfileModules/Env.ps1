@@ -56,33 +56,35 @@ function Get-GitUsrBinPath {
         return $null
     }
 
-    $gitExe = $cmd.Source
-    $gitRoot = Split-Path (Split-Path $gitExe -Parent) -Parent
-    $usrBin = Join-Path $gitRoot 'usr\bin'
-
-    if (Test-Path $usrBin) {
-        return $usrBin
+    # Git for Windows: <root>\cmd\git.exe. Scoop's git.exe is a shim, so look in the app dir.
+    $candidates = @(
+        Join-Path (Split-Path (Split-Path $cmd.Source -Parent) -Parent) 'usr\bin'
+        if ($Env:SCOOP) { Join-Path $Env:SCOOP 'apps\git\current\usr\bin' }
+    )
+    foreach ($usrBin in $candidates) {
+        if (Test-Path $usrBin) {
+            return $usrBin
+        }
     }
 
     return $null
 }
 
-$env:YAZI_FILE_ONE = "C:\Program Files\Git\usr\bin\file.exe"
-if (-not (Get-Command 'file' -ErrorAction SilentlyContinue)) {
+if (-not (Get-Command 'file' -ErrorAction Ignore)) {
     $gitUsrBin = Get-GitUsrBinPath
     if ($gitUsrBin) {
         $gitFile = Join-Path $gitUsrBin 'file.exe'
         if (Test-Path $gitFile) {
             $env:YAZI_FILE_ONE = $gitFile
         } else {
-            warn "file.exe not found in Git usr/bin directory. yazi may not work correctly."
+            Write-Warning "file.exe not found in Git usr/bin directory. yazi may not work correctly."
         }
         # $destFileShim = Join-Path $Env:XDG_BIN_HOME 'file.cmd'
         # if (-not (Test-Path $destFileShim)) {
         #     New-DFShim $gitFile
         # }
     } else {
-        warn "file.exe not found in PATH or in Git usr/bin directory. yazi may not work correctly."
+        Write-Warning "file.exe not found in PATH or in Git usr/bin directory. yazi may not work correctly."
     }
 }
 

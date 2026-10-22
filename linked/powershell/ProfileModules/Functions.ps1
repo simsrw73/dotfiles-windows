@@ -119,8 +119,9 @@ function global:Measure-Profile {
 }
 
 # Recklessly allow Claude to run all over me
-$script:ClaudeExe = (Get-Command claude).Source
+$script:ClaudeExe = (Get-Command claude -ErrorAction Ignore).Source
 function clauded {
+    if (-not $script:ClaudeExe) { Write-Warning 'claude is not on PATH'; return }
     & $script:ClaudeExe --dangerously-skip-permissions @Args
 }
 

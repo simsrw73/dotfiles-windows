@@ -65,7 +65,7 @@ bindings before PSFzf's companion reclaims them.
 
 | Tool           | Purpose                  | Config location                                                                    |
 | -------------- | ------------------------ | ---------------------------------------------------------------------------------- |
-| starship       | Prompt                   | `~/.config/starship.toml` (p9cat preset, github.com/simsrw73/starship-p9cat); DotForge `starship.ps1` companion. Transient prompt ("time dir ❯") from `~/.config/starship/p9cat.transient.ps1`, dot-sourced after `Register-DFTool`. oh-my-posh stays installed but is skipped via `SkipTools` |
+| starship       | Prompt                   | `~/.config/starship/starship.toml` (p9cat preset, github.com/simsrw73/starship-p9cat); DotForge `starship.ps1` companion. Transient prompt ("time dir ❯") from `~/.config/starship/p9cat.transient.ps1`, dot-sourced after `Register-DFTool`. oh-my-posh stays installed but is skipped via `SkipTools` |
 | PSReadLine     | Input experience         | `PSReadline.ps1`                                                                   |
 | PSFzf          | Fuzzy finder integration | DotForge `Tools/PSFzf.ps1` companion                                               |
 | eza            | Modern ls replacement    | DotForge `Tools/eza.json`; ls/ll/la/tree aliases                                   |
@@ -117,7 +117,7 @@ Everything uses **Catppuccin Mocha** consistently:
 
 - PSReadLine syntax colors: set in `PSReadline.ps1`
 - FZF: `$FZF_DEFAULT_OPTS` color string in DotForge `Tools/fzf.json`
-- starship: `~/.config/starship.toml` (p9cat preset, a port of the old oh-my-posh `catpow.omp.yaml`)
+- starship: `~/.config/starship/starship.toml` (p9cat preset, a port of the old oh-my-posh `catpow.omp.yaml`)
 - bat: `~/.config/bat/bat.conf`
 
 ## Environment Layout (XDG)

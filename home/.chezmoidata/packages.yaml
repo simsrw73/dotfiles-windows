@@ -322,6 +322,7 @@ packages:
     - GoogleFonts
     - ImportExcel
     - Microsoft.PowerShell.PlatyPS
+    - Microsoft.WinGet.Client
     - Microsoft.WinGet.CommandNotFound
     - NerdFonts
     - Pester

@@ -89,7 +89,8 @@ $DFConfig = @{
         '+admin-tools', '+markdown', '+package-managers'
         # Not in any group. posh-git and Terminal-Icons were dropped: starship shows git
         # status, carapace completes git, and eza (ls/ll/la/tree) draws its own icons.
-        'bitwarden', 'broot', 'choco', 'direnv', 'docker', 'inshellisense', 'mdcat', 'mdv',
+        # docker too: Docker Desktop writes ~/.docker whatever DOCKER_CONFIG says.
+        'bitwarden', 'broot', 'choco', 'direnv', 'inshellisense', 'mdcat', 'mdv',
         'moor', 'ov', 'ps-dotenv', 'vcpkg', 'vivid'
     )
     ExcludeTools = @('lazygit')   # in +git, not installed
