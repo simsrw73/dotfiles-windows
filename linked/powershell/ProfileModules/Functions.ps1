@@ -18,35 +18,22 @@ function global:Update-AllModules {
 
     Set-PSResourceRepository -Name PSGallery -Trusted -ErrorAction SilentlyContinue
 
+    # Get-InstalledPSResource lists only modules whose files exist. InstalledLocation is
+    # read from each module's PSGetModuleInfo.xml and goes stale when the profile folder
+    # moves (restore, rename), so never treat a missing InstalledLocation as a missing
+    # module: Uninstall-PSResource -Name/-Version would delete the live copy.
     $installed = Get-InstalledPSResource | Sort-Object Name
 
-    # --- Phase 1: Prune stale entries ---
-    Write-Host "`n⚙  Phase 1 — Pruning stale entries" -ForegroundColor Cyan
+    # --- Phase 1: Update installed modules ---
+    Write-Host "`n⚙  Phase 1 — Updating modules" -ForegroundColor Cyan
 
-    $stale = $installed | Where-Object { -not (Test-Path $_.InstalledLocation) }
-
-    if (-not $stale) {
-        Write-Host '  ✓ No stale entries' -ForegroundColor Green
-    } else {
-        foreach ($module in $stale) {
-            Write-Warning "Stale entry: $($module.Name) v$($module.Version) — $($module.InstalledLocation)"
-            if ($PSCmdlet.ShouldProcess("$($module.Name) v$($module.Version)", 'Uninstall stale entry')) {
-                Uninstall-PSResource -Name $module.Name -Version $module.Version -ErrorAction SilentlyContinue
-            }
-        }
-    }
-
-    # --- Phase 2: Update installed modules ---
-    Write-Host "`n⚙  Phase 2 — Updating modules" -ForegroundColor Cyan
-
-    $valid = $installed | Where-Object { Test-Path $_.InstalledLocation }
-    $unique = $valid | Sort-Object Name -Unique
+    $unique = $installed | Sort-Object Name -Unique
     $total = @($unique).Count
     $i = 0
 
     foreach ($module in $unique) {
         $i++
-        $scope = if ($module.InstalledLocation -like "*$env:USERPROFILE*") { 'CurrentUser' } else { 'AllUsers' }
+        $scope = if ($module.InstalledLocation -like "$env:ProgramFiles*") { 'AllUsers' } else { 'CurrentUser' }
 
         if ($scope -eq 'AllUsers' -and -not $Global:IsAdmin) {
             Write-Host "  · [$i/$total] $($module.Name) — needs admin" -ForegroundColor DarkYellow
@@ -58,7 +45,6 @@ function global:Update-AllModules {
         Update-PSResource -Name $module.Name -Scope $scope -ErrorAction SilentlyContinue
 
         $allVersions = @(Get-InstalledPSResource -Name $module.Name |
-                Where-Object { Test-Path $_.InstalledLocation } |
                 Sort-Object Version -Descending)
 
         if ($allVersions.Count -gt 1) {
@@ -70,8 +56,8 @@ function global:Update-AllModules {
         Write-Host ' ✓' -ForegroundColor Green
     }
 
-    # --- Phase 3: Update help files ---
-    Write-Host "`n⚙  Phase 3 — Updating help files" -ForegroundColor Cyan
+    # --- Phase 2: Update help files ---
+    Write-Host "`n⚙  Phase 2 — Updating help files" -ForegroundColor Cyan
 
     try {
         if ($PSCmdlet.ShouldProcess('PowerShell help content', 'Update help files')) {
