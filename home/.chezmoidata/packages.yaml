@@ -144,7 +144,6 @@ packages:
       - Apple.Bonjour
       - appmakes.Typora
       - astral-sh.uv
-      - AutoHotkey.AutoHotkey
       - Bitwarden.Bitwarden
       - Blizzard.BattleNet
       - Blur009.BlurAutoClicker
@@ -310,6 +309,8 @@ packages:
       - yt-dlp.yt-dlp
     elevated:
       - AmN.yasb
+      # machine scope: only a Program Files install gets AutoHotkey64_UIA.exe (wpm unit)
+      - AutoHotkey.AutoHotkey
       - LGUG2Z.komorebi
       - LibreHardwareMonitor.LibreHardwareMonitor
       - namazso.PawnIO
