@@ -28,11 +28,6 @@ gh auth setup-git
 
 if ((bw status | ConvertFrom-Json).status -eq 'unauthenticated') { bw login }
 
-# DotForge's tool records list the env vars tools need; the user-env script sets
-# them before anything installs, so clone it first (chezmoi's external keeps it updated).
-$dotforge = Join-Path $HOME 'projects\DotForge'
-if (-not (Test-Path $dotforge)) { git clone https://github.com/simsrw73/DotForge.git $dotforge }
-
 $src = Join-Path $HOME '.local\share\chezmoi'
 chezmoi init https://github.com/simsrw73/dotfiles-windows.git --source $src
 git -C $src config core.hooksPath .githooks

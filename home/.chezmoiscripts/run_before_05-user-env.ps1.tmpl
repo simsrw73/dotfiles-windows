@@ -1,6 +1,6 @@
-# Persistent user env vars apps need before first launch (and outside the pwsh profile).
-# Runs on every apply (it only writes what differs), so changes to DotForge's
-# records reach the user environment too.
+# Persistent user env vars, only for what runs outside pwsh (GUI apps, other
+# shells, sign-in tasks). Every other tool variable belongs to DotForge, which
+# sets it in each pwsh session. Runs on every apply; it only writes what differs.
 $ErrorActionPreference = 'Stop'
 $xdg = [ordered]@{
     XDG_CONFIG_HOME = Join-Path $HOME '.config'
@@ -14,29 +14,9 @@ foreach ($k in $xdg.Keys) { $vars[$k] = $xdg[$k] }
 $vars.SCOOP = Join-Path $HOME '.local\share\scoop'
 $vars.KOMOREBI_CONFIG_HOME = Join-Path $HOME '.config\komorebi'
 $vars.GNUPGHOME = Join-Path $HOME '.config\gnupg'
-
-# Every tool's xdg.vars from DotForge's records, expanded as DotForge does
-# (${XDG_*_HOME} filled in, then canonicalized), so its session sees them as
-# already set. Only unset ones are added. bootstrap.ps1 clones DotForge before
-# the first apply.
-# Skipped: docker (Docker Desktop writes ~/.docker whatever DOCKER_CONFIG says).
-$skipTools = @('docker')
-$tools = Join-Path $HOME 'projects\DotForge\Tools'
-if (Test-Path $tools) {
-    foreach ($file in Get-ChildItem $tools -Filter *.json) {
-        $rec = Get-Content -LiteralPath $file.FullName -Raw | ConvertFrom-Json
-        if ($rec.xdg.method -ne 'env' -or $rec.name -in $skipTools) { continue }
-        foreach ($p in @($rec.xdg.vars?.PSObject.Properties)) {
-            if (-not $p) { continue }
-            $v = [regex]::Replace($p.Value, '\$\{(XDG_[A-Z]+_HOME)\}', { param($m) $xdg[$m.Groups[1].Value] })
-            if ($v -match '\$\{') { Write-Warning "user-env: skipped $($p.Name)=$($p.Value) ($($file.Name))"; continue }
-            # Defaults, as in DotForge: a value set elsewhere (scoop sets VCPKG_ROOT) stays.
-            if ([Environment]::GetEnvironmentVariable($p.Name, 'User')) { continue }
-            $vars[$p.Name] = [IO.Path]::GetFullPath($v).TrimEnd('\')
-        }
-    }
-}
-else { Write-Warning "user-env: $tools not found; only the XDG base folders are set" }
+# Claude Code, also when started outside pwsh (desktop app, editors).
+$vars.CLAUDE_CONFIG_DIR = Join-Path $HOME '.config\claude'
+$vars.CLAUDE_CODE_GIT_BASH_PATH = Join-Path $vars.SCOOP 'apps\git\current\bin\bash.exe'
 
 # Written to the registry with one broadcast at the end: SetEnvironmentVariable
 # broadcasts on every call and waits on slow windows (seconds per variable).
