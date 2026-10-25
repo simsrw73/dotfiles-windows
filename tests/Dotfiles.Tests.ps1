@@ -208,6 +208,30 @@ Describe 'Update-HomePath' {
     }
 }
 
+Describe 'bootstrap and user-env variables' {
+    BeforeAll {
+        # Name -> folder under $HOME, from lines like `XDG_DATA_HOME = Join-Path $HOME '.local\share'`.
+        function Get-HomeVar([string] $Path) {
+            $vars = @{}
+            foreach ($m in [regex]::Matches((Get-Content -Raw $Path), "(XDG_\w+_HOME|SCOOP)\s*=\s*Join-Path \`$HOME '([^']+)'")) {
+                $vars[$m.Groups[1].Value] = $m.Groups[2].Value
+            }
+            $vars
+        }
+        $root = Join-Path $PSScriptRoot '..'
+        $script:Bootstrap = Get-HomeVar (Join-Path $root 'bootstrap.ps1')
+        $script:UserEnv = Get-HomeVar (Join-Path $root 'home\.chezmoiscripts\run_before_05-user-env.ps1.tmpl')
+    }
+    It 'sets the five XDG folders and SCOOP in the bootstrap' {
+        @($script:Bootstrap.Keys | Sort-Object) |
+            Should -Be @('SCOOP', 'XDG_BIN_HOME', 'XDG_CACHE_HOME', 'XDG_CONFIG_HOME', 'XDG_DATA_HOME', 'XDG_STATE_HOME')
+    }
+    It 'sets the same folders in both' {
+        foreach ($k in $script:Bootstrap.Keys) { $script:UserEnv[$k] | Should -Be $script:Bootstrap[$k] -Because $k }
+        @($script:UserEnv.Keys).Count | Should -Be @($script:Bootstrap.Keys).Count
+    }
+}
+
 Describe 'ConvertFrom-CargoInstallList' {
     It 'returns crate names from `cargo install --list` output, including git installs' {
         $text = @(

@@ -24,6 +24,8 @@ The source lives at `~/.local/share/chezmoi`. `chezmoi cd` opens a shell there.
 
 1. Download [`bootstrap.ps1`](https://raw.githubusercontent.com/simsrw73/dotfiles-windows/main/bootstrap.ps1) and run:
    `powershell -ExecutionPolicy Bypass -File .\bootstrap.ps1`
+   Run it from a normal (not elevated) window: it asks once, through UAC, to turn
+   on Developer Mode, so winget links its apps instead of filling PATH.
 2. Sign in to GitHub and Bitwarden when asked; enter the Bitwarden master
    password once when chezmoi applies.
 3. Sign out and back in. Then re-login to Claude Code, Copilot, Docker and OneDrive.

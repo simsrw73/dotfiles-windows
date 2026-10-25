@@ -1,6 +1,8 @@
 # Persistent user env vars, only for what runs outside pwsh (GUI apps, other
 # shells, sign-in tasks). Every other tool variable belongs to DotForge, which
 # sets it in each pwsh session. Runs on every apply; it only writes what differs.
+# bootstrap.ps1 sets the XDG folders and SCOOP first, before anything installs;
+# keep both lists in step (tests/Dotfiles.Tests.ps1 checks them).
 $ErrorActionPreference = 'Stop'
 $xdg = [ordered]@{
     XDG_CONFIG_HOME = Join-Path $HOME '.config'
