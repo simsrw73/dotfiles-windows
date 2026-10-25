@@ -29,13 +29,12 @@ All CLI tool configuration (XDG paths, aliases, completers, fzf pickers) is hand
 DotForge module at `~/projects/DotForge`. The profile calls:
 
 ```powershell
-$DFConfig = @{
-    PackageManagerOrder = @('scoop', 'winget')
-    SkipTools           = @('lsd', 'oh-my-posh')  # oh-my-posh replaced by starship
-}
 Import-Module DotForge
-Register-DFTool -All
+Start-DFSession -Config $DFConfig   # read from ~/.config/dotforge/config.psd1
 ```
+
+The settings live in `~/.config/dotforge/config.psd1` (chezmoi links `~/.config/dotforge` to
+`linked/dotforge`). Edit the tool list there, not in the profile.
 
 DotForge reads `~/projects/DotForge/Tools/*.json` records and processes each installed tool.
 Per-tool companion scripts at `Tools/<name>.ps1` handle complex initialization:

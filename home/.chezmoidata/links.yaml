@@ -21,6 +21,8 @@ links:
     target: "{src}/linked/nvim"
   - path: "~/.config/powershell"
     target: "{src}/linked/powershell"
+  - path: "~/.config/dotforge"
+    target: "{src}/linked/dotforge"
   - path: "%APPDATA%/FlowLauncher"
     target: "~/.config/FlowLauncher"
   - path: "~/{docs}/AutoHotkey"

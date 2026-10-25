@@ -78,28 +78,15 @@ function global:Write-ProfileMsg {
     Write-Host $Message -ForegroundColor $c
 }
 
-# ── DotForge config (passed to Start-DFSession -Config below) ────────────────
-# Only the tools listed here are configured; nothing is installed at load. Missing
-# ones are listed at the end of loading (Get-DFToolStatus -Missing shows them).
-# Groups: Get-DFToolGroup. oh-my-posh (replaced by starship) and lsd (eza fills
-# 'listing') are simply not requested; to switch back, request them here.
-$DFConfig = @{
-    Tools = @(
-        '+core', '+prompt', '+git', '+dev-tools', '+javascript-dev', '+python-dev', '+rust-dev',
-        '+admin-tools', '+markdown', '+package-managers'
-        # Not in any group. posh-git and Terminal-Icons were dropped: starship shows git
-        # status, carapace completes git, and eza (ls/ll/la/tree) draws its own icons.
-        # docker too: Docker Desktop writes ~/.docker whatever DOCKER_CONFIG says.
-        'bitwarden', 'broot', 'choco', 'direnv', 'inshellisense', 'mdcat', 'mdv',
-        'moor', 'ov', 'ps-dotenv', 'vcpkg', 'vivid'
-    )
-    ExcludeTools = @('lazygit')   # in +git, not installed
-    InstallOrder = @('scoop', 'winget')
-    PSReadLineEditMode = 'Emacs'
-    PSReadLineTheme = 'catppuccin-mocha'
-    # Startup banner: clears the screen, then fastfetch, drive health and the public IP,
-    # gathered while tools load and printed a line at a time.
-    ShowBanner = $true
+# ── DotForge config: ~/.config/dotforge/config.psd1 (linked/dotforge) ────────
+# Read here and passed with -Config until the installed DotForge reads the file
+# itself (the release after 0.7.1); then both calls below become plain Start-DFSession.
+$DFConfigFile = Join-Path ($Env:XDG_CONFIG_HOME ?? (Join-Path $HOME '.config')) 'dotforge' 'config.psd1'
+try {
+    $DFConfig = Import-PowerShellDataFile -LiteralPath $DFConfigFile -ErrorAction Stop
+} catch {
+    Write-Warning "DotForge config not loaded ($DFConfigFile): $($_.Exception.Message)"
+    $DFConfig = @{}
 }
 
 # Starship transient prompt (p9cat): collapses each submitted prompt to "time dir ❯".

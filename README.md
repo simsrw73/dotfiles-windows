@@ -33,7 +33,7 @@ The source lives at `~/.local/share/chezmoi`. `chezmoi cd` opens a shell there.
 ## Daily use
 
 - Linked folders (`AutoHotKey`, `FlowLauncher`, `yasb`, `komorebi`, `wpm`,
-  `claude`, `psmux`, `yazi`, `nvim`, `powershell`): edit in place, then
+  `claude`, `psmux`, `yazi`, `nvim`, `powershell`, `dotforge`): edit in place, then
   `chezmoi cd` and `git add/commit/push`.
 - Copied files: `chezmoi edit <file>`, or edit the live file and run
   `chezmoi re-add <file>`. `chezmoi diff` shows what `chezmoi apply` would change.
