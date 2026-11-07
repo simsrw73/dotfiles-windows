@@ -7,11 +7,6 @@
  * (links.yaml), because YASB resolves nested @imports from this folder.
  *
  * Personal overrides go below the import; a later :root wins, for example
- *   :root { --accent: var(--mauve); --accent-rgb: var(--mauve-rgb); }
+ *   :root { --accent: var(--blue); --accent-rgb: var(--blue-rgb); }
  */
 @import "../../projects/catelier/styles.css";
-
-:root {
-  --accent: var(--mauve);
-  --accent-rgb: var(--mauve-rgb);
-}
