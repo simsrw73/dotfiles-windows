@@ -10,3 +10,8 @@
  *   :root { --accent: var(--mauve); --accent-rgb: var(--mauve-rgb); }
  */
 @import "../../projects/catelier/styles.css";
+
+:root {
+  --accent: var(--mauve);
+  --accent-rgb: var(--mauve-rgb);
+}
