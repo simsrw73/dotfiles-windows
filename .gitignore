@@ -9,6 +9,7 @@ linked/FlowLauncher/Settings/Plugins/Github Quick Launcher/
 linked/yasb/*.log
 linked/yasb/*.log.*
 linked/yasb/yasb_colors.css
+linked/yasb/flavors
 
 # claude: keep config only (settings, hooks, skills, plugin manifests, memory)
 linked/claude/*

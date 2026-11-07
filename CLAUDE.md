@@ -41,6 +41,15 @@ come from packages.yaml / .chezmoiexternal, never mason. Commit
 `nvim-pack-lock.json` after plugin updates. Fixtures named `*.log` need
 `git add -f` (the global git ignore has `*.log`).
 
+## yasb (`linked/yasb`)
+
+The styles are a live dev install of the public theme repo `~/projects/catelier`
+(simsrw73/catelier): `styles.css` here is only an `@import` of it, plus any
+personal overrides, and `flavors/` is a junction to the repo's flavors
+(links.yaml). Edit theme styles in catelier. `config.yaml` stays here: it has
+this machine's drives and LibreHardwareMonitor sensors, which catelier's
+config replaces with placeholders.
+
 ## Public mirror
 
 `~/projects/w11dwm.config` (simsrw73/w11dwm-config) publishes the desktop

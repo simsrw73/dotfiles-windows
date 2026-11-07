@@ -7,6 +7,10 @@ links:
     target: "{src}/linked/FlowLauncher"
   - path: "~/.config/yasb"
     target: "{src}/linked/yasb"
+  # yasb styles come from the catelier theme repo (styles.css @imports it). YASB
+  # resolves nested @imports from this folder, so catelier's flavors must be here too.
+  - path: "{src}/linked/yasb/flavors"
+    target: "~/projects/catelier/flavors"
   - path: "~/.config/komorebi"
     target: "{src}/linked/komorebi"
   - path: "~/.config/wpm"
