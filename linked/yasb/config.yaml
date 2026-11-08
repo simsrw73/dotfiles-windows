@@ -97,7 +97,13 @@ widgets:
     type: "yasb.grouper.GrouperWidget"
     options:
       class_name: "wm-pill"
-      widgets: ["komorebi_control", "komorebi_active_layout", "komorebi_stack", "komorebi_workspaces"]
+      widgets:
+        [
+          "komorebi_control",
+          "komorebi_active_layout",
+          "komorebi_stack",
+          "komorebi_workspaces",
+        ]
       collapse_options:
         enabled: false
 
@@ -139,7 +145,7 @@ widgets:
     type: "yasb.grouper.GrouperWidget"
     options:
       class_name: "controls-pill"
-      widgets: ["systray", "volume", "control_center", "bluetooth", "wifi"]
+      widgets: ["systray", "wifi", "bluetooth", "volume", "control_center"]
       collapse_options:
         enabled: false
 
@@ -156,7 +162,7 @@ widgets:
   launchpad:
     type: "yasb.launchpad.LaunchpadWidget"
     options:
-      label: "<span>\U000F003B</span>" # nf-md-apps
+      label: "<span>\U00002756</span>" # black diamond minus white x
       search_placeholder: "Search apps…"
       app_icon_size: 48
       window:
@@ -203,7 +209,18 @@ widgets:
     options:
       hide_if_offline: true
       label: "{icon}"
-      layouts: ["bsp", "columns", "rows", "grid", "scrolling", "vertical_stack", "horizontal_stack", "ultrawide_vertical_stack", "right_main_vertical_stack"]
+      layouts:
+        [
+          "bsp",
+          "columns",
+          "rows",
+          "grid",
+          "scrolling",
+          "vertical_stack",
+          "horizontal_stack",
+          "ultrawide_vertical_stack",
+          "right_main_vertical_stack",
+        ]
       layout_icons:
         bsp: "\uebeb" # nf-cod-layout
         columns: "\uebf7" # nf-cod-layout_centered
@@ -457,7 +474,7 @@ widgets:
       class_name: "ssd-health-widget"
       label: "<span>\U000F05F6</span>{info[value]}{info[unit]}" # nf-md-heart_pulse
       label_alt: "<span>\U000F05F6</span>{info[value]}{info[unit]}" # nf-md-heart_pulse
-      sensor_id: "/nvme/2/level/20"  # C: Samsung 990 PRO
+      sensor_id: "/nvme/2/level/20" # C: Samsung 990 PRO
       precision: 0
       update_interval: 60000
       history_size: 1
@@ -472,13 +489,22 @@ widgets:
         alignment: "right"
         direction: "down"
         sensors:
-          - { id: "/nvme/2/data/32", name: "<span style='font-size:11px; color:#9399b2'>C:  Samsung 990 PRO</span>" }
+          - {
+              id: "/nvme/2/data/32",
+              name: "<span style='font-size:11px; color:#9399b2'>C:  Samsung 990 PRO</span>",
+            }
           - { id: "/nvme/2/level/20", name: "    Health" }
           - { id: "/nvme/2/temperature/0", name: "    Temp" }
-          - { id: "/ssd/0/data/32", name: "<span style='font-size:11px; color:#9399b2'>G:  Samsung 860 EVO</span>" }
+          - {
+              id: "/ssd/0/data/32",
+              name: "<span style='font-size:11px; color:#9399b2'>G:  Samsung 860 EVO</span>",
+            }
           - { id: "/ssd/0/level/20", name: "    Health" }
           - { id: "/ssd/0/temperature/0", name: "    Temp" }
-          - { id: "/hdd/1/data/32", name: "<span style='font-size:11px; color:#9399b2'>S:  WD Blue HDD</span>" }
+          - {
+              id: "/hdd/1/data/32",
+              name: "<span style='font-size:11px; color:#9399b2'>S:  WD Blue HDD</span>",
+            }
           - { id: "/hdd/1/temperature/0", name: "    Temp" }
       callbacks:
         on_left: "toggle_menu"
@@ -593,7 +619,8 @@ widgets:
     options:
       label: "<span>\U000F1542</span>" # nf-md-tune_variant
       tooltip: true
-      sections_order: ["system_controls", "quick_actions", "sliders", "power", "media"]
+      sections_order:
+        ["system_controls", "quick_actions", "sliders", "power", "media"]
       popup:
         alignment: "right"
         direction: "down"
@@ -707,7 +734,7 @@ widgets:
     options:
       label: "<span>\uf408</span>" # nf-oct-mark_github
       label_alt: "<span>\uf408</span>" # nf-oct-mark_github
-      token: ""   # empty = OAuth sign-in; token stored in %LOCALAPPDATA%\YASB\github_token
+      token: "" # empty = OAuth sign-in; token stored in %LOCALAPPDATA%\YASB\github_token
       max_notification: 30
       notification_dot:
         enabled: true
@@ -727,7 +754,8 @@ widgets:
         alignment: "right"
         direction: "down"
         show_categories: true
-        categories_order: ["PullRequest", "Issue", "CheckSuite", "Release", "Discussion"]
+        categories_order:
+          ["PullRequest", "Issue", "CheckSuite", "Release", "Discussion"]
 
   notifications:
     type: "yasb.notifications.NotificationsWidget"
