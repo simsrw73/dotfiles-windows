@@ -23,7 +23,7 @@ source, `linked/` holds folders that `~/.config/<name>` junctions point to
 
 - Entry point `autohotkey.ahk`; apps in `Apps.ahk`, Win+Space launcher in
   `Chords.ahk`, window keys in `WindowManager.ahk`. Legend is the submodule
-  `Lib/Legend` (source repo `~/projects/Legend`, which has its own
+  `Lib/Legend` (source repo `~/projects/Legend.ahk`, which has its own
   CLAUDE.md).
 - Run AutoHotkey from PowerShell only. Check syntax with
   `AutoHotkey64.exe /ErrorStdOut /validate autohotkey.ahk`; reload by
@@ -52,7 +52,7 @@ config replaces with placeholders.
 
 ## Public mirror
 
-`~/projects/w11dwm.config` (simsrw73/w11dwm-config) publishes the desktop
+`~/projects/w11dwm-config` (simsrw73/w11dwm-config) publishes the desktop
 configs. After changing AutoHotkey, komorebi, yasb, Flow Launcher or wpm
 files: run its `sync.ps1` (copies an allowlist, scans for secrets), bump its
 `autohotkey/Lib/Legend` submodule to the same commit, commit, push.
