@@ -5,7 +5,7 @@
       "repo": "anthropics/claude-plugins-official"
     },
     "installLocation": "C:\\Users\\simsrw73\\.config\\claude\\plugins\\marketplaces\\claude-plugins-official",
-    "lastUpdated": "2026-10-22T20:25:28.435Z"
+    "lastUpdated": "2026-11-08T22:05:57.279Z"
   },
   "claude-hud": {
     "source": {
@@ -14,5 +14,13 @@
     },
     "installLocation": "C:\\Users\\simsrw73\\.config\\claude\\plugins\\marketplaces\\claude-hud",
     "lastUpdated": "2026-10-21T23:51:29.751Z"
+  },
+  "claude-themes": {
+    "source": {
+      "source": "github",
+      "repo": "matcra587/claude-themes"
+    },
+    "installLocation": "C:\\Users\\simsrw73\\.config\\claude\\plugins\\marketplaces\\claude-themes",
+    "lastUpdated": "2026-10-26T19:00:03.547Z"
   }
 }
