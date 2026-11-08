@@ -38,6 +38,7 @@ home/dot_config/joplin-desktop/cache/
 home/dot_config/joplin-desktop/tmp/
 home/dot_config/hyper/.hyper_plugins/
 linked/FlowLauncher/Cache/
+linked/FlowLauncher/Environments/
 linked/FlowLauncher/Logs/
 linked/FlowLauncher/Plugins/
 linked/FlowLauncher/Settings/**/*.bak
