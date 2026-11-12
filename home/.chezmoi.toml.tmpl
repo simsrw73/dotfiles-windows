@@ -1,6 +1,8 @@
 {{- $docs := output "pwsh" "-NoProfile" "-Command" "[Environment]::GetFolderPath('MyDocuments')" | trim | replace "\\" "/" -}}
 {{- $home := .chezmoi.homeDir | replace "\\" "/" -}}
 {{- $docsRel := $docs | trimPrefix (printf "%s/" $home) -}}
+encryption = "gpg"
+
 [data]
     name = "Randy W. Sims"
     email = "simsrw73@gmail.com"
@@ -24,3 +26,6 @@
 
 [git]
     autoAdd = true
+
+[gpg]
+    recipient = "590E436016A49D7D09E561198FDC1EB03BECE139"
