@@ -55,7 +55,13 @@
     "git-firefly": true,
     "ssh-config": true,
     "marksman": true,
-    "markdownlint": true
+    "markdownlint": true,
+    "caddyfile": true,
+    "catppuccin": true,
+    "codebook": true,
+    "comment": true,
+    "emmet": true,
+    "mermaid": true
   },
   "file_types": {
     "PowerShell": ["ps1", "psm1", "psd1"],
@@ -83,7 +89,8 @@
       "docker-compose.yml",
       "docker-compose.*.yaml",
       "docker-compose.*.yml"
-    ]
+    ],
+    "Caddyfile": ["Caddyfile*", "*.caddyfile"]
   },
   "edit_predictions": {
     "provider": "copilot"
@@ -213,17 +220,22 @@
   "languages": {
     "PowerShell": {
       "tab_size": 4,
-      "language_servers": ["powershell-es"],
+      "language_servers": ["powershell-es", "codebook"],
       "formatter": "language_server"
     },
     "Perl": {
       "tab_size": 4,
-      "language_servers": ["perlnavigator-server"],
+      "language_servers": ["perlnavigator-server", "codebook"],
       "formatter": "language_server"
     },
     "JavaScript": {
       "tab_size": 2,
-      "language_servers": ["vtsls", "eslint", "tailwindcss-language-server"],
+      "language_servers": [
+        "vtsls",
+        "eslint",
+        "tailwindcss-language-server",
+        "codebook"
+      ],
       "formatter": "prettier",
       "code_actions_on_format": {
         "source.fixAll.eslint": true
@@ -231,7 +243,12 @@
     },
     "TypeScript": {
       "tab_size": 2,
-      "language_servers": ["vtsls", "eslint", "tailwindcss-language-server"],
+      "language_servers": [
+        "vtsls",
+        "eslint",
+        "tailwindcss-language-server",
+        "codebook"
+      ],
       "formatter": "prettier",
       "code_actions_on_format": {
         "source.fixAll.eslint": true
@@ -239,7 +256,12 @@
     },
     "TSX": {
       "tab_size": 2,
-      "language_servers": ["vtsls", "eslint", "tailwindcss-language-server"],
+      "language_servers": [
+        "vtsls",
+        "eslint",
+        "tailwindcss-language-server",
+        "codebook"
+      ],
       "formatter": "prettier",
       "code_actions_on_format": {
         "source.fixAll.eslint": true
@@ -247,7 +269,8 @@
     },
     "Python": {
       "tab_size": 4,
-      "language_servers": ["basedpyright", "ruff"],
+      // basedpyright for types, ruff for lint/format. Strictness lives in each project's pyproject.toml.
+      "language_servers": ["basedpyright", "ruff", "!ty", "codebook"],
       "code_actions_on_format": {
         "source.organizeImports.ruff": true,
         "source.fixAll.ruff": true
@@ -260,27 +283,27 @@
     },
     "Rust": {
       "tab_size": 4,
-      "language_servers": ["rust-analyzer"],
+      "language_servers": ["rust-analyzer", "codebook"],
       "formatter": "language_server"
     },
     "C": {
       "tab_size": 4,
-      "language_servers": ["clangd"],
+      "language_servers": ["clangd", "codebook"],
       "formatter": "language_server"
     },
     "C++": {
       "tab_size": 4,
-      "language_servers": ["clangd"],
+      "language_servers": ["clangd", "codebook"],
       "formatter": "language_server"
     },
     "CSharp": {
       "tab_size": 4,
-      "language_servers": ["roslyn"],
+      "language_servers": ["roslyn", "codebook"],
       "formatter": "language_server"
     },
     "Lua": {
       "tab_size": 4,
-      "language_servers": ["lua-language-server"],
+      "language_servers": ["lua-language-server", "codebook"],
       "formatter": {
         "external": {
           "command": "stylua",
@@ -295,7 +318,7 @@
     },
     "Ruby": {
       "tab_size": 2,
-      "language_servers": ["ruby-lsp", "rubocop"],
+      "language_servers": ["ruby-lsp", "rubocop", "codebook"],
       "formatter": {
         "language_server": {
           "name": "rubocop"
@@ -320,19 +343,19 @@
     },
     "TOML": {
       "tab_size": 2,
-      "language_servers": ["tombi"],
+      "language_servers": ["tombi", "codebook"],
       "formatter": "language_server"
     },
     "YAML": {
       "tab_size": 2,
-      "language_servers": ["yaml-language-server"],
+      "language_servers": ["yaml-language-server", "codebook"],
       "formatter": "prettier"
     },
     "Markdown": {
       "tab_size": 2,
       "soft_wrap": "editor_width",
       "preferred_line_length": 100,
-      "language_servers": ["marksman", "markdownlint"],
+      "language_servers": ["marksman", "markdownlint", "codebook"],
       "formatter": "prettier",
       "prettier": {
         "proseWrap": "preserve"
@@ -349,16 +372,30 @@
     },
     "Dockerfile": {
       "tab_size": 4,
-      "language_servers": ["docker-language-server"],
+      "language_servers": ["docker-language-server", "codebook"],
       "formatter": "language_server"
     },
     "Docker Compose": {
       "tab_size": 2,
-      "language_servers": ["docker-language-server", "yaml-language-server"],
+      "language_servers": [
+        "docker-language-server",
+        "yaml-language-server",
+        "codebook"
+      ],
       "formatter": "prettier",
       "prettier": {
         "allowed": true,
         "parser": "yaml"
+      }
+    },
+    "Caddyfile": {
+      "format_on_save": "on",
+      "tab_size": 2,
+      "formatter": {
+        "external": {
+          "command": "caddy",
+          "arguments": ["fmt", "-c", "-"]
+        }
       }
     },
     "HTML": {
@@ -379,7 +416,7 @@
     },
     "Shell Script": {
       "tab_size": 2,
-      "language_servers": ["bash-language-server"],
+      "language_servers": ["bash-language-server", "codebook"],
       "formatter": {
         "external": {
           "command": "shfmt",
