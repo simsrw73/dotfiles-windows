@@ -11,13 +11,11 @@ linked/yasb/*.log.*
 linked/yasb/yasb_colors.css
 linked/yasb/flavors
 
-# claude: keep config only (settings, hooks, skills, plugin manifests, memory)
+# claude: keep config only (settings, hooks, plugin manifests, memory); skills are all third-party
 linked/claude/*
 !linked/claude/settings.json
 !linked/claude/CLAUDE.md
 !linked/claude/hooks/
-!linked/claude/skills/
-linked/claude/skills/synced/
 !linked/claude/plugins/
 linked/claude/plugins/*
 !linked/claude/plugins/installed_plugins.json
