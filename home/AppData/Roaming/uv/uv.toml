@@ -1,0 +1,8 @@
+# uv user configuration.
+# Docs: https://docs.astral.sh/uv/reference/settings/
+
+# Use only uv-managed interpreters; never pick up system or install-manager Pythons.
+python-preference = "only-managed"
+
+# Fetch a managed interpreter automatically when a project needs one.
+python-downloads = "automatic"
