@@ -1,69 +1,69 @@
 [[plugin.deps]]
 use = "stevencarpenter/duckdb"
-rev = "52eb31b"
-hash = "fdefe75fc941919b7dd45f235d3891e6"
+rev = "5ef2f3c"
+hash = "ab7a9e3c0212e2053c5a900ab352ffa0"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:types"
-rev = "bbac5e7"
-hash = "c10878e0267229f420233066afa61781"
+rev = "e0bbd20"
+hash = "d368d5a6a72657e1c0e7ee7340dcea8c"
 
 [[plugin.deps]]
 use = "boydaihungst/mediainfo"
-rev = "e079a00"
-hash = "d3dfd2196e54cef090ff02f7f881f135"
+rev = "f1cec0b"
+hash = "246c5b95a750a37351f81be79f04c380"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:git"
-rev = "bbac5e7"
-hash = "6fd67ce8c2b36f45be405aa218e89c74"
+rev = "e0bbd20"
+hash = "347cc6b190eb0c2fd60513cc7ae37412"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:toggle-pane"
-rev = "bbac5e7"
-hash = "8a42c842143b1933d7b59c557b376f3b"
+rev = "e0bbd20"
+hash = "5b2fbef7d1513ce38ff72623a071a5e"
 
 [[plugin.deps]]
 use = "AleMenon/exiftool"
 rev = "4c35573"
-hash = "938c57c5de369a25242229138b9222cd"
+hash = "44ef03e4d7151fa4094dd6b87a553033"
 
 [[plugin.deps]]
 use = "AnirudhG07/rich-preview"
-rev = "7d616ad"
-hash = "4b15d186d555d318134160f843193ee9"
+rev = "02597c4"
+hash = "33982a6e2d6df07619a2a0fc163a0950"
 
 [[plugin.deps]]
 use = "alberti42/faster-piper"
-rev = "8b794bf"
-hash = "7fc8921769b02a0c9b1d9a2bc523db57"
+rev = "bb90261"
+hash = "12b5e342d54db42b5b023faa1a11f28e"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-paste"
-rev = "bbac5e7"
-hash = "e44dcc831ee62d5f79a1f8130cfdc847"
+rev = "e0bbd20"
+hash = "5be02722d97561b6f7aec22429aa00be"
 
 [[plugin.deps]]
 use = "imsi32/yatline"
-rev = "c5d4b48"
-hash = "91c9b9a3355e213b801fdb0c5fc92dc1"
+rev = "dc44b73"
+hash = "fa488655544e367e5439a9748d28519e"
 
 [[plugin.deps]]
 use = "ndtoan96/ouch"
-rev = "406ce6c"
-hash = "c30dfd49121b0860ce41ebf6765c6e6e"
+rev = "596b666"
+hash = "c2f4f4aca257dcceafa9e3b828dbf1c9"
 
 [[plugin.deps]]
 use = "imsi32/yatline-catppuccin"
 rev = "6c3f166"
-hash = "c1443f8e0bf6c01e57400ca15e972a8"
+hash = "e1d5b1c34c53c4c4661d910eb3a6fd95"
 
 [[plugin.deps]]
 use = "imsi32/yatline-githead"
 rev = "929e52c"
-hash = "7e1138023f5943712fa9203e9fff6458"
+hash = "8282baf02fcd6aac00ccad2276775358"
 
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
-rev = "4770a34"
-hash = "5ebc8659108fcb68fe853e523115ed3c"
+rev = "1183892"
+hash = "ce320f877fe709b189433941aba747c4"
