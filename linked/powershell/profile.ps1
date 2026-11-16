@@ -91,6 +91,8 @@ try {
 # Starship transient prompt (p9cat): collapses each submitted prompt to "time dir ❯".
 # Must load after Start-DFSession (needs starship's init + zoxide's prompt wrapper).
 $p9catTransient = Join-Path $HOME '.config' 'starship' 'p9cat.transient.ps1'
+# Responsive layout (p9cat): picks full/compact/bare/tall by window width.
+$p9catResponsive = Join-Path $HOME '.config' 'starship' 'p9cat.responsive.ps1'
 
 # ── VS Code integrated terminal: fast / lite init ────────────────────────────
 # Skips: VS Dev Shell, transcript, diagnostics, weekly updates.
@@ -147,6 +149,9 @@ if (Test-Path $p9catTransient) {
     . $p9catTransient
 }
 
+if (Test-Path $p9catResponsive) {
+    . $p9catResponsive
+}
 
 # Weekly module update (every Friday, once per day)
 if ((Get-Date).DayOfWeek -eq 'Friday') {
