@@ -63,3 +63,23 @@ Hostname 192.168.99.13
 user Yosef
 port 42022
 IdentityFile ~/.ssh/routeros_rsa
+
+# Read-only RouterOS access for Claude (mcp-user, read,ssh,test policies)
+Host rt1-ro sw1-ro sw2-ro ap1-ro ap3-ro
+    User mcp-user
+    Port 42022
+    IdentityFile ~/.ssh/mcp-server-mikrotik
+    IdentitiesOnly yes
+    BatchMode yes
+    ConnectTimeout 5
+
+Host rt1-ro
+    HostName 192.168.99.1
+Host sw1-ro
+    HostName 192.168.99.2
+Host sw2-ro
+    HostName 192.168.99.3
+Host ap1-ro
+    HostName 192.168.99.11
+Host ap3-ro
+    HostName 192.168.99.13
