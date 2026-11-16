@@ -1,0 +1,12 @@
+# Loads .env files as you change folders: the one in the current folder and each
+# parent's (the nearest wins). Seeded by DotForge's mise plugin; edit freely,
+# DotForge never overwrites it. config.toml (mise use --global) overrides it.
+[settings]
+env_file = ".env"
+
+# A .env loads only once you approve its current contents (`mise trust .env`);
+# editing it revokes that. Until then mise warns "not trusted" and skips it.
+paranoid = ["env_files"]
+
+# Folders whose .env files load without asking (each folder and everything under it).
+trusted_config_paths = ["~/projects"]

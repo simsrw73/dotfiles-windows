@@ -9,9 +9,6 @@ $env:GIT_EDITOR = 'micro'
 #   FIXME: We should juggle the paths ourselves.
 # gsudo config PathPrecedence true
 
-#  This function is case sensitive, somehow.
-Add-DotenvPattern -Pattern "${Env:USERPROFILE}\projects\**\.env"
-echo "${Env:USERPROFILE}\projects\**\.env"
 # Themes
 $env:GLAMOUR_STYLE = Join-Path -Path $Env:XDG_CONFIG_HOME 'glamour' 'themes' 'catppuccin-mocha.json'
 
@@ -59,7 +56,9 @@ function Get-GitUsrBinPath {
     # Git for Windows: <root>\cmd\git.exe. Scoop's git.exe is a shim, so look in the app dir.
     $candidates = @(
         Join-Path (Split-Path (Split-Path $cmd.Source -Parent) -Parent) 'usr\bin'
-        if ($Env:SCOOP) { Join-Path $Env:SCOOP 'apps\git\current\usr\bin' }
+        if ($Env:SCOOP) {
+            Join-Path $Env:SCOOP 'apps\git\current\usr\bin'
+        }
     )
     foreach ($usrBin in $candidates) {
         if (Test-Path $usrBin) {

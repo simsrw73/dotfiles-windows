@@ -13,9 +13,12 @@
         # Not in any group. posh-git and Terminal-Icons were dropped: starship shows git
         # status, carapace completes git, and eza (ls/ll/la/tree) draws its own icons.
         # docker too: Docker Desktop writes ~/.docker whatever DOCKER_CONFIG says.
+        # ps-dotenv was dropped: mise (+dev-tools) loads .env files, set up in
+        # ~/.config/mise/conf.d/dotenv.toml.
         'bitwarden', 'broot', 'choco', 'direnv', 'inshellisense', 'mdcat', 'mdv',
-        'moor', 'ov', 'ps-dotenv', 'vcpkg', 'vivid'
+        'moor', 'ov', 'vcpkg', 'vivid', 'claude-code'
     )
+    Defaults = @{ 'project-env' = 'mise' }
     ExcludeTools = @('lazygit')   # in +git, not installed
     InstallOrder = @('scoop', 'winget')
     PSReadLineEditMode = 'Emacs'
