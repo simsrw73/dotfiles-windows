@@ -14,13 +14,5 @@
     },
     "installLocation": "C:\\Users\\simsrw73\\.config\\claude\\plugins\\marketplaces\\claude-hud",
     "lastUpdated": "2026-10-21T23:51:29.751Z"
-  },
-  "claude-themes": {
-    "source": {
-      "source": "github",
-      "repo": "matcra587/claude-themes"
-    },
-    "installLocation": "C:\\Users\\simsrw73\\.config\\claude\\plugins\\marketplaces\\claude-themes",
-    "lastUpdated": "2026-10-26T19:00:03.547Z"
   }
 }

@@ -91,20 +91,13 @@
     "rust-analyzer-lsp@claude-plugins-official": true,
     "clangd-lsp@claude-plugins-official": true,
     "lua-lsp@claude-plugins-official": true,
-    "claude-hud@claude-hud": true,
-    "catppuccin@claude-themes": true
+    "claude-hud@claude-hud": true
   },
   "extraKnownMarketplaces": {
     "claude-hud": {
       "source": {
         "source": "github",
         "repo": "jarrodwatts/claude-hud"
-      }
-    },
-    "claude-themes": {
-      "source": {
-        "source": "github",
-        "repo": "matcra587/claude-themes"
       }
     }
   },
@@ -117,7 +110,7 @@
   "autoUpdatesChannel": "latest",
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
-  "theme": "custom:catppuccin:catppuccin-mocha",
+  "theme": "custom:catppuccin-mocha",
   "editorMode": "normal",
   "verbose": true,
   "preferredNotifChannel": "auto",

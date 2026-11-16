@@ -16,6 +16,7 @@ linked/claude/*
 !linked/claude/settings.json
 !linked/claude/CLAUDE.md
 !linked/claude/hooks/
+!linked/claude/themes/
 !linked/claude/plugins/
 linked/claude/plugins/*
 !linked/claude/plugins/installed_plugins.json

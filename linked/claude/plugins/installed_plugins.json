@@ -170,16 +170,6 @@
         "lastUpdated": "2026-10-21T23:51:29.763Z",
         "gitCommitSha": "3e4e6b4a26e4a4263c6e0b8d60b5f124de4d84f0"
       }
-    ],
-    "catppuccin@claude-themes": [
-      {
-        "scope": "user",
-        "installPath": "C:\\Users\\simsrw73\\.config\\claude\\plugins\\cache\\claude-themes\\catppuccin\\0.2.2",
-        "version": "0.2.2",
-        "installedAt": "2026-10-26T19:00:39.143Z",
-        "lastUpdated": "2026-10-26T19:00:39.143Z",
-        "gitCommitSha": "d9de2d4e12ba27dde79979552e002566bf9194f1"
-      }
     ]
   }
 }
