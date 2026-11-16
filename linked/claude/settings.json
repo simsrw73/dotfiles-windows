@@ -2,11 +2,12 @@
   "skillListingMaxDescChars": 2048,
   "skillListingBudgetFraction": 0.02,
   "env": {
-    "CLAUDE_CODE_USE_POWERSHELL_TOOL": "1"
+    "CLAUDE_CODE_USE_POWERSHELL_TOOL": "1",
+    "CLAUDE_CODE_GIT_BASH_PATH": "C:\\Users\\simsrw73\\.local\\share\\scoop\\apps\\git\\current\\bin\\bash.exe"
   },
   "permissions": {
     "allow": [],
-    "defaultMode": "plan",
+    "defaultMode": "auto",
     "additionalDirectories": [
       "~/projects"
     ]
@@ -75,7 +76,7 @@
   },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": false,
     "code-review@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
@@ -90,7 +91,8 @@
     "rust-analyzer-lsp@claude-plugins-official": true,
     "clangd-lsp@claude-plugins-official": true,
     "lua-lsp@claude-plugins-official": true,
-    "claude-hud@claude-hud": true
+    "claude-hud@claude-hud": true,
+    "catppuccin@claude-themes": true
   },
   "extraKnownMarketplaces": {
     "claude-hud": {
@@ -98,15 +100,62 @@
         "source": "github",
         "repo": "jarrodwatts/claude-hud"
       }
+    },
+    "claude-themes": {
+      "source": {
+        "source": "github",
+        "repo": "matcra587/claude-themes"
+      }
     }
   },
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "medium"
+    }
+  },
+  "dialogExpiry": "never",
   "autoUpdatesChannel": "latest",
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
-  "theme": "custom:catppuccin-mocha",
+  "theme": "custom:catppuccin:catppuccin-mocha",
   "editorMode": "normal",
+  "verbose": true,
   "preferredNotifChannel": "auto",
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "autoMode": {
+    "soft_deny": [
+      "$defaults",
+      "Bash(Publish-PSResource:*) in DotForge — real (non -WhatIf) PSGallery publish, only after exact-tag check per CLAUDE.md Releasing section",
+      "Bash(gh release create:*) in simsrw73/DotForge — public GitHub release creation"
+    ],
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Cloud provider(s)**: None configured",
+      "**Repository visibility**: PUBLIC — simsrw73/DotForge (github.com) is a public repository; any push there is publishing",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: PSGallery API key read from gitignored `.env` (`PSGALLERY_API_KEY=...`) in this repo — never hardcode or commit it",
+      "**Default / protected branches**: Default branch `main`; no branch protection rules or rulesets listed for simsrw73/DotForge via gh (authoritative check) — treat `main` as unprotected at the platform level, but releases there still require the documented tag-then-publish sequence",
+      "**CI/CD deploy targets**: PowerShell Gallery (release publish for simsrw73/DotForge), gated by a PreToolUse hook in `.claude/settings.json` requiring the commit to be an exact git tag before `Publish-PSResource`/`Publish-Module` runs for real",
+      "**Network posture**: None configured",
+      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine with open internet",
+      "**Source control**: The trusted repo (simsrw73/DotForge on github.com) and its origin remote only — no additional orgs configured",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: None configured",
+      "**Internal package registry**: PowerShell Gallery (public, release target) and a local dev gallery at `~\\repos\\Local_PSGallery` (registered for PSResourceGet, used only for local dev-build publishes, never for real releases)",
+      "**Sensitive data locations & audiences**: gitignored `.env` in this repo (holds `PSGALLERY_API_KEY`) — credentials, never to be committed or shared; GPG commit-signing passphrase handling is local-only and never to be exposed",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: None found beyond the default heuristic — any namespace/host/container with `prod`/`production` as a whole word or name segment",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
+      "### User-specific",
+      "**Primary use of Claude Code**: software development (PowerShell module development on DotForge, this repo)",
+      "**Trusted repo**: simsrw73/DotForge (github.com), the working directory's origin remote — PUBLIC, so only this repo's own work belongs there; confidential/secret material is never cleared into it by visibility alone",
+      "**Org-specific CLIs**: None configured — project-specific tooling observed: scoop/winget/choco (package managers), PSResourceGet/Publish-PSResource (PowerShell Gallery publishing), gh (GitHub CLI for releases), Pester 6 (test runner), rustup/cargo (toolchain, used outside Claude per shell history)",
+      "**routine under simsrw73/ prefix**: routine build/test/publish-to-local-gallery actions scoped to simsrw73/DotForge are low-risk; real PSGallery publishes and GitHub releases still require the documented tag-first sequence and explicit confirmation"
+    ]
+  }
 }
