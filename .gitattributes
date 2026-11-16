@@ -7,7 +7,7 @@
 home/dot_config/carapace/specs/*.yaml -text
 home/dot_config/delta/catppuccin.gitconfig -text
 home/dot_config/git/config.tmpl -text
-linked/claude/projects/C--Users-simsr--config/memory/yasb-bar-design.md -text
+linked/claude/projects/C--Users-simsrw73--config/memory/yasb-bar-design.md -text
 
 # Flow Launcher rewrites runtime state into its settings; lib/flow-state.sed
 # pins those values in the repo copy (the live file keeps the real ones).
@@ -15,3 +15,8 @@ linked/claude/projects/C--Users-simsr--config/memory/yasb-bar-design.md -text
 #   git config filter.flowstate.clean "sed -E -f lib/flow-state.sed"
 linked/FlowLauncher/Settings/Settings.json filter=flowstate
 linked/FlowLauncher/Settings/Plugins/Flow.Launcher.Plugin.Program/Settings.json filter=flowstate
+
+# Claude's project memories are encrypted in the repo with git-crypt (GPG key
+# 8FDC1EB03BECE139); the working tree stays plain text. A new clone has them as
+# ciphertext until `git-crypt unlock` (bootstrap.ps1 runs it after the GPG import).
+linked/claude/projects/*/memory/** filter=git-crypt diff=git-crypt

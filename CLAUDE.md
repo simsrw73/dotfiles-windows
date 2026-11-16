@@ -18,6 +18,9 @@ source, `linked/` holds folders that `~/.config/<name>` junctions point to
   timestamp); commit it with other work, don't chase it.
 - Leave the user's uncommitted changes alone unless asked; commit only the
   files you changed.
+- Claude memory files (`linked/claude/projects/*/memory/`) are git-crypt
+  encrypted in the repo (rule in `.gitattributes`). Check new ones with
+  `git-crypt status -e` before committing; never move them outside that rule.
 
 ## AutoHotkey (`linked/AutoHotKey`)
 

@@ -46,7 +46,7 @@ $env:PATH = "$env:SCOOP\shims;$env:PATH"
 
 scoop install git
 scoop bucket add extras
-scoop install chezmoi bitwarden-cli gsudo gh gitleaks
+scoop install chezmoi bitwarden-cli gsudo gh gitleaks git-crypt
 
 # pwsh from winget (Microsoft's own package, MSIX: no admin, `pwsh` is on PATH at once).
 if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
@@ -66,6 +66,12 @@ chezmoi init https://github.com/simsrw73/dotfiles-windows.git --source $src
 git -C $src config core.hooksPath .githooks
 git -C $src config filter.flowstate.clean "sed -E -f lib/flow-state.sed"
 chezmoi apply -v
+
+# Claude's memory files are git-crypt ciphertext until unlocked. The apply above
+# imported the GPG key, so this asks for its passphrase once. Unlock needs a
+# clean working tree; if apps have already rewritten files, run it again later.
+git -C $src crypt unlock
+if ($LASTEXITCODE -ne 0) { Write-Warning "git-crypt unlock failed; run 'git -C $src crypt unlock' later." }
 
 Write-Host ''
 Write-Host 'Done. Sign out and back in (env vars, wpmd logon task), then open a new terminal.'

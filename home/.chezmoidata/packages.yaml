@@ -70,6 +70,7 @@ packages:
       - gdu
       - ghostscript
       - git
+      - git-crypt
       - git-filter-repo
       - gitleaks
       - glow
