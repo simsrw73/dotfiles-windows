@@ -4,7 +4,6 @@ Set-StrictMode -Version 'Latest'
 
 $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding
 
-
 # Preferred Setup
 #
 # Modules:
@@ -24,7 +23,7 @@ $moduleRoot = Join-Path $profileRoot 'ProfileModules'
 #   [LogLevel]::Info  — key status lines (default)
 #   [LogLevel]::Debug — full detail: modules, file loads, tool inventory
 enum LogLevel {
-    Error = 0; Warn = 1; Info = 2; Debug = 3 
+    Error = 0; Warn = 1; Info = 2; Debug = 3
 }
 $Global:ProfileLogLevel = [LogLevel]::Info
 
@@ -45,33 +44,33 @@ function global:Write-ProfileMsg {
         [string]$Color = ''
     )
     $_effectiveLevel = if ($null -eq $Global:ProfileLogLevel) {
-        [LogLevel]::Info 
+        [LogLevel]::Info
     } else {
-        $Global:ProfileLogLevel 
+        $Global:ProfileLogLevel
     }
     if ([int]$Level -gt [int]$_effectiveLevel) {
-        return 
+        return
     }
     switch ($Level) {
         ([LogLevel]::Error) {
-            Write-Error $Message; return 
+            Write-Error $Message; return
         }
         ([LogLevel]::Warn) {
-            Write-Warning $Message; return 
+            Write-Warning $Message; return
         }
     }
     $c = if ($Color) {
-        $Color 
+        $Color
     } else {
         switch ($Level) {
             ([LogLevel]::Info) {
-                'Cyan' 
+                'Cyan'
             }
             ([LogLevel]::Debug) {
-                'DarkGray' 
+                'DarkGray'
             }
             default {
-                'White' 
+                'White'
             }
         }
     }
@@ -105,7 +104,7 @@ if ($Env:TERM_PROGRAM -eq 'vscode') {
     . (Join-Path $moduleRoot 'Functions.ps1')
     . (Join-Path $moduleRoot 'Completers.ps1')
     if (Test-Path $p9catTransient) {
-        . $p9catTransient 
+        . $p9catTransient
     }
     return
 }
@@ -145,7 +144,7 @@ Write-ProfileMsg "  Terminal: $($Env:TERM_PROGRAM ?? 'unknown')" -Level Debug
 . (Join-Path $moduleRoot 'Completers.ps1')
 
 if (Test-Path $p9catTransient) {
-    . $p9catTransient 
+    . $p9catTransient
 }
 
 
@@ -154,9 +153,9 @@ if ((Get-Date).DayOfWeek -eq 'Friday') {
     $_sentinel = Join-Path ($Env:XDG_STATE_HOME ?? "$HOME/.local/state") 'ps_friday_maintenance'
     $_today = Get-Date -Format 'yyyy-MM-dd'
     $_lastRun = if (Test-Path $_sentinel) {
-        (Get-Content $_sentinel -Raw).Trim() 
+        (Get-Content $_sentinel -Raw).Trim()
     } else {
-        '' 
+        ''
     }
     if ($_lastRun -ne $_today) {
         Write-ProfileMsg '⚙  Running weekly module update…'

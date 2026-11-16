@@ -33,7 +33,11 @@ function global:Update-AllModules {
 
     foreach ($module in $unique) {
         $i++
-        $scope = if ($module.InstalledLocation -like "$env:ProgramFiles*") { 'AllUsers' } else { 'CurrentUser' }
+        $scope = if ($module.InstalledLocation -like "$env:ProgramFiles*") {
+            'AllUsers' 
+        } else {
+            'CurrentUser' 
+        }
 
         if ($scope -eq 'AllUsers' -and -not $Global:IsAdmin) {
             Write-Host "  · [$i/$total] $($module.Name) — needs admin" -ForegroundColor DarkYellow
@@ -71,13 +75,6 @@ function global:Update-AllModules {
     Write-Host "`n✓ Done" -ForegroundColor Green
 }
 
-
-function global:Remove-All {
-    [CmdletBinding()]
-    param([Parameter(Mandatory, ValueFromRemainingArguments)][string[]]$Path)
-    Remove-Item -Force -Recurse @Path
-}
-
 function global:Get-PubIP {
     [CmdletBinding()]
     param()
@@ -103,13 +100,3 @@ function global:Measure-Profile {
     $t = Measure-Command { . $PROFILE }
     Write-ProfileMsg "Profile load: $([math]::Round($t.TotalMilliseconds))ms" -Color Cyan
 }
-
-# Recklessly allow Claude to run all over me
-$script:ClaudeExe = (Get-Command claude -ErrorAction Ignore).Source
-function clauded {
-    if (-not $script:ClaudeExe) { Write-Warning 'claude is not on PATH'; return }
-    & $script:ClaudeExe --dangerously-skip-permissions @Args
-}
-
-
-
