@@ -4,9 +4,11 @@
 [settings]
 env_file = ".env"
 
-# A .env loads only once you approve its current contents (`mise trust .env`);
-# editing it revokes that. Until then mise warns "not trusted" and skips it.
-paranoid = ["env_files"]
-
-# Folders whose .env files load without asking (each folder and everything under it).
-trusted_config_paths = ["~/projects"]
+# Every project config file (.env, mise.toml, .tool-versions) loads only once you
+# approve its current contents (`mise trust`); editing it revokes that. Until then
+# mise warns "not trusted" and skips it.
+#
+# No trusted_config_paths: it would trust every mise.toml under a folder too, and
+# a mise.toml can run commands (hooks, exec() templates), so a cloned repo would
+# run its code on cd. Trust each folder once with `mise trust` instead.
+paranoid = true
